@@ -51,8 +51,12 @@
   <ItemGroup>
     <Compile Include="AuthenticatedAccount.cs" />
     <Compile Include="Credentials.cs" />
+    <Compile Include="Hull.cs" />
     <Compile Include="Profile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rank.cs" />
+    <Compile Include="Rate.cs" />
+    <Compile Include="Vessel.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
