@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FleetManager", "FleetManager\FleetManager.csproj", "{11D81C08-5445-4D2A-8E70-614279C15FFE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{5D0DDFE3-320C-4064-92D9-9EB7FD5AA434}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ANWI", "ANWI\ANWI.csproj", "{F80E34D8-1A0A-49E2-AB7A-E38503DF89EC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{11D81C08-5445-4D2A-8E70-614279C15FFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11D81C08-5445-4D2A-8E70-614279C15FFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11D81C08-5445-4D2A-8E70-614279C15FFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11D81C08-5445-4D2A-8E70-614279C15FFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D0DDFE3-320C-4064-92D9-9EB7FD5AA434}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D0DDFE3-320C-4064-92D9-9EB7FD5AA434}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D0DDFE3-320C-4064-92D9-9EB7FD5AA434}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D0DDFE3-320C-4064-92D9-9EB7FD5AA434}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F80E34D8-1A0A-49E2-AB7A-E38503DF89EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F80E34D8-1A0A-49E2-AB7A-E38503DF89EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F80E34D8-1A0A-49E2-AB7A-E38503DF89EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F80E34D8-1A0A-49E2-AB7A-E38503DF89EC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
