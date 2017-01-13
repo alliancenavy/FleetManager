@@ -13,6 +13,6 @@ namespace ANWI {
 	public class AuthenticatedAccount {
 		public string nickname;
 		public string idToken;
-		public Profile profile;
+		public Profile profile = new Profile();
 	}
 }

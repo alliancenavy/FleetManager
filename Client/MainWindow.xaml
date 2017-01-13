@@ -5,11 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="Alliance Fleet Manager" Height="350" Width="525">
+        Title="Alliance Fleet Manager" Height="370.167" Width="242.666" ResizeMode="NoResize">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
+        <Button x:Name="ServiceRecButton" Content="Your Service Record" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="207" Height="40" Background="#FF316838" Foreground="White" Click="ServiceRecButton_Click"/>
+        <Button x:Name="VesselRegButton" Content="Vessel Registry" HorizontalAlignment="Left" Margin="10,55,0,0" VerticalAlignment="Top" Width="207" Height="40" Background="#FF316838" Foreground="White" Click="VesselRegButton_Click" IsEnabled="False"/>
+        <Button x:Name="QuitButton" Content="Quit" HorizontalAlignment="Left" Margin="10,283,0,0" VerticalAlignment="Top" Width="207" Height="40" Background="#FF316838" Foreground="White" Click="QuitButton_Click"/>
 
     </Grid>
 </Window>

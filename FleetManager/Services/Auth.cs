@@ -47,6 +47,21 @@ namespace FleetManager.Services {
 				account.idToken = user.IdToken;
 				account.nickname = user.Profile["nickname"].ToString();
 
+				// TODO: This is placeholder account info
+				account.profile.nickname = "Mazer Ludd";
+				account.profile.rank.name = "Captain";
+				account.profile.rank.abbrev = "CAPT";
+				account.profile.assignedShip.name = "ANS This Isn't Over";
+				account.profile.assignedShip.hull.type = "Polaris";
+				account.profile.assignedShip.hull.role = "Corvette";
+				account.profile.rates.Add(new Rate() {
+					id = 1,
+					name = "Fighter Pilot",
+					abbrev = "FP",
+					rank = 1
+				});
+				account.profile.primaryRate = 0;
+
 				Send(JsonConvert.SerializeObject(account));
 			} catch (System.Net.Http.HttpRequestException e) {
 				ANWI.AuthenticatedAccount failed = new AuthenticatedAccount();

@@ -9,10 +9,10 @@ namespace ANWI {
 	/// A user's profile.
 	/// Incudings things like name, rank, rates, etc
 	/// </summary>
-	public struct Profile {
+	public class Profile {
 		public string nickname;
 		public Rank rank;
-		public List<Rate> rates;
+		public List<Rate> rates = new List<Rate>();
 		public int primaryRate;
 		public Vessel assignedShip;
 	}

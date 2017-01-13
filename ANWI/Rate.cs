@@ -10,5 +10,15 @@ namespace ANWI {
 		public string name;
 		public string abbrev;
 		public string icon;
+		public int rank;
+
+		public string getClass() {
+			if (rank == 1)
+				return "1st";
+			else if (rank == 2)
+				return "2nd";
+			else
+				return "3rd";
+		}
 	}
 }
