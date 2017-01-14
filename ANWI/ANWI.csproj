@@ -39,6 +39,10 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MsgPack, Version=0.1.4298.15470, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MsgPack.0.1.0.2011042300\lib\net40\MsgPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -91,6 +95,7 @@
   <ItemGroup />
   <ItemGroup>
     <None Include="database\README.md" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
