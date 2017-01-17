@@ -34,13 +34,12 @@ namespace ANWI.Database.Model
             get
             {
                 if (_rate == null)
-                    DBI.GetRateById(rate, out _rate);
+                    Rate.FetchById(ref _rate, rate);
                 return _rate;
             }
             set
             {
                 _rate = value;
-                rate = _rate.id;
             }
         }
 
@@ -82,6 +81,46 @@ namespace ANWI.Database.Model
                 Rate: null
             );
             return result;
+        }
+
+        public static bool Create(ref AssignmentRole output, string name, int rate)
+        {
+            int result = DBI.DoAction($"insert into AssignmentRole (name, rate) values('{name}', {rate});");
+            if (result == 1)
+            {
+                return AssignmentRole.FetchById(ref output, DBI.LastInsertRowId);
+            }
+            return false;
+        }
+
+        public static bool FetchById(ref AssignmentRole output, int id)
+        {
+            SQLiteDataReader reader = DBI.DoQuery($"select * from AssignmentRole where id = {id} limit 1;");
+            if (reader.Read())
+            {
+                output = AssignmentRole.Factory(reader);
+                return true;
+            }
+            return false;
+        }
+
+        public static bool FetchByName(ref AssignmentRole output, string name)
+        {
+            SQLiteDataReader reader = DBI.DoQuery($"select * from AssignmentRole where name = {name} limit 1;");
+            if (reader.Read())
+            {
+                output = AssignmentRole.Factory(reader);
+                return true;
+            }
+            return false;
+        }
+
+        public static bool Store(AssignmentRole input)
+        {
+            int result = DBI.DoAction($"update AssignmentRole set name = '{input.name}', rate = {input.rate} where id = {input.id};");
+            if (result == 1)
+                return true;
+            return false;
         }
 
         #endregion

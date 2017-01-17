@@ -66,6 +66,46 @@ namespace ANWI.Database.Model
             return result;
         }
 
+        public static bool Create(ref HullRole output, string name, string abrv, string icon = "")
+        {
+            int result = DBI.DoAction($"insert into HullRole (name, abrv, icon) values('{name}', '{abrv}', '{icon}');");
+            if (result == 1)
+            {
+                return HullRole.FetchById(ref output, DBI.LastInsertRowId);
+            }
+            return false;
+        }
+
+        public static bool FetchById(ref HullRole output, int id)
+        {
+            SQLiteDataReader reader = DBI.DoQuery($"select * from HullRole where id = {id} limit 1;");
+            if (reader.Read())
+            {
+                output = HullRole.Factory(reader);
+                return true;
+            }
+            return false;
+        }
+
+        public static bool FetchByName(ref HullRole output, string name)
+        {
+            SQLiteDataReader reader = DBI.DoQuery($"select * from HullRole where name = {name} limit 1;");
+            if (reader.Read())
+            {
+                output = HullRole.Factory(reader);
+                return true;
+            }
+            return false;
+        }
+
+        public static bool Store(HullRole input)
+        {
+            int result = DBI.DoAction($"update HullRole set name = '{input.name}', abrv = '{input.abrv}', icon = '{input.icon}' where id = {input.id};");
+            if (result == 1)
+                return true;
+            return false;
+        }
+
         #endregion
     }
 }

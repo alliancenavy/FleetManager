@@ -66,6 +66,46 @@ namespace ANWI.Database.Model
             return result;
         }
 
+        public static bool Create(ref Rate output, string name, string abrv, string icon = "")
+        {
+            int result = DBI.DoAction($"insert into Rate (name, abrv, icon) values('{name}', '{abrv}', '{icon}');");
+            if (result == 1)
+            {
+                return Rate.FetchById(ref output, DBI.LastInsertRowId);
+            }
+            return false;
+        }
+
+        public static bool FetchById(ref Rate output, int id)
+        {
+            SQLiteDataReader reader = DBI.DoQuery($"select * from Rate where id = {id} limit 1;");
+            if ( reader.Read() )
+            {
+                output = Rate.Factory(reader);
+                return true;
+            }
+            return false;
+        }
+
+        public static bool FetchByName(ref Rate output, string name)
+        {
+            SQLiteDataReader reader = DBI.DoQuery($"select * from Rate where name = {name} limit 1;");
+            if ( reader.Read() )
+            {
+                output = Rate.Factory(reader);
+                return true;
+            }
+            return false;
+        }
+
+        public static bool Store(Rate input)
+        {
+            int result = DBI.DoAction($"update Rate set name = '{input.name}', abrv = '{input.abrv}', icon = '{input.icon}' where id = {input.id};");
+            if (result == 1)
+                return true;
+            return false;
+        }
+
         #endregion
     }
 }

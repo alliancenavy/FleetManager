@@ -44,13 +44,12 @@ namespace ANWI.Database.Model
             get
             {
                 if (_user == null)
-                    DBI.GetUserById(user, out _user);
+                    User.FetchById(ref _user, user);
                 return _user;
             }
             set
             {
                 _user = value;
-                user = _user.id;
             }
         }
 
@@ -59,13 +58,12 @@ namespace ANWI.Database.Model
             get
             {
                 if (_ship == null)
-                    DBI.GetUserShipById(ship, out _ship); ;
+                    UserShip.FetchById(ref _ship, ship);
                 return _ship;
             }
             set
             {
                 _ship = value;
-                ship = _ship.id;
             }
         }
 
@@ -74,13 +72,12 @@ namespace ANWI.Database.Model
             get
             {
                 if (_role == null)
-                    DBI.GetAssignmentRoleById(role, out _role); ;
+                    AssignmentRole.FetchById(ref _role, role);
                 return _role;
             }
             set
             {
                 _role = value;
-                role = _role.id;
             }
         }
 
@@ -138,6 +135,35 @@ namespace ANWI.Database.Model
                 Role: null
             );
             return result;
+        }
+
+        public static bool Create(ref Assignment output, int user, int ship, int role, int from, int until)
+        {
+            int result = DBI.DoAction($"insert into Assignment (user, ship, role, from, until) values({user}, {ship}, {role}, {from}, {until});");
+            if (result == 1)
+            {
+                return Assignment.FetchById(ref output, DBI.LastInsertRowId);
+            }
+            return false;
+        }
+
+        public static bool FetchById(ref Assignment output, int id)
+        {
+            SQLiteDataReader reader = DBI.DoQuery($"select * from Assignment where id = {id} limit 1;");
+            if (reader.Read())
+            {
+                output = Assignment.Factory(reader);
+                return true;
+            }
+            return false;
+        }
+
+        public static bool Store(Assignment input)
+        {
+            int result = DBI.DoAction($"update Assignment set user = {input.user}, ship = {input.ship}, role = {input.role}, from = {input.from}, until = {input.until} where id = {input.id};");
+            if (result == 1)
+                return true;
+            return false;
         }
 
         #endregion

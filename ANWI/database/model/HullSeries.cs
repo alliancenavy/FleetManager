@@ -56,6 +56,46 @@ namespace ANWI.Database.Model
             return result;
         }
 
+        public static bool Create(ref HullSeries output, string name)
+        {
+            int result = DBI.DoAction($"insert into HullSeries (name) values('{name}');");
+            if (result == 1)
+            {
+                return HullSeries.FetchById(ref output, DBI.LastInsertRowId);
+            }
+            return false;
+        }
+
+        public static bool FetchById(ref HullSeries output, int id)
+        {
+            SQLiteDataReader reader = DBI.DoQuery($"select * from HullSeries where id = {id} limit 1;");
+            if (reader.Read())
+            {
+                output = HullSeries.Factory(reader);
+                return true;
+            }
+            return false;
+        }
+
+        public static bool FetchByName(ref HullSeries output, string name)
+        {
+            SQLiteDataReader reader = DBI.DoQuery($"select * from HullSeries where name = {name} limit 1;");
+            if (reader.Read())
+            {
+                output = HullSeries.Factory(reader);
+                return true;
+            }
+            return false;
+        }
+
+        public static bool Store(HullSeries input)
+        {
+            int result = DBI.DoAction($"update HullSeries set name = '{input.name}' where id = {input.id};");
+            if (result == 1)
+                return true;
+            return false;
+        }
+
         #endregion
     }
 }

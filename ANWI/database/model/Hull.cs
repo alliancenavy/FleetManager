@@ -47,13 +47,12 @@ namespace ANWI.Database.Model
             get
             {
                 if (_vendor == null)
-                    DBI.GetHullVendorById(vendor, out _vendor);
+                    HullVendor.FetchById(ref _vendor, vendor);
                 return _vendor;
             }
             set
             {
                 _vendor = value;
-                vendor = _vendor.id;
             }
         }
 
@@ -62,13 +61,12 @@ namespace ANWI.Database.Model
             get
             {
                 if (_role == null)
-                    DBI.GetHullRoleById(role, out _role);
+                    HullRole.FetchById(ref _role, role);
                 return _role;
             }
             set
             {
                 _role = value;
-                role = _role.id;
             }
         }
 
@@ -77,13 +75,12 @@ namespace ANWI.Database.Model
             get
             {
                 if (_series == null)
-                    DBI.GetHullSeriesById(series, out _series);
+                    HullSeries.FetchById(ref _series, series);
                 return _series;
             }
             set
             {
                 _series = value;
-                series = _series.id;
             }
         }
 
@@ -143,6 +140,35 @@ namespace ANWI.Database.Model
                 Series: null
             );
             return result;
+        }
+
+        public static bool Create(ref Hull output, int vendor, int role, int series, string version, string symbol, int ordering)
+        {
+            int result = DBI.DoAction($"insert into Hull (vendor, role, series, version, symbol, ordering) values({vendor}, {role}, {series}, '{version}', '{symbol}', {ordering});");
+            if (result == 1)
+            {
+                return Hull.FetchById(ref output, DBI.LastInsertRowId);
+            }
+            return false;
+        }
+
+        public static bool FetchById(ref Hull output, int id)
+        {
+            SQLiteDataReader reader = DBI.DoQuery($"select * from Hull where id = {id} limit 1;");
+            if (reader.Read())
+            {
+                output = Hull.Factory(reader);
+                return true;
+            }
+            return false;
+        }
+
+        public static bool Store(Hull input)
+        {
+            int result = DBI.DoAction($"update Hull set vendor = {input.vendor}, role = {input.role}, series = {input.series}, version = '{input.version}', symbol = '{input.symbol}', ordering = {input.ordering} where id = {input.id};");
+            if (result == 1)
+                return true;
+            return false;
         }
 
         #endregion

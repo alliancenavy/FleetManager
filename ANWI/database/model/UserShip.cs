@@ -41,13 +41,12 @@ namespace ANWI.Database.Model
             get
             {
                 if (_user == null)
-                    DBI.GetUserById(user, out _user);
+                    User.FetchById(ref _user, user);
                 return _user;
             }
             set
             {
                 _user = value;
-                user = _user.id;
             }
         }
 
@@ -56,7 +55,7 @@ namespace ANWI.Database.Model
             get
             {
                 if (_hull == null)
-                    DBI.GetHullById(hull, out _hull);
+                    Hull.FetchById(ref _hull, hull);
                 return _hull;
             }
             set
@@ -116,13 +115,44 @@ namespace ANWI.Database.Model
             return result;
         }
 
-        public static bool CreateEntry(out UserShip result, int user, int hull, int insurance, int number, string name)
+        public static bool Create(ref UserShip output, int user, int hull, int insurance, int number, string name)
         {
-            int outval = DBI.DoAction("insert into UserShip (user, hull, insurance, number, name) values ("
-                + user + ", "  + hull + ", " + insurance + ", " + number + ", " + name + ");"
-            );
-            result = UserShip.Factory();
-            return true;
+            int result = DBI.DoAction($"insert into UserShip (user, hull, insurance, number, name) values ({user}, {hull}, {insurance}, {number}, '{name}');");
+            if (result == 1)
+            {
+                return UserShip.FetchById(ref output, DBI.LastInsertRowId);
+            }
+            return false;
+        }
+
+        public static bool FetchById(ref UserShip output, int id)
+        {
+            SQLiteDataReader reader = DBI.DoQuery($"select * from UserShip where id = {id} limit 1;");
+            if ( reader.Read() )
+            {
+                output = UserShip.Factory(reader);
+                return true;
+            }
+            return false;
+        }
+
+        public static bool FetchByName(ref UserShip output, string name)
+        {
+            SQLiteDataReader reader = DBI.DoQuery($"select * from UserShip where name = '{name}' limit 1;");
+            if ( reader.Read() )
+            {
+                output = UserShip.Factory(reader);
+                return true;
+            }
+            return false;
+        }
+
+        public static bool Store(UserShip input)
+        {
+            int result = DBI.DoAction($"update UserShip set name = '{input.name}', user = {input.user}, hull = {input.hull}, insurance = {input.insurance}, number = {input.number}, name = '{input.name}' where id = {input.id};");
+            if (result == 1)
+                return true;
+            return false;
         }
 
         #endregion

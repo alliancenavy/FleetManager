@@ -66,6 +66,46 @@ namespace ANWI.Database.Model
             return result;
         }
 
+        public static bool Create(ref HullVendor output, string name, string abrv, string icon = "")
+        {
+            int result = DBI.DoAction($"insert into HullVendor (name, abrv, icon) values('{name}', '{abrv}', '{icon}');");
+            if (result == 1)
+            {
+                return HullVendor.FetchById(ref output, DBI.LastInsertRowId);
+            }
+            return false;
+        }
+
+        public static bool FetchById(ref HullVendor output, int id)
+        {
+            SQLiteDataReader reader = DBI.DoQuery($"select * from HullVendor where id = {id} limit 1;");
+            if (reader.Read())
+            {
+                output = HullVendor.Factory(reader);
+                return true;
+            }
+            return false;
+        }
+
+        public static bool FetchByName(ref HullVendor output, string name)
+        {
+            SQLiteDataReader reader = DBI.DoQuery($"select * from HullVendor where name = {name} limit 1;");
+            if (reader.Read())
+            {
+                output = HullVendor.Factory(reader);
+                return true;
+            }
+            return false;
+        }
+
+        public static bool Store(HullVendor input)
+        {
+            int result = DBI.DoAction($"update HullVendor set name = '{input.name}', abrv = '{input.abrv}', icon = '{input.icon}' where id = {input.id};");
+            if (result == 1)
+                return true;
+            return false;
+        }
+
         #endregion
     }
 }

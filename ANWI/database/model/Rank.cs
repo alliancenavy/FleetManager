@@ -71,6 +71,46 @@ namespace ANWI.Database.Model
             return result;
         }
 
+        public static bool Create(ref Rank output, string name, string abrv, string icon, int ordering)
+        {
+            int result = DBI.DoAction($"insert into Rank (name, abrv, icon, ordering) values('{name}', '{abrv}', '{icon}', {ordering});");
+            if (result == 1)
+            {
+                return Rank.FetchById(ref output, DBI.LastInsertRowId);
+            }
+            return false;
+        }
+
+        public static bool FetchById(ref Rank output, int id)
+        {
+            SQLiteDataReader reader = DBI.DoQuery($"select * from Rank where id = {id} limit 1;");
+            if (reader.Read())
+            {
+                output = Rank.Factory(reader);
+                return true;
+            }
+            return false;
+        }
+
+        public static bool FetchByName(ref Rank output, string name)
+        {
+            SQLiteDataReader reader = DBI.DoQuery($"select * from Rank where name = {name} limit 1;");
+            if (reader.Read())
+            {
+                output = Rank.Factory(reader);
+                return true;
+            }
+            return false;
+        }
+
+        public static bool Store(Rank input)
+        {
+            int result = DBI.DoAction($"update Rank set name = '{input.name}', abrv = '{input.abrv}', icon = '{input.icon}' where id = {input.id};");
+            if (result == 1)
+                return true;
+            return false;
+        }
+
         #endregion
     }
 }

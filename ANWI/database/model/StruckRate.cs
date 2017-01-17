@@ -1,4 +1,5 @@
-﻿using System.Data.SQLite;
+﻿using System.Collections.Generic;
+using System.Data.SQLite;
 
 namespace ANWI.Database.Model
 {
@@ -38,13 +39,12 @@ namespace ANWI.Database.Model
             get
             {
                 if (_rate == null)
-                    DBI.GetRateById(rate, out _rate);
+                    Rate.FetchById(ref _rate, rate);
                 return _rate;
             }
             set
             {
                 _rate = value;
-                rate = _rate.id;
             }
         }
 
@@ -53,13 +53,12 @@ namespace ANWI.Database.Model
             get
             {
                 if (_user == null)
-                    DBI.GetUserById(user, out _user);
+                    User.FetchById(ref _user, user);
                 return _user;
             }
             set
             {
                 _user = value;
-                user = _user.id;
             }
         }
 
@@ -107,6 +106,67 @@ namespace ANWI.Database.Model
                 Rate: null
             );
             return result;
+        }
+
+        public static bool Create(ref StruckRate output, int user, int rate, int rank)
+        {
+            int result = DBI.DoAction($"insert into StruckRate (user, rate, rank) values({user}, {rate}, {rank});");
+            if (result == 1)
+            {
+                return StruckRate.FetchById(ref output, DBI.LastInsertRowId);
+            }
+            return false;
+        }
+
+        public static bool FetchById(ref StruckRate output, int id)
+        {
+            SQLiteDataReader reader = DBI.DoQuery($"select * from StruckRate where id = {id} limit 1;");
+            if ( reader.Read() )
+            {
+                output = StruckRate.Factory(reader);
+                return true;
+            }
+            return false;
+        }
+
+        public static bool FetchByUserId(ref List<StruckRate> output, int user)
+        {
+            SQLiteDataReader reader = DBI.DoQuery($"select * from StruckRate where user = {user};");
+            if ( reader.Read() )
+            {
+                output = new List<StruckRate>();
+                do
+                {
+                    output.Add(StruckRate.Factory(reader));
+                }
+                while ( reader.Read() );
+                return true;
+            }
+            return false;
+        }
+
+        public static bool FetchByRateId(ref List<StruckRate> output, int rate)
+        {
+            SQLiteDataReader reader = DBI.DoQuery($"select * from StruckRate where rate = {rate};");
+            if ( reader.Read() )
+            {
+                output = new List<StruckRate>();
+                do
+                {
+                    output.Add(StruckRate.Factory(reader));
+                }
+                while ( reader.Read() );
+                return true;
+            }
+            return false;
+        }
+
+        public static bool Store(StruckRate input)
+        {
+            int result = DBI.DoAction($"update StruckRate set user = {input.user}, rate = {input.rate}, rank = {input.rank} where id = {input.id};");
+            if (result == 1)
+                return true;
+            return false;
         }
 
         #endregion
