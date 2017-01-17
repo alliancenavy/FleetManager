@@ -19,29 +19,34 @@ namespace Client {
 	/// </summary>
 	public partial class ServiceRecord : Window {
 
+		public class AwardRecord {
+			public string Name { get; set; }
+			public string Icon { get; set; }
+		}
+
 		public ServiceRecord(Profile p) {
 			InitializeComponent();
-
-			//
-			// Populate fields
-			Text_Nickname.Text = p.rank.abbrev + " " + p.nickname;
-
-			// Rank
-			Text_Rank.Text = p.rank.name;
-			// TODO: rank image
-
-			// Primary Rate
-			Rate pr = p.rates[p.primaryRate];
-			Text_PrimaryRate.Text = pr.name + " " + pr.getClass() + " Class";
-			// TODO: rate image
-
-			// Time in service
-			// TODO
+			this.DataContext = p;
 
 			// Assigned ship
 			Text_CurrentShip.Text = p.assignedShip.name + " (" + p.assignedShip.hull.type 
 				+ " class " + p.assignedShip.hull.role + ")";
 
+			// Awards list
+			List_Awards.Items.Add(new AwardRecord() {
+				Name = "Order of the Cool Guy (x1)",
+				Icon = "images/no_image.png"
+			});
+
+			List_Awards.Items.Add(new AwardRecord() {
+				Name = "Good Conduct Medal (x2)",
+				Icon = "images/no_image.png"
+			});
+
+			List_Awards.Items.Add(new AwardRecord() {
+				Name = "Command Star (x1)",
+				Icon = "images/no_image.png"
+			});
 		}
 	}
 }

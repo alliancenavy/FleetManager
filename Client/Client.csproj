@@ -53,6 +53,10 @@
       <HintPath>..\packages\FontAwesome.WPF.4.7.0.9\lib\net40\FontAwesome.WPF.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="MsgPack, Version=0.8.0.0, Culture=neutral, PublicKeyToken=a2625990d5dc0167, processorArchitecture=MSIL">
+      <HintPath>..\packages\MsgPack.Cli.0.8.0\lib\net45\MsgPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -96,6 +100,11 @@
     <Compile Include="ServiceRecord.xaml.cs">
       <DependentUpon>ServiceRecord.xaml</DependentUpon>
     </Compile>
+    <Compile Include="VesselReg.xaml.cs">
+      <DependentUpon>VesselReg.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="VesselRegHelpers.cs" />
+    <Compile Include="VesselRegTemplateSelector.cs" />
     <Page Include="Login.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -116,6 +125,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="ServiceRecord.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="VesselReg.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -156,6 +169,27 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\no_image.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\rates\DC1.png" />
+    <Resource Include="images\rates\DC2.png" />
+    <Resource Include="images\rates\DC3.png" />
+    <Resource Include="images\rates\FP1.png" />
+    <Resource Include="images\rates\FP2.png" />
+    <Resource Include="images\rates\FP3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\ranks\1.png" />
+    <Resource Include="images\ranks\2.png" />
+    <Resource Include="images\ranks\3.png" />
+    <Resource Include="images\ranks\4.png" />
+    <Resource Include="images\ranks\5.png" />
+    <Resource Include="images\ranks\6.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\rates\SK1.png" />
+    <Resource Include="images\rates\SK2.png" />
+    <Resource Include="images\rates\SK3.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />

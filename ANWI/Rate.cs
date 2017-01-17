@@ -9,8 +9,9 @@ namespace ANWI {
 		public int id;
 		public string name;
 		public string abbrev;
-		public string icon;
 		public int rank;
+		public string date { get; set; }
+		public string expires;
 
 		public string getClass() {
 			if (rank == 1)
@@ -20,5 +21,9 @@ namespace ANWI {
 			else
 				return "3rd";
 		}
+
+		public string FullName { get { return name + " " + getClass() + " Class"; } }
+
+		public string Icon { get { return "images/rates/" + abbrev + rank.ToString() + ".png";  } }
 	}
 }

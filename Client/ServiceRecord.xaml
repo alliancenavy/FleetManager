@@ -5,16 +5,56 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="ServiceRecord" Height="495.833" Width="323.333">
-    <Grid>
-        <TextBlock x:Name="Text_Nickname" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Nickname" VerticalAlignment="Top" Height="30" Width="273" FontSize="20" FontWeight="Bold" Margin="10,0,0,0"/>
-        <Image x:Name="Image_Rank" HorizontalAlignment="Left" Height="55" Margin="10,30,0,0" VerticalAlignment="Top" Width="55" OpacityMask="Black" Source="images/no_image.png"/>
-        <TextBlock x:Name="Text_Rank" HorizontalAlignment="Left" Margin="130,35,0,0" TextWrapping="Wrap" Text="Rank" VerticalAlignment="Top" Width="177"/>
-        <TextBlock x:Name="Text_PrimaryRate" HorizontalAlignment="Left" Margin="130,51,0,0" TextWrapping="Wrap" Text="Primary Rate" VerticalAlignment="Top" Width="177"/>
-        <TextBlock x:Name="Text_TimeInServe" HorizontalAlignment="Left" Margin="130,69,0,0" TextWrapping="Wrap" Text="Time In Service" VerticalAlignment="Top" Width="177"/>
-        <Separator HorizontalAlignment="Left" Height="15" Margin="10,105,0,0" VerticalAlignment="Top" Width="297"/>
-        <TextBlock x:Name="Text_CurrentShip" HorizontalAlignment="Left" Margin="10,89,0,0" TextWrapping="Wrap" Text="ANS Unknown" VerticalAlignment="Top" Width="273"/>
-        <Image x:Name="Image_PrimaryRate" HorizontalAlignment="Left" Height="55" Margin="70,29,0,0" VerticalAlignment="Top" Width="55" OpacityMask="Black" Source="images/no_image.png"/>
+        Title="Service Record" Height="560.333" Width="332.667" ResizeMode="NoResize">
 
+    <Window.Resources>
+        <DataTemplate x:Key="RateTemplate">
+            <Canvas Height="70" Width="265">
+                <Image HorizontalAlignment="Left" Height="70" VerticalAlignment="Top" Width="70" OpacityMask="Black" Source="{Binding Path=Icon}"/>
+                <TextBlock Canvas.Left="70" TextWrapping="Wrap" Text="{Binding Path=FullName}" Canvas.Top="10" Width="195"/>
+                <TextBlock Canvas.Left="70" TextWrapping="Wrap" Text="{Binding Path=date}" Canvas.Top="26" Width="195"/>
+                <TextBlock Canvas.Left="70" TextWrapping="Wrap" Canvas.Top="42" Width="195">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="Expires: {0}">
+                            <Binding Path="expires"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+            </Canvas>
+        </DataTemplate>
+
+        <DataTemplate x:Key="AwardTemplate">
+            <Canvas Height="38" Width="265">
+                <Image HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="100" OpacityMask="Black" Source="{Binding Path=Icon}" Canvas.Top="5" Stretch="Fill"/>
+                <TextBlock Canvas.Left="100" TextWrapping="Wrap" Text="{Binding Path=Name}" Canvas.Top="10" Width="165"/>
+            </Canvas>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <TextBlock x:Name="Text_Nickname" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" Width="273" FontSize="20" FontWeight="Bold" Margin="10,0,0,0">
+            <TextBlock.Text>
+                <MultiBinding StringFormat="{}{0} {1}">
+                    <Binding Path="wpfRank.abbrev"/>
+                    <Binding Path="nickname"/>
+                </MultiBinding>
+            </TextBlock.Text>
+        </TextBlock>
+        <Image x:Name="Image_Rank" HorizontalAlignment="Left" Height="55" Margin="10,30,0,0" VerticalAlignment="Top" Width="55" OpacityMask="Black" Source="{Binding Path=wpfRank.Icon}"/>
+        <TextBlock x:Name="Text_Rank" HorizontalAlignment="Left" Margin="130,35,0,0" TextWrapping="Wrap" Text="{Binding Path=wpfRank.name}" VerticalAlignment="Top" Width="177"/>
+        <TextBlock x:Name="Text_PrimaryRate" HorizontalAlignment="Left" Margin="130,51,0,0" TextWrapping="Wrap" Text="{Binding Path=wpfPrimaryRate.FullName}" VerticalAlignment="Top" Width="177"/>
+        <TextBlock x:Name="Text_TimeInServe" HorizontalAlignment="Left" Margin="130,69,0,0" TextWrapping="Wrap" Text="Time In Service" VerticalAlignment="Top" Width="177"/>
+        <TextBlock x:Name="Text_CurrentShip" HorizontalAlignment="Left" Margin="10,89,0,0" TextWrapping="Wrap" Text="ANS Unknown" VerticalAlignment="Top" Width="273"/>
+        <Image x:Name="Image_PrimaryRate" HorizontalAlignment="Left" Height="55" Margin="70,29,0,0" VerticalAlignment="Top" Width="55" OpacityMask="Black" Source="{Binding Path=wpfPrimaryRate.Icon}"/>
+        <ListBox x:Name="List_Rates" HorizontalAlignment="Left" Height="170" Margin="10,130,0,0" VerticalAlignment="Top" Width="297" ItemTemplate="{DynamicResource RateTemplate}" ItemsSource="{Binding Path=wpfRates}"/>
+        <ListBox x:Name="List_Awards" HorizontalAlignment="Left" Height="185" Margin="10,327,0,0" VerticalAlignment="Top" Width="297" ItemTemplate="{DynamicResource AwardTemplate}"/>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Rates" VerticalAlignment="Top" Height="20" Width="95" FontSize="14" FontWeight="Bold" Margin="10,110,0,0"/>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Awards" VerticalAlignment="Top" Height="20" Width="95" FontSize="14" FontWeight="Bold" Margin="10,305,0,0"/>
+        
     </Grid>
 </Window>
+
+    

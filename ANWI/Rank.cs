@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 namespace ANWI {
 	public struct Rank {
 		public int id;
-		public string name;
-		public string abbrev;
+		public string name { get; set; }
+		public string abbrev { get; set; }
 		public int ordering;
-		public string icon;
+
+		public string Icon { get { return "images/ranks/" + ordering + ".png"; } }
 	}
 }

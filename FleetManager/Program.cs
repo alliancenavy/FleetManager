@@ -11,11 +11,15 @@ using FleetManager.Services;
 namespace FleetManager {
 
 	class Program {
+
+		Dictionary<string, string> CurrentUsers;
+
 		static void Main(string[] args) {
 			var wssv = new WebSocketServer("ws://localhost:9000");
 			
 			// Set up services
 			wssv.AddWebSocketService<Auth>("/auth");
+			wssv.AddWebSocketService<Main>("/main");
 
 			// Start the web socket
 			wssv.Start();

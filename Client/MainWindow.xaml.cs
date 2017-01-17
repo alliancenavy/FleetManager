@@ -24,6 +24,7 @@ namespace Client {
 		private readonly WebSocket socket;
 		private AuthenticatedAccount account = null;
 		private bool serviceRecordOpen = false;
+		private bool vesselRegOpen = false;
 
 		/// <summary>
 		/// Form constructor
@@ -59,8 +60,8 @@ namespace Client {
 			if (account != null && !serviceRecordOpen) {
 				ServiceRecord newRec = new ServiceRecord(account.profile);
 				newRec.Closed += (s,args) => { serviceRecordOpen = false; };
-				newRec.Show();
 				serviceRecordOpen = true;
+				newRec.Show();
 			}
 		}
 
@@ -70,7 +71,12 @@ namespace Client {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void VesselRegButton_Click(object sender, RoutedEventArgs e) {
-
+			if(!vesselRegOpen) {
+				VesselReg reg = new VesselReg();
+				reg.Closed += (s, args) => { vesselRegOpen = false; };
+				vesselRegOpen = true;
+				reg.Show();
+			}
 		}
 
 		private void QuitButton_Click(object sender, RoutedEventArgs e) {

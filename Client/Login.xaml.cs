@@ -96,8 +96,8 @@ namespace Client {
 			AuthenticatedAccount account = 
 				JsonConvert.DeserializeObject<AuthenticatedAccount>(e.Data);
 
-			// If the login failed the idToken will be an empty string
-			if(account.idToken == "") {
+			// If the login failed the authToken will be an empty string
+			if(account.authToken == "") {
 				this.Dispatcher.Invoke(EndWorkingFailed);
 			} else {
 				this.Dispatcher.Invoke(() => {
