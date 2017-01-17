@@ -3,26 +3,26 @@
 namespace ANWI.Database.Model
 {
     /// <summary>
-    /// Represents a row of the Rates table.
+    /// Represents a row of the HullMakers table.
     /// </summary>
 
-    public class Rate
+    public class HullManufacturer
     {
-        public static Rate Factory()
+        public static HullManufacturer Factory()
         {
-            Rate result = new Rate(-1, "", "", "");
+            HullManufacturer result = new HullManufacturer(-1, "", "", "");
             return result;
         }
 
-        public static Rate Factory(int _id, string _name, string _abbreviation, string _icon_name)
+        public static HullManufacturer Factory(int _id, string _name, string _abbreviation, string _icon_name)
         {
-            Rate result = new Rate(_id, _name, _abbreviation, _icon_name);
+            HullManufacturer result = new HullManufacturer(_id, _name, _abbreviation, _icon_name);
             return result;
         }
 
-        public static Rate Factory(SQLiteDataReader reader)
+        public static HullManufacturer Factory(SQLiteDataReader reader)
         {
-            Rate result = new Rate(
+            HullManufacturer result = new HullManufacturer(
                 (int)reader["id"],
                 (string)reader["name"],
                 (string)reader["abbreviation"],
@@ -36,7 +36,7 @@ namespace ANWI.Database.Model
         public string abbreviation;
         public string icon_name;
 
-        private Rate(int _id, string _name, string _abbreviation, string _icon_name)
+        private HullManufacturer(int _id, string _name, string _abbreviation, string _icon_name)
         {
             id = _id;
             name = _name;

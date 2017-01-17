@@ -1,36 +1,62 @@
-﻿namespace ANWI.DB
+﻿using System.Data.SQLite;
+
+namespace ANWI.Database.Model
 {
     /// <summary>
     /// Represents a row of the StruckRates table.
     /// </summary>
 
-
-
-    // Data definitions
-    public partial struct StruckRate
+    public class StruckRate
     {
+        public static StruckRate Factory()
+        {
+            StruckRate result = new StruckRate(-1, -1, -1, 0, null, null);
+            return result;
+        }
+
+        public static StruckRate Factory(int _id, int _user_id, int _rate_id, int _rank)
+        {
+            StruckRate result = new StruckRate(_id, _user_id, _rate_id, _rank, null, null);
+            return result;
+        }
+
+        public static StruckRate Factory(SQLiteDataReader reader)
+        {
+            StruckRate result = new StruckRate(
+                (int)reader["id"],
+                (int)reader["user_id"],
+                (int)reader["rate_id"],
+                (int)reader["_rank"],
+                null,
+                null
+            );
+            return result;
+        }
+
         public int id;
         public int user_id;
         public int rate_id;
         public int rank;
 
-        public User user_object;
-        public Rate rate_object;
-    }
+        User user_object;
+        Rate rate_object;
 
+        private StruckRate(int _id, int _user_id, int _rate_id, int _rank, User _user_object, Rate _rate_object)
+        {
+            id = _id;
+            user_id = _user_id;
+            rate_id = _rate_id;
+            rank = _rank;
+            user_object = _user_object;
+            rate_object = _rate_object;
+        }
 
-
-    // Accessors, operators, & methods
-    public partial struct StruckRate
-    {
         public User user
         {
             get
             {
-                if (user_object == default(User))
-                {
-                    // if user_object is not resolved, resolve it first
-                }
+                if (user_object == null)
+                    DBI.GetUserById(user_id, out user_object);
                 return user_object;
             }
             set
@@ -39,32 +65,18 @@
             }
         }
 
-        public static bool operator ==(StruckRate sr1, StruckRate sr2)
+        public Rate rate
         {
-            return sr1.GetHashCode() == sr2.GetHashCode();
-        }
-
-        public static bool operator !=(StruckRate sr1, StruckRate sr2)
-        {
-            return sr1.GetHashCode() != sr2.GetHashCode();
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
+            get
             {
-                int hash = 17;
-                hash = hash * 23 + id.GetHashCode();
-                hash = hash * 23 + user_id.GetHashCode();
-                hash = hash * 23 + rate_id.GetHashCode();
-                hash = hash * 23 + rank.GetHashCode();
-                return hash;
+                if (rate_object == null)
+                    DBI.GetRateById(rate_id, out rate_object);
+                return rate_object;
             }
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj.GetHashCode() == GetHashCode();
+            set
+            {
+                rate_object = value;
+            }
         }
     }
 }

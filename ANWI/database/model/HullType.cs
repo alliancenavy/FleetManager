@@ -1,47 +1,41 @@
-﻿namespace ANWI.DB
+﻿using System.Data.SQLite;
+
+namespace ANWI.Database.Model
 {
     /// <summary>
     /// Represents a row of the HullTypes table.
     /// </summary>
 
-
-
-    // Data definitions
-    public partial struct HullType
+    public class HullType
     {
+        public static HullType Factory()
+        {
+            HullType result = new HullType(-1, "");
+            return result;
+        }
+
+        public static HullType Factory(int _id, string _name)
+        {
+            HullType result = new HullType(_id, _name);
+            return result;
+        }
+
+        public static HullType Factory(SQLiteDataReader reader)
+        {
+            HullType result = new HullType(
+                (int)reader["id"],
+                (string)reader["name"]
+            );
+            return result;
+        }
+
         public int id;
         public string name;
-    }
 
-
-
-    // Accessors, operators, & methods
-    public partial struct HullType
-    {
-        public static bool operator ==(HullType h1, HullType h2)
+        private HullType(int _id, string _name)
         {
-            return h1.GetHashCode() == h2.GetHashCode();
-        }
-
-        public static bool operator !=(HullType h1, HullType h2)
-        {
-            return h1.GetHashCode() != h2.GetHashCode();
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hash = 17;
-                hash = hash * 23 + id.GetHashCode();
-                hash = hash * 23 + name.GetHashCode();
-                return hash;
-            }
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj.GetHashCode() == GetHashCode();
+            id = _id;
+            name = _name;
         }
     }
 }

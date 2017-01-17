@@ -1,53 +1,50 @@
-﻿namespace ANWI.DB
+﻿using System.Data.SQLite;
+
+namespace ANWI.Database.Model
 {
     /// <summary>
     /// Represents a row of the Ranks table.
     /// </summary>
 
-    
-    
-    // Data definitions
-    public partial struct Rank
+    public class Rank
     {
+        public static Rank Factory()
+        {
+            Rank result = new Rank(-1, "", "", 0, "");
+            return result;
+        }
+
+        public static Rank Factory(int _id, string _name, string _abbreviation, int _ordering, string _icon_name)
+        {
+            Rank result = new Rank(_id, _name, _abbreviation, _ordering, _icon_name);
+            return result;
+        }
+
+        public static Rank Factory(SQLiteDataReader reader)
+        {
+            Rank result = new Rank(
+                (int)reader["id"],
+                (string)reader["name"],
+                (string)reader["abbreviation"],
+                (int)reader["ordering"],
+                (string)reader["icon_name"]
+            );
+            return result;
+        }
+
         public int id;
         public string name;
         public string abbreviation;
         public int ordering;
         public string icon_name;
-    }
 
-
-
-    // Accessors, operators, & methods
-    public partial struct Rank
-    {
-        public static bool operator ==(Rank r1, Rank r2)
+        private Rank(int _id, string _name, string _abbreviation, int _ordering, string _icon_name)
         {
-            return r1.GetHashCode() == r2.GetHashCode();
-        }
-
-        public static bool operator !=(Rank r1, Rank r2)
-        {
-            return r1.GetHashCode() != r2.GetHashCode();
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hash = 17;
-                hash = hash * 23 + id.GetHashCode();
-                hash = hash * 23 + name.GetHashCode();
-                hash = hash * 23 + abbreviation.GetHashCode();
-                hash = hash * 23 + ordering.GetHashCode();
-                hash = hash * 23 + icon_name.GetHashCode();
-                return hash;
-            }
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj.GetHashCode() == GetHashCode();
+            id = _id;
+            name = _name;
+            abbreviation = _abbreviation;
+            ordering = _ordering;
+            icon_name = _icon_name;
         }
     }
 }
