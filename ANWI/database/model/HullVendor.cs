@@ -3,10 +3,10 @@
 namespace ANWI.Database.Model
 {
     /// <summary>
-    /// Represents a row of the HullRole table.
+    /// Represents a row of the HullVendor table.
     /// </summary>
 
-    public class HullRole
+    public class HullVendor
     {
         #region Model
 
@@ -15,7 +15,7 @@ namespace ANWI.Database.Model
         public string abrv;
         public string icon;
 
-        private HullRole(int id, string name, string abrv, string icon)
+        private HullVendor(int id, string name, string abrv, string icon)
         {
             this.id = id;
             this.name = name;
@@ -33,9 +33,9 @@ namespace ANWI.Database.Model
 
         #region Class-Members
 
-        public static HullRole Factory()
+        public static HullVendor Factory()
         {
-            HullRole result = new HullRole(
+            HullVendor result = new HullVendor(
                 id: -1,
                 name: "",
                 abrv: "",
@@ -44,9 +44,9 @@ namespace ANWI.Database.Model
             return result;
         }
 
-        public static HullRole Factory(int id, string name, string abrv, string icon)
+        public static HullVendor Factory(int id, string name, string abrv, string icon)
         {
-            HullRole result = new HullRole(
+            HullVendor result = new HullVendor(
                 id: id,
                 name: name,
                 abrv: abrv,
@@ -55,9 +55,9 @@ namespace ANWI.Database.Model
             return result;
         }
 
-        public static HullRole Factory(SQLiteDataReader reader)
+        public static HullVendor Factory(SQLiteDataReader reader)
         {
-            HullRole result = new HullRole(
+            HullVendor result = new HullVendor(
                 id: (int)reader["id"],
                 name: (string)reader["name"],
                 abrv: (string)reader["abrv"],
@@ -66,41 +66,41 @@ namespace ANWI.Database.Model
             return result;
         }
 
-        public static bool Create(ref HullRole output, string name, string abrv, string icon = "")
+        public static bool Create(ref HullVendor output, string name, string abrv, string icon = "")
         {
-            int result = DBI.DoAction($"insert into HullRole (name, abrv, icon) values('{name}', '{abrv}', '{icon}');");
+            int result = DBI.DoAction($"insert into HullVendor (name, abrv, icon) values('{name}', '{abrv}', '{icon}');");
             if (result == 1)
             {
-                return HullRole.FetchById(ref output, DBI.LastInsertRowId);
+                return HullVendor.FetchById(ref output, DBI.LastInsertRowId);
             }
             return false;
         }
 
-        public static bool FetchById(ref HullRole output, int id)
+        public static bool FetchById(ref HullVendor output, int id)
         {
-            SQLiteDataReader reader = DBI.DoQuery($"select * from HullRole where id = {id} limit 1;");
+            SQLiteDataReader reader = DBI.DoQuery($"select * from HullVendor where id = {id} limit 1;");
             if (reader.Read())
             {
-                output = HullRole.Factory(reader);
+                output = HullVendor.Factory(reader);
                 return true;
             }
             return false;
         }
 
-        public static bool FetchByName(ref HullRole output, string name)
+        public static bool FetchByName(ref HullVendor output, string name)
         {
-            SQLiteDataReader reader = DBI.DoQuery($"select * from HullRole where name = {name} limit 1;");
+            SQLiteDataReader reader = DBI.DoQuery($"select * from HullVendor where name = {name} limit 1;");
             if (reader.Read())
             {
-                output = HullRole.Factory(reader);
+                output = HullVendor.Factory(reader);
                 return true;
             }
             return false;
         }
 
-        public static bool Store(HullRole input)
+        public static bool Store(HullVendor input)
         {
-            int result = DBI.DoAction($"update HullRole set name = '{input.name}', abrv = '{input.abrv}', icon = '{input.icon}' where id = {input.id};");
+            int result = DBI.DoAction($"update HullVendor set name = '{input.name}', abrv = '{input.abrv}', icon = '{input.icon}' where id = {input.id};");
             if (result == 1)
                 return true;
             return false;
