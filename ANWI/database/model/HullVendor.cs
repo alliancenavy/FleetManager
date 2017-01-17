@@ -3,10 +3,10 @@
 namespace ANWI.Database.Model
 {
     /// <summary>
-    /// Represents a row of the Rank table.
+    /// Represents a row of the HullVendor table.
     /// </summary>
 
-    public class Rank
+    public class HullVendor
     {
         #region Model
 
@@ -14,15 +14,13 @@ namespace ANWI.Database.Model
         public string name;
         public string abrv;
         public string icon;
-        public int ordering;
 
-        private Rank(int id, string name, string abrv, string icon, int ordering)
+        private HullVendor(int id, string name, string abrv, string icon)
         {
             this.id = id;
             this.name = name;
             this.abrv = abrv;
             this.icon = icon;
-            this.ordering = ordering;
         }
 
         #endregion
@@ -35,38 +33,35 @@ namespace ANWI.Database.Model
 
         #region Class-Members
 
-        public static Rank Factory()
+        public static HullVendor Factory()
         {
-            Rank result = new Rank(
+            HullVendor result = new HullVendor(
                 id: -1,
                 name: "",
                 abrv: "",
-                icon: "",
-                ordering: 0
+                icon: ""
             );
             return result;
         }
 
-        public static Rank Factory(int id, string name, string abrv, string icon, int ordering)
+        public static HullVendor Factory(int id, string name, string abrv, string icon)
         {
-            Rank result = new Rank(
+            HullVendor result = new HullVendor(
                 id: id,
                 name: name,
                 abrv: abrv,
-                icon: icon,
-                ordering: ordering
+                icon: icon
             );
             return result;
         }
 
-        public static Rank Factory(SQLiteDataReader reader)
+        public static HullVendor Factory(SQLiteDataReader reader)
         {
-            Rank result = new Rank(
+            HullVendor result = new HullVendor(
                 id: (int)reader["id"],
                 name: (string)reader["name"],
                 abrv: (string)reader["abrv"],
-                icon: (string)reader["icon"],
-                ordering: (int)reader["order"]
+                icon: (string)reader["icon"]
             );
             return result;
         }

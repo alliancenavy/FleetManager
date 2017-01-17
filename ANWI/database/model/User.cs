@@ -3,106 +3,118 @@
 namespace ANWI.Database.Model
 {
     /// <summary>
-    /// Represents a row of the Users table.
+    /// Represents a row of the User table.
     /// </summary>
 
     public class User
     {
+        #region Model
+
+        public int id;
+        public string name;
+        public string auth0;
+        public int rank;
+        public int rate;
+
+        private Rank _rank;
+        private StruckRate _rate;
+
+        private User(int id, string name, string auth0, int rank, int rate, Rank Rank, StruckRate Rate)
+        {
+            this.id = id;
+            this.name = name;
+            this.auth0 = auth0;
+            this.rank = rank;
+            this.rate = rate;
+
+            this._rank = Rank;
+            this._rate = Rate;
+        }
+
+        #endregion
+
+        #region Instance-Members
+
+        public Rank Rank
+        {
+            get
+            {
+                if (_rank == null)
+                    DBI.GetRankById(rank, out _rank);
+                return _rank;
+            }
+            set
+            {
+                _rank = value;
+                rank = _rank.id;
+            }
+        }
+
+        public StruckRate Rate
+        {
+            get
+            {
+                if (_rate == null)
+                    DBI.GetStruckRateById(rate, out _rate);
+                return _rate;
+            }
+            set
+            {
+                _rate = value;
+                rate = _rate.id;
+            }
+        }
+
+        #endregion
+
+        #region Class-Members
+
         public static User Factory()
         {
-            User result = new User(-1, "", 0, "", -1, -1, -1, null, null, null);
+            User result = new User(
+                id: -1,
+                name: "",
+                auth0: "",
+                rank: -1,
+                rate: -1,
+
+                Rank: null,
+                Rate: null
+            );
             return result;
         }
 
-        public static User Factory(int _id, string _name, int _joined, string _auth0_id, int _rank_id, int _primary_rate_id, int _assigned_ship_id)
+        public static User Factory(int id, string name, string auth0, int rank, int rate)
         {
-            User result = new User(_id, _name, _joined, _auth0_id, _rank_id, _primary_rate_id, _assigned_ship_id, null, null, null);
+
+            User result = new User(
+                id: id,
+                name: name,
+                auth0: auth0,
+                rank: rank,
+                rate: rate,
+
+                Rank: null,
+                Rate: null
+            );
             return result;
         }
 
         public static User Factory(SQLiteDataReader reader)
         {
             User result = new User(
-                (int)reader["id"],
-                (string)reader["name"],
-                (int)reader["joined"],
-                (string)reader["auth0_id"],
-                (int)reader["rank_id"],
-                (int)reader["primary_rate_id"],
-                (int)reader["assigned_ship_id"],
-                null,
-                null,
-                null
+                id: (int)reader["id"],
+                name: (string)reader["name"],
+                auth0: (string)reader["auth0"],
+                rank: (int)reader["rank"],
+                rate: (int)reader["rate"],
+
+                Rank: null,
+                Rate: null
             );
             return result;
         }
 
-        public int id;
-        public string name;
-        public int joined;
-        public string auth0_id;
-        public int rank_id;
-        public int primary_rate_id;
-        public int assigned_ship_id;
-
-        Rank rank_object;
-        StruckRate primary_rate_object;
-        UserShip assigned_ship_object;
-
-        private User(int _id, string _name, int _joined, string _auth0_id, int _rank_id, int _primary_rate_id, int _assigned_ship_id, Rank _rank_object, StruckRate _primary_rate_object, UserShip _assigned_ship_object)
-        {
-            id = _id;
-            name = _name;
-            joined = _joined;
-            auth0_id = _auth0_id;
-            rank_id = _rank_id;
-            primary_rate_id = _primary_rate_id;
-            assigned_ship_id = _assigned_ship_id;
-            rank_object = _rank_object;
-            primary_rate_object = _primary_rate_object;
-            assigned_ship_object = _assigned_ship_object;
-        }
-
-        public Rank rank
-        {
-            get
-            {
-                if (rank_object == null)
-                    DBI.GetRankById(rank_id, out rank_object);
-                return rank_object;
-            }
-            set
-            {
-                rank_object = value;
-            }
-        }
-
-        public StruckRate primary_rate
-        {
-            get
-            {
-                if (primary_rate_object == null)
-                    DBI.GetStruckRateById(primary_rate_id, out primary_rate_object);
-                return primary_rate_object;
-            }
-            set
-            {
-                primary_rate_object = value;
-            }
-        }
-
-        public UserShip assigned_ship
-        {
-            get
-            {
-                if (assigned_ship_object == null)
-                    DBI.GetUserShipById(assigned_ship_id, out assigned_ship_object);
-                return assigned_ship_object;
-            }
-            set
-            {
-                assigned_ship_object = value;
-            }
-        }
+        #endregion
     }
 }

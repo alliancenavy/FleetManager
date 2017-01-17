@@ -3,80 +3,112 @@
 namespace ANWI.Database.Model
 {
     /// <summary>
-    /// Represents a row of the StruckRates table.
+    /// Represents a row of the StruckRate table.
     /// </summary>
 
     public class StruckRate
     {
+        #region Model
+
+        public int id;
+        public int user;
+        public int rate;
+        public int rank;
+
+        private User _user;
+        private Rate _rate;
+
+        private StruckRate(int id, int user, int rate, int rank, User User, Rate Rate)
+        {
+            this.id = id;
+            this.user = user;
+            this.rate = rate;
+            this.rank = rank;
+
+            this._user = User;
+            this._rate = Rate;
+        }
+
+        #endregion
+
+        #region Instance-Members
+
+        public Rate Rate
+        {
+            get
+            {
+                if (_rate == null)
+                    DBI.GetRateById(rate, out _rate);
+                return _rate;
+            }
+            set
+            {
+                _rate = value;
+                rate = _rate.id;
+            }
+        }
+
+        public User User
+        {
+            get
+            {
+                if (_user == null)
+                    DBI.GetUserById(user, out _user);
+                return _user;
+            }
+            set
+            {
+                _user = value;
+                user = _user.id;
+            }
+        }
+
+        #endregion
+
+        #region Class-Members
+
         public static StruckRate Factory()
         {
-            StruckRate result = new StruckRate(-1, -1, -1, 0, null, null);
+            StruckRate result = new StruckRate(
+                id: -1,
+                user: -1,
+                rate: -1,
+                rank: 0,
+
+                User: null,
+                Rate: null
+            );
             return result;
         }
 
-        public static StruckRate Factory(int _id, int _user_id, int _rate_id, int _rank)
+        public static StruckRate Factory(int id, int user, int rate, int rank)
         {
-            StruckRate result = new StruckRate(_id, _user_id, _rate_id, _rank, null, null);
+            StruckRate result = new StruckRate(
+                id: id,
+                user: user,
+                rate: rate,
+                rank: rank,
+
+                User: null,
+                Rate: null
+            );
             return result;
         }
 
         public static StruckRate Factory(SQLiteDataReader reader)
         {
             StruckRate result = new StruckRate(
-                (int)reader["id"],
-                (int)reader["user_id"],
-                (int)reader["rate_id"],
-                (int)reader["_rank"],
-                null,
-                null
+                id: (int)reader["id"],
+                user: (int)reader["user"],
+                rate: (int)reader["rate"],
+                rank: (int)reader["rank"],
+
+                User: null,
+                Rate: null
             );
             return result;
         }
 
-        public int id;
-        public int user_id;
-        public int rate_id;
-        public int rank;
-
-        User user_object;
-        Rate rate_object;
-
-        private StruckRate(int _id, int _user_id, int _rate_id, int _rank, User _user_object, Rate _rate_object)
-        {
-            id = _id;
-            user_id = _user_id;
-            rate_id = _rate_id;
-            rank = _rank;
-            user_object = _user_object;
-            rate_object = _rate_object;
-        }
-
-        public User user
-        {
-            get
-            {
-                if (user_object == null)
-                    DBI.GetUserById(user_id, out user_object);
-                return user_object;
-            }
-            set
-            {
-                user_object = value;
-            }
-        }
-
-        public Rate rate
-        {
-            get
-            {
-                if (rate_object == null)
-                    DBI.GetRateById(rate_id, out rate_object);
-                return rate_object;
-            }
-            set
-            {
-                rate_object = value;
-            }
-        }
+        #endregion
     }
 }

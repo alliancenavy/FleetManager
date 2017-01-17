@@ -78,11 +78,13 @@
   <ItemGroup>
     <Compile Include="AuthenticatedAccount.cs" />
     <Compile Include="Credentials.cs" />
-    <Compile Include="Database\Database.cs" />
+    <Compile Include="Database\DBI.cs" />
+    <Compile Include="Database\Model\Assignment.cs" />
+    <Compile Include="Database\Model\AssignmentRole.cs" />
     <Compile Include="Database\Model\Hull.cs" />
-    <Compile Include="Database\Model\HullManufacturer.cs" />
     <Compile Include="Database\Model\HullRole.cs" />
-    <Compile Include="Database\Model\HullType.cs" />
+    <Compile Include="Database\Model\HullSeries.cs" />
+    <Compile Include="Database\Model\HullVendor.cs" />
     <Compile Include="Database\Model\Rank.cs" />
     <Compile Include="Database\Model\Rate.cs" />
     <Compile Include="Database\Model\StruckRate.cs" />
@@ -92,29 +94,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Database\SQL\HullMakers.query.sql" />
-    <Content Include="Database\SQL\HullMakers.table.sql" />
-    <Content Include="Database\SQL\HullRoles.query.sql" />
-    <Content Include="Database\SQL\HullRoles.table.sql" />
-    <Content Include="Database\SQL\Hulls.table.sql" />
-    <Content Include="Database\SQL\HullTypes.query.sql" />
-    <Content Include="Database\SQL\HullTypes.table.sql" />
-    <Content Include="Database\SQL\Pragmas.sql" />
-    <Content Include="Database\SQL\Ranks.query.sql" />
-    <Content Include="Database\SQL\Ranks.table.sql" />
-    <Content Include="Database\SQL\Rates.query.sql" />
-    <Content Include="Database\SQL\Rates.table.sql" />
-    <Content Include="Database\SQL\StruckRates.query.sql" />
-    <Content Include="Database\SQL\StruckRates.table.sql" />
-    <Content Include="Database\SQL\Users.query.sql" />
-    <Content Include="Database\SQL\Users.table.sql" />
-    <Content Include="Database\SQL\UserShips.query.sql" />
-    <Content Include="Database\SQL\UserShips.table.sql" />
+    <Content Include="Database\schema.sql" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Database\README.md" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

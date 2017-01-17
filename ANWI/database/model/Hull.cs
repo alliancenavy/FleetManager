@@ -3,100 +3,148 @@
 namespace ANWI.Database.Model
 {
     /// <summary>
-    /// Represents a row of the Hulls table.
+    /// Represents a row of the Hull table.
     /// </summary>
-    
-    public sealed class Hull
+
+    public class Hull
     {
+        #region Model
+
+        public int id;
+        public int vendor;
+        public int role;
+        public int series;
+        public string version;
+        public string symbol;
+        public int ordering;
+
+        private HullVendor _vendor;
+        private HullRole _role;
+        private HullSeries _series;
+
+        private Hull(int id, int vendor, int role, int series, string version, string symbol, int ordering,
+            HullVendor Vendor, HullRole Role, HullSeries Series)
+        {
+            this.id = id;
+            this.vendor = vendor;
+            this.role = role;
+            this.series = series;
+            this.version = version;
+            this.symbol = symbol;
+            this.ordering = ordering;
+
+            this._vendor = Vendor;
+            this._role = Role;
+            this._series = Series;
+        }
+
+        #endregion
+
+        #region Instance-Members
+
+        public HullVendor Vendor
+        {
+            get
+            {
+                if (_vendor == null)
+                    DBI.GetHullVendorById(vendor, out _vendor);
+                return _vendor;
+            }
+            set
+            {
+                _vendor = value;
+                vendor = _vendor.id;
+            }
+        }
+
+        public HullRole Role
+        {
+            get
+            {
+                if (_role == null)
+                    DBI.GetHullRoleById(role, out _role);
+                return _role;
+            }
+            set
+            {
+                _role = value;
+                role = _role.id;
+            }
+        }
+
+        public HullSeries Series
+        {
+            get
+            {
+                if (_series == null)
+                    DBI.GetHullSeriesById(series, out _series);
+                return _series;
+            }
+            set
+            {
+                _series = value;
+                series = _series.id;
+            }
+        }
+
+        #endregion
+
+        #region Class-Members
+
         public static Hull Factory()
         {
-            Hull result = new Hull(-1, -1, "", -1, -1, null, null, null);
+            Hull result = new Hull(
+                id: -1,
+                vendor: -1,
+                role: -1,
+                series: -1,
+                version: "",
+                symbol: "",
+                ordering: 0,
+
+                Vendor: null,
+                Role: null,
+                Series: null
+            );
             return result;
         }
 
-        public static Hull Factory(int _id, int _type_id, string _subtype, int _role_id, int _manufacturer_id)
+        public static Hull Factory(int id, int vendor, int role, int series, string version, string symbol, int ordering)
         {
-            Hull result = new Hull(_id, _type_id, _subtype, _role_id, _manufacturer_id, null, null, null);
+            Hull result = new Hull(
+                id: id,
+                vendor: vendor,
+                role: role,
+                series: series,
+                version: version,
+                symbol: symbol,
+                ordering: ordering,
+
+                Vendor: null,
+                Role: null,
+                Series: null
+            );
             return result;
         }
 
         public static Hull Factory(SQLiteDataReader reader)
         {
             Hull result = new Hull(
-                (int)reader["id"],
-                (int)reader["type_id"],
-                (string)reader["subtype"],
-                (int)reader["role_id"],
-                (int)reader["manufacturer_id"],
-                null,
-                null,
-                null
+                id: (int)reader["id"],
+                vendor: (int)reader["vendor"],
+                role: (int)reader["role"],
+                series: (int)reader["series"],
+                version: (string)reader["version"],
+                symbol: (string)reader["symbol"],
+                ordering: (int)reader["order"],
+
+                Vendor: null,
+                Role: null,
+                Series: null
             );
             return result;
         }
 
-        public int id;
-        public int type_id;
-        public string subtype;
-        public int role_id;
-        public int manufacturer_id;
-
-        HullType type_object;
-        HullRole role_object;
-        HullManufacturer manufacturer_object;
-
-        private Hull(int _id, int _type_id, string _subtype, int _role_id, int _manufacturer_id, HullType _type_object, HullRole _role_object, HullManufacturer _manufacturer_object)
-        {
-            id = _id;
-            type_id = _type_id;
-            subtype = _subtype;
-            role_id = _role_id;
-            manufacturer_id = _manufacturer_id;
-            type_object = _type_object;
-            role_object = _role_object;
-            manufacturer_object = _manufacturer_object;
-        }
-
-        public HullType type
-        {
-            get
-            {
-                if (type_object == null)
-                    DBI.GetHullTypeById(type_id, out type_object);
-                return type_object;
-            }
-            set
-            {
-                type_object = value;
-            }
-        }
-
-        public HullRole role
-        {
-            get
-            {
-                if (role_object == null)
-                    DBI.GetHullRoleById(role_id, out role_object);
-                return role_object;
-            }
-            set
-            {
-                role_object = value;
-            }
-        }
-
-        public HullManufacturer manufacturer
-        {
-            get
-            {
-                if (manufacturer_object == null)
-                    DBI.GetHullManufacturerById(manufacturer_id, out manufacturer_object);
-                return manufacturer_object;
-            }
-            set
-            {
-                manufacturer_object = value;
-            }
-        }
+        #endregion
     }
 }
