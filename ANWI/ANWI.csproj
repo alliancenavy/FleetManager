@@ -49,6 +49,10 @@
       <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="MsgPack, Version=0.1.4298.15470, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MsgPack.0.1.0.2011042300\lib\net40\MsgPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -74,47 +78,27 @@
   <ItemGroup>
     <Compile Include="AuthenticatedAccount.cs" />
     <Compile Include="Credentials.cs" />
-    <Compile Include="database\DBI.cs" />
-    <Compile Include="database\model\Hull.cs" />
-    <Compile Include="database\model\HullMaker.cs" />
-    <Compile Include="database\model\HullRole.cs" />
-    <Compile Include="database\model\HullType.cs" />
-    <Compile Include="database\model\Rank.cs" />
-    <Compile Include="database\model\Rate.cs" />
-    <Compile Include="database\model\StruckRate.cs" />
-    <Compile Include="database\model\User.cs" />
-    <Compile Include="database\model\UserShip.cs" />
-    <Compile Include="Hull.cs" />
+    <Compile Include="Database\DBI.cs" />
+    <Compile Include="Database\Model\Assignment.cs" />
+    <Compile Include="Database\Model\AssignmentRole.cs" />
+    <Compile Include="Database\Model\Hull.cs" />
+    <Compile Include="Database\Model\HullRole.cs" />
+    <Compile Include="Database\Model\HullSeries.cs" />
+    <Compile Include="Database\Model\HullVendor.cs" />
+    <Compile Include="Database\Model\Rank.cs" />
+    <Compile Include="Database\Model\Rate.cs" />
+    <Compile Include="Database\Model\StruckRate.cs" />
+    <Compile Include="Database\Model\User.cs" />
+    <Compile Include="Database\Model\UserShip.cs" />
     <Compile Include="Profile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rank.cs" />
-    <Compile Include="Rate.cs" />
-    <Compile Include="Vessel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="database\sql\HullMakers.query.sql" />
-    <Content Include="database\sql\HullMakers.table.sql" />
-    <Content Include="database\sql\HullRoles.query.sql" />
-    <Content Include="database\sql\HullRoles.table.sql" />
-    <Content Include="database\sql\Hulls.table.sql" />
-    <Content Include="database\sql\HullTypes.query.sql" />
-    <Content Include="database\sql\HullTypes.table.sql" />
-    <Content Include="database\sql\Pragmas.sql" />
-    <Content Include="database\sql\Ranks.query.sql" />
-    <Content Include="database\sql\Ranks.table.sql" />
-    <Content Include="database\sql\Rates.query.sql" />
-    <Content Include="database\sql\Rates.table.sql" />
-    <Content Include="database\sql\StruckRates.query.sql" />
-    <Content Include="database\sql\StruckRates.table.sql" />
-    <Content Include="database\sql\Users.query.sql" />
-    <Content Include="database\sql\Users.table.sql" />
-    <Content Include="database\sql\UserShips.query.sql" />
-    <Content Include="database\sql\UserShips.table.sql" />
+    <Content Include="Database\schema.sql" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="database\README.md" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
