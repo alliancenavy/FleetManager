@@ -13,29 +13,25 @@ namespace ANWI.Database.Model
         public int id;
         public int vendor;
         public int role;
-        public int series;
-        public string version;
+        public string series;
         public string symbol;
         public int ordering;
 
         private HullVendor _vendor;
         private HullRole _role;
-        private HullSeries _series;
 
-        private Hull(int id, int vendor, int role, int series, string version, string symbol, int ordering,
-            HullVendor Vendor, HullRole Role, HullSeries Series)
+        private Hull(int id, int vendor, int role, string series, string symbol, int ordering,
+            HullVendor Vendor, HullRole Role)
         {
             this.id = id;
             this.vendor = vendor;
             this.role = role;
             this.series = series;
-            this.version = version;
             this.symbol = symbol;
             this.ordering = ordering;
 
             this._vendor = Vendor;
             this._role = Role;
-            this._series = Series;
         }
 
         #endregion
@@ -70,20 +66,6 @@ namespace ANWI.Database.Model
             }
         }
 
-        public HullSeries Series
-        {
-            get
-            {
-                if (_series == null)
-                    HullSeries.FetchById(ref _series, series);
-                return _series;
-            }
-            set
-            {
-                _series = value;
-            }
-        }
-
         #endregion
 
         #region Class-Members
@@ -94,32 +76,28 @@ namespace ANWI.Database.Model
                 id: -1,
                 vendor: -1,
                 role: -1,
-                series: -1,
-                version: "",
+                series: "",
                 symbol: "",
                 ordering: 0,
 
                 Vendor: null,
-                Role: null,
-                Series: null
+                Role: null
             );
             return result;
         }
 
-        public static Hull Factory(int id, int vendor, int role, int series, string version, string symbol, int ordering)
+        public static Hull Factory(int id, int vendor, int role, string series, string version, string symbol, int ordering)
         {
             Hull result = new Hull(
                 id: id,
                 vendor: vendor,
                 role: role,
                 series: series,
-                version: version,
                 symbol: symbol,
                 ordering: ordering,
 
                 Vendor: null,
-                Role: null,
-                Series: null
+                Role: null
             );
             return result;
         }
@@ -130,21 +108,19 @@ namespace ANWI.Database.Model
                 id: (int)reader["id"],
                 vendor: (int)reader["vendor"],
                 role: (int)reader["role"],
-                series: (int)reader["series"],
-                version: (string)reader["version"],
+                series: (string)reader["series"],
                 symbol: (string)reader["symbol"],
                 ordering: (int)reader["order"],
 
                 Vendor: null,
-                Role: null,
-                Series: null
+                Role: null
             );
             return result;
         }
 
-        public static bool Create(ref Hull output, int vendor, int role, int series, string version, string symbol, int ordering)
+        public static bool Create(ref Hull output, int vendor, int role, string series, string version, string symbol, int ordering)
         {
-            int result = DBI.DoAction($"insert into Hull (vendor, role, series, version, symbol, ordering) values({vendor}, {role}, {series}, '{version}', '{symbol}', {ordering});");
+            int result = DBI.DoAction($"insert into Hull (vendor, role, series, symbol, ordering) values({vendor}, {role}, '{series}', '{symbol}', {ordering});");
             if (result == 1)
             {
                 return Hull.FetchById(ref output, DBI.LastInsertRowId);
@@ -165,7 +141,7 @@ namespace ANWI.Database.Model
 
         public static bool Store(Hull input)
         {
-            int result = DBI.DoAction($"update Hull set vendor = {input.vendor}, role = {input.role}, series = {input.series}, version = '{input.version}', symbol = '{input.symbol}', ordering = {input.ordering} where id = {input.id};");
+            int result = DBI.DoAction($"update Hull set vendor = {input.vendor}, role = {input.role}, series = '{input.series}', symbol = '{input.symbol}', ordering = {input.ordering} where id = {input.id};");
             if (result == 1)
                 return true;
             return false;

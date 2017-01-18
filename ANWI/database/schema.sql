@@ -1,19 +1,12 @@
 ﻿pragma foreign_keys = "1";
 
-drop table if exists HullSeries;
-
-create table if not exists HullSeries (
- id integer not null primary key autoincrement,
- name text not null unique
-);
-
 drop table if exists HullVendor;
 
 create table if not exists HullVendor (
  id integer not null primary key autoincrement,
  name text not null unique,
  abrv text not null unique,
- icon text not null unique
+ icon text not null
 );
 
 drop table if exists HullRole;
@@ -22,7 +15,7 @@ create table if not exists HullRole (
  id integer not null primary key autoincrement,
  name text not null unique,
  abrv text not null unique,
- icon text not null unique
+ icon text not null
 );
 
 drop table if exists Hull;
@@ -31,8 +24,7 @@ create table if not exists Hull (
  id integer not null primary key autoincrement,
  vendor integer not null references HullVendor(id),
  role integer not null references HullRole(id),
- series integer not null references HullSeries(id),
- version text not null default '',
+ series text not null,
  symbol text not null default '',
  ordering integer not null default 0
 );
@@ -80,7 +72,7 @@ create table if not exists User (
  name text not null unique,
  auth0 text not null default '',
  rank integer not null references Rank(id),
- rate integer not null references StruckRate(id)
+ rate integer references StruckRate(id)
 );
 
 drop table if exists Assignment;

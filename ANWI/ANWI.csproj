@@ -90,8 +90,12 @@
     <Compile Include="Database\Model\StruckRate.cs" />
     <Compile Include="Database\Model\User.cs" />
     <Compile Include="Database\Model\UserShip.cs" />
+    <Compile Include="Hull.cs" />
     <Compile Include="Profile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rank.cs" />
+    <Compile Include="Rate.cs" />
+    <Compile Include="Vessel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Database\schema.sql" />
