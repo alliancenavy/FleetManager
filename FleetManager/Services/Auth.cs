@@ -7,7 +7,11 @@ using WebSocketSharp;
 using WebSocketSharp.Server;
 using Newtonsoft.Json;
 using ANWI;
+using Datamodel = ANWI.Database.Model;
 using Auth0.Windows;
+using MsgPack;
+using MsgPack.Serialization;
+using System.IO;
 
 namespace FleetManager.Services {
 	public class Auth : WebSocketBehavior {
@@ -48,41 +52,24 @@ namespace FleetManager.Services {
 				account.auth0_id = user.Profile["user_id"].ToString();
 				account.nickname = user.Profile["nickname"].ToString();
 
-				// TODO: This is placeholder account info
-				account.profile.nickname = "Mazer Ludd";
-				account.profile.rank.name = "Captain";
-				account.profile.rank.abbrev = "CAPT";
-				account.profile.rank.ordering = 5;
-				account.profile.assignedShip.name = "ANS This Isn't Over";
-				account.profile.assignedShip.hull.type = "Polaris";
-				account.profile.assignedShip.hull.role = "Corvette";
-				account.profile.rates.Add(new Rate() {
-					id = 1,
-					name = "Fighter Pilot",
-					abbrev = "FP",
-					rank = 1,
-					date = "Forever Ago",
-					expires = "Never"
-				});
-				account.profile.rates.Add(new Rate() {
-					id = 2,
-					name = "Damage Controlman",
-					abbrev="DC",
-					rank=3,
-					date = "Forever Ago",
-					expires = "Never"
-				});
-				account.profile.rates.Add(new Rate() {
-					id = 3,
-					name="Skipper",
-					abbrev="SK",
-					rank=2,
-					date = "Forever Ago",
-					expires = "Never"
-				});
-				account.profile.primaryRate = 2;
+				// Get the main user profile
+				Datamodel.User dbUser = null;
+				Datamodel.User.FetchByAuth0(ref dbUser, account.auth0_id);
+				dbUser.Acquire();
 
-				Send(JsonConvert.SerializeObject(account));
+				// Get their full list of rates
+				List<Datamodel.StruckRate> rates = null;
+				Datamodel.StruckRate.FetchByUserId(ref rates, dbUser.id);
+				foreach(Datamodel.StruckRate r in rates) {
+					r.Acquire();
+				}
+
+				account.profile = Profile.FromDatamodel(dbUser, rates);
+
+				using (var stream = new MemoryStream()) {
+					MessagePackSerializer.Get<AuthenticatedAccount>().Pack(stream, account);
+					Send(stream.ToArray());
+				}
 			} catch (System.Net.Http.HttpRequestException e) {
 				ANWI.AuthenticatedAccount failed = new AuthenticatedAccount();
 				failed.nickname = "";
@@ -90,7 +77,11 @@ namespace FleetManager.Services {
 
 				Console.WriteLine("Failed to authenticate account with auth0.");
 
-				Send(JsonConvert.SerializeObject(failed));
+				using (var stream = new MemoryStream()) {
+					MessagePackSerializer.Get<AuthenticatedAccount>().Pack(stream, failed);
+					Send(stream.ToArray());
+				}
+
 				return;
 			}
 		}

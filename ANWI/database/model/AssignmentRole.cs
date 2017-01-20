@@ -1,4 +1,5 @@
-﻿using System.Data.SQLite;
+﻿using System;
+using System.Data.SQLite;
 
 namespace ANWI.Database.Model
 {
@@ -74,9 +75,9 @@ namespace ANWI.Database.Model
         public static AssignmentRole Factory(SQLiteDataReader reader)
         {
             AssignmentRole result = new AssignmentRole(
-                id: (int)reader["id"],
+                id: Convert.ToInt32(reader["id"]),
                 name: (string)reader["name"],
-                rate: (int)reader["rate"],
+                rate: Convert.ToInt32(reader["rate"]),
 
                 Rate: null
             );

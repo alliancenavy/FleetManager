@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.SQLite;
 
 namespace ANWI.Database.Model
@@ -62,6 +63,10 @@ namespace ANWI.Database.Model
             }
         }
 
+		public bool Acquire() {
+			return Rate.FetchById(ref _rate, rate);
+		}
+
         #endregion
 
         #region Class-Members
@@ -97,10 +102,10 @@ namespace ANWI.Database.Model
         public static StruckRate Factory(SQLiteDataReader reader)
         {
             StruckRate result = new StruckRate(
-                id: (int)reader["id"],
-                user: (int)reader["user"],
-                rate: (int)reader["rate"],
-                rank: (int)reader["rank"],
+                id:   Convert.ToInt32(reader["id"]),
+                user: Convert.ToInt32(reader["user"]),
+                rate: Convert.ToInt32(reader["rate"]),
+                rank: Convert.ToInt32(reader["rank"]),
 
                 User: null,
                 Rate: null

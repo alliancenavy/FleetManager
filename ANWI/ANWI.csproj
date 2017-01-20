@@ -83,7 +83,6 @@
     <Compile Include="Database\Model\AssignmentRole.cs" />
     <Compile Include="Database\Model\Hull.cs" />
     <Compile Include="Database\Model\HullRole.cs" />
-    <Compile Include="Database\Model\HullSeries.cs" />
     <Compile Include="Database\Model\HullVendor.cs" />
     <Compile Include="Database\Model\Rank.cs" />
     <Compile Include="Database\Model\Rate.cs" />
@@ -99,6 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Database\schema.sql" />
+    <Content Include="Database\TestData.sql" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

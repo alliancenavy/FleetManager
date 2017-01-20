@@ -47,7 +47,7 @@
         <TextBlock x:Name="Text_Rank" HorizontalAlignment="Left" Margin="130,35,0,0" TextWrapping="Wrap" Text="{Binding Path=wpfRank.name}" VerticalAlignment="Top" Width="177"/>
         <TextBlock x:Name="Text_PrimaryRate" HorizontalAlignment="Left" Margin="130,51,0,0" TextWrapping="Wrap" Text="{Binding Path=wpfPrimaryRate.FullName}" VerticalAlignment="Top" Width="177"/>
         <TextBlock x:Name="Text_TimeInServe" HorizontalAlignment="Left" Margin="130,69,0,0" TextWrapping="Wrap" Text="Time In Service" VerticalAlignment="Top" Width="177"/>
-        <TextBlock x:Name="Text_CurrentShip" HorizontalAlignment="Left" Margin="10,89,0,0" TextWrapping="Wrap" Text="ANS Unknown" VerticalAlignment="Top" Width="273"/>
+        <TextBlock x:Name="Text_CurrentAssignment" HorizontalAlignment="Left" Margin="10,89,0,0" TextWrapping="Wrap" Text="ANS Unknown" VerticalAlignment="Top" Width="273"/>
         <Image x:Name="Image_PrimaryRate" HorizontalAlignment="Left" Height="55" Margin="70,29,0,0" VerticalAlignment="Top" Width="55" OpacityMask="Black" Source="{Binding Path=wpfPrimaryRate.Icon}"/>
         <ListBox x:Name="List_Rates" HorizontalAlignment="Left" Height="170" Margin="10,130,0,0" VerticalAlignment="Top" Width="297" ItemTemplate="{DynamicResource RateTemplate}" ItemsSource="{Binding Path=wpfRates}"/>
         <ListBox x:Name="List_Awards" HorizontalAlignment="Left" Height="185" Margin="10,327,0,0" VerticalAlignment="Top" Width="297" ItemTemplate="{DynamicResource AwardTemplate}"/>

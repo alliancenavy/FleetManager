@@ -15,6 +15,12 @@ namespace FleetManager {
 		Dictionary<string, string> CurrentUsers;
 
 		static void Main(string[] args) {
+			// Open database connection
+			if(!ANWI.Database.DBI.Open()) {
+				Console.WriteLine("Failed to open database connection");
+				return;
+			}
+
 			var wssv = new WebSocketServer("ws://localhost:9000");
 			
 			// Set up services

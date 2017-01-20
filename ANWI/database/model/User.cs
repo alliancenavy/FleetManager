@@ -64,6 +64,11 @@ namespace ANWI.Database.Model
             }
         }
 
+		public bool Acquire() {
+			return Rank.FetchById(ref _rank, rank)
+				&& StruckRate.FetchById(ref _rate, rate);
+		}
+
         #endregion
 
         #region Class-Members
@@ -102,11 +107,11 @@ namespace ANWI.Database.Model
         public static User Factory(SQLiteDataReader reader)
         {
             User result = new User(
-                id: (int)reader["id"],
+                id: Convert.ToInt32(reader["id"]),
                 name: (string)reader["name"],
                 auth0: (string)reader["auth0"],
-                rank: (int)reader["rank"],
-                rate: (int)reader["rate"],
+                rank: Convert.ToInt32(reader["rank"]),
+                rate: Convert.ToInt32(reader["rate"]),
 
                 Rank: null,
                 Rate: null

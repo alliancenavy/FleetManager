@@ -1,4 +1,5 @@
-﻿using System.Data.SQLite;
+﻿using System;
+using System.Data.SQLite;
 
 namespace ANWI.Database.Model
 {
@@ -123,12 +124,12 @@ namespace ANWI.Database.Model
         public static Assignment Factory(SQLiteDataReader reader)
         {
             Assignment result = new Assignment(
-                id: (int)reader["id"],
-                user: (int)reader["user"],
-                ship: (int)reader["ship"],
-                role: (int)reader["role"],
-                from: (int)reader["from"],
-                until: (int)reader["until"],
+                id:    Convert.ToInt32(reader["id"]),
+                user:  Convert.ToInt32(reader["user"]),
+                ship:  Convert.ToInt32(reader["ship"]),
+                role:  Convert.ToInt32(reader["role"]),
+                from:  Convert.ToInt32(reader["from"]),
+                until: Convert.ToInt32(reader["until"]),
 
                 User: null,
                 Ship: null,

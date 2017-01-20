@@ -1,4 +1,5 @@
-﻿using System.Data.SQLite;
+﻿using System;
+using System.Data.SQLite;
 
 namespace ANWI.Database.Model
 {
@@ -103,11 +104,11 @@ namespace ANWI.Database.Model
         public static UserShip Factory(SQLiteDataReader reader)
         {
             UserShip result = new UserShip(
-                id: (int)reader["id"],
-                user: (int)reader["user"],
-                hull: (int)reader["hull"],
-                insurance: (int)reader["insurance"],
-                number: (int)reader["number"],
+                id: Convert.ToInt32(reader["id"]),
+                user: Convert.ToInt32(reader["user"]),
+                hull: Convert.ToInt32(reader["hull"]),
+                insurance: Convert.ToInt32(reader["insurance"]),
+                number: Convert.ToInt32(reader["number"]),
                 name: (string)reader["name"],
                 User: null,
                 Hull: null

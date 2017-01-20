@@ -16,6 +16,9 @@ using WebSocketSharp;
 using FontAwesome;
 using Newtonsoft.Json;
 using ANWI;
+using MsgPack;
+using MsgPack.Serialization;
+using System.IO;
 
 namespace Client {
 
@@ -93,8 +96,9 @@ namespace Client {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void OnMessage(object sender, MessageEventArgs e) {
-			AuthenticatedAccount account = 
-				JsonConvert.DeserializeObject<AuthenticatedAccount>(e.Data);
+			MemoryStream stream = new MemoryStream(e.RawData);
+			AuthenticatedAccount account =
+				MessagePackSerializer.Get<AuthenticatedAccount>().Unpack(stream);
 
 			// If the login failed the authToken will be an empty string
 			if(account.authToken == "") {
@@ -115,7 +119,7 @@ namespace Client {
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void SocketError(object sender, ErrorEventArgs e) {
+		private void SocketError(object sender, WebSocketSharp.ErrorEventArgs e) {
 			this.Dispatcher.Invoke(EndWorkingFailed);
 		}
 

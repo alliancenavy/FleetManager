@@ -1,4 +1,5 @@
-﻿using System.Data.SQLite;
+﻿using System;
+using System.Data.SQLite;
 
 namespace ANWI.Database.Model
 {
@@ -58,7 +59,7 @@ namespace ANWI.Database.Model
         public static HullVendor Factory(SQLiteDataReader reader)
         {
             HullVendor result = new HullVendor(
-                id: (int)reader["id"],
+                id: Convert.ToInt32(reader["id"]),
                 name: (string)reader["name"],
                 abrv: (string)reader["abrv"],
                 icon: (string)reader["icon"]

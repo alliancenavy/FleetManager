@@ -29,24 +29,12 @@ namespace Client {
 			this.DataContext = p;
 
 			// Assigned ship
-			Text_CurrentShip.Text = p.assignedShip.name + " (" + p.assignedShip.hull.type 
-				+ " class " + p.assignedShip.hull.role + ")";
-
-			// Awards list
-			List_Awards.Items.Add(new AwardRecord() {
-				Name = "Order of the Cool Guy (x1)",
-				Icon = "images/no_image.png"
-			});
-
-			List_Awards.Items.Add(new AwardRecord() {
-				Name = "Good Conduct Medal (x2)",
-				Icon = "images/no_image.png"
-			});
-
-			List_Awards.Items.Add(new AwardRecord() {
-				Name = "Command Star (x1)",
-				Icon = "images/no_image.png"
-			});
+			if (p.assignedShip == null) {
+				Text_CurrentAssignment.Text = "No Current Assignment";
+			} else {
+				Text_CurrentAssignment.Text = p.assignedShip.name + " (" + p.assignedShip.hull.type
+					+ " class " + p.assignedShip.hull.role + ")";
+			}
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using System.Data.SQLite;
+﻿using System;
+using System.Data.SQLite;
 
 namespace ANWI.Database.Model
 {
@@ -62,11 +63,11 @@ namespace ANWI.Database.Model
         public static Rank Factory(SQLiteDataReader reader)
         {
             Rank result = new Rank(
-                id: (int)reader["id"],
+                id: Convert.ToInt32(reader["id"]),
                 name: (string)reader["name"],
                 abrv: (string)reader["abrv"],
                 icon: (string)reader["icon"],
-                ordering: (int)reader["order"]
+                ordering: Convert.ToInt32(reader["ordering"])
             );
             return result;
         }
