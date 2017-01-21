@@ -14,6 +14,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WebSocketSharp;
 using ANWI;
+using MsgPack.Serialization;
+using System.IO;
 
 namespace Client {
 	/// <summary>
@@ -23,8 +25,8 @@ namespace Client {
 
 		private readonly WebSocket socket;
 		private AuthenticatedAccount account = null;
-		private bool serviceRecordOpen = false;
-		private bool vesselRegOpen = false;
+		private ServiceRecord serviceRecord = null;
+		private VesselReg vesselRegister = null;
 
 		/// <summary>
 		/// Form constructor
@@ -48,7 +50,11 @@ namespace Client {
 				Application.Current.Shutdown();
 			}
 
-			// TODO: populate profile info
+			// Open connection to the main service
+			socket = new WebSocket("ws://localhost:9000/main");
+			socket.OnMessage += OnMessage;
+			socket.OnError += SocketError;
+			socket.Connect();
 		}
 
 		/// <summary>
@@ -57,11 +63,10 @@ namespace Client {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void ServiceRecButton_Click(object sender, RoutedEventArgs e) {
-			if (account != null && !serviceRecordOpen) {
-				ServiceRecord newRec = new ServiceRecord(account.profile);
-				newRec.Closed += (s,args) => { serviceRecordOpen = false; };
-				serviceRecordOpen = true;
-				newRec.Show();
+			if (account != null && serviceRecord == null) {
+				serviceRecord = new ServiceRecord(account.profile);
+				serviceRecord.Closed += (s,args) => { serviceRecord = null; };
+				serviceRecord.Show();
 			}
 		}
 
@@ -71,16 +76,38 @@ namespace Client {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void VesselRegButton_Click(object sender, RoutedEventArgs e) {
-			if(!vesselRegOpen) {
-				VesselReg reg = new VesselReg();
-				reg.Closed += (s, args) => { vesselRegOpen = false; };
-				vesselRegOpen = true;
-				reg.Show();
+			if(vesselRegister == null) {
+				vesselRegister = new VesselReg(socket);
+				vesselRegister.Closed += (s, args) => { vesselRegister = null; };
+				vesselRegister.Show();
 			}
 		}
 
 		private void QuitButton_Click(object sender, RoutedEventArgs e) {
 			Application.Current.Shutdown();
+		}
+
+		private void OnMessage(object sender, MessageEventArgs e) {
+			ANWI.Messaging.Message msg = null;
+			using (MemoryStream stream = new MemoryStream(e.RawData)) {
+				msg = MessagePackSerializer.Get<ANWI.Messaging.Message>().Unpack(stream);
+			}
+
+			switch(msg.address.dest) {
+				case ANWI.Messaging.Message.Routing.Target.ServiceRecord:
+					serviceRecord.DeliverMessage(msg);
+					break;
+
+				case ANWI.Messaging.Message.Routing.Target.VesselReg:
+					break;
+
+				default:
+					break;
+			}
+		}
+
+		private void SocketError(object sender, WebSocketSharp.ErrorEventArgs e) {
+			// TODO
 		}
 	}
 }

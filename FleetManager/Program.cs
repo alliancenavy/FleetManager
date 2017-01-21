@@ -7,6 +7,8 @@ using WebSocketSharp;
 using WebSocketSharp.Server;
 using Auth0.Windows;
 using FleetManager.Services;
+using MsgPack.Serialization;
+using System.IO;
 
 namespace FleetManager {
 

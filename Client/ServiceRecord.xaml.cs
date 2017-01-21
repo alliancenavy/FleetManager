@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ANWI;
+using ANWI.Messaging;
 
 namespace Client {
 	/// <summary>
@@ -35,6 +36,10 @@ namespace Client {
 				Text_CurrentAssignment.Text = p.assignedShip.name + " (" + p.assignedShip.hull.type
 					+ " class " + p.assignedShip.hull.role + ")";
 			}
+		}
+
+		public void DeliverMessage(Message m) {
+			
 		}
 	}
 }

@@ -13,6 +13,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ANWI;
 using Client.VesselRegHelpers;
+using WebSocketSharp;
+using System.IO;
+using MsgPack.Serialization;
 
 namespace Client {
 	/// <summary>
@@ -24,122 +27,137 @@ namespace Client {
 
 		public List<VesselRecord> wpfVesselList { get { return vesselList; } }
 
-		public VesselReg() {
+		private WebSocket socket = null;
+
+		public VesselReg(WebSocket ws) {
 			InitializeComponent();
+			socket = ws;
 			this.DataContext = this;
 
-			Spinner.Visibility = Visibility.Hidden;
-			vesselList.Clear();
+			LoadVesselList();
+		}
 
-			vesselList.Add(new CategoryDivider() {
-				text = "Capital"
-			});
+		private void LoadVesselList() {
 
-			vesselList.Add(new NamedVessel() {
-				v = new Vessel() {
-					name = "ANS Legend of Dave",
-					hull = new Hull() {
-						role = "Frigate",
-						type = "Idris",
-						subtype = "-P",
-						symbol = "FF"
-					},
-					owner = "Fleet",
-					isLTI = false,
-					hullNumber = 10,
-					status = Vessel.VesselStatus.ACTIVE
-				}
-			});
-
-			vesselList.Add(new NamedVessel() {
-				v = new Vessel() {
-					name = "ANS Suffering is Relative",
-					hull = new Hull() {
-						role = "Corvette",
-						type = "Polaris",
-						subtype = "",
-						symbol = "K"
-					},
-					owner = "Meia Cosmos",
-					isLTI = true,
-					hullNumber = 1,
-					status = Vessel.VesselStatus.DESTROYED_WAITING_REPLACEMENT
-				}
-			});
-
-			vesselList.Add(new NamedVessel() {
-				v = new Vessel() {
-					name = "ANS Everlasting Snowmew",
-					hull = new Hull() {
-						role = "Corvette",
-						type = "Polaris",
-						subtype = "",
-						symbol = "K"
-					},
-					owner = "Spookerton",
-					isLTI = true,
-					hullNumber = 2,
-					status = Vessel.VesselStatus.DRYDOCKED
-				}
-			});
-
-			vesselList.Add(new CategoryDivider() {
-				text = "Sub-Capital"
-			});
-
-			vesselList.Add(new NamedVessel() {
-				v = new Vessel() {
-					name = "ANS Queen Ludd's Revenge",
-					hull = new Hull() {
-						role = "Cutter",
-						type = "Constellation",
-						subtype = " Phoenix",
-						symbol = "C"
-					},
-					owner = "Spookerton",
-					isLTI = true,
-					hullNumber = 5,
-					status = Vessel.VesselStatus.ACTIVE
-				}
-			});
-
-			vesselList.Add(new CategoryDivider() {
-				text = "Small Multi-Crew"
-			});
-
-			vesselList.Add(new CategoryDivider() {
-				text = "Fighters"
-			});
-
-			vesselList.Add(new UnnamedVessel() {
-				v = new Vessel() {
-					hull = new Hull() {
-						role = "Fighter",
-						type = "Hornet",
-						subtype = " F7C",
-						manufacturer = "Anvil Aerospace"
-					}
-				},
-				owners = new List<UnnamedVessel.Owner>() {
-					new UnnamedVessel.Owner() {name = "Cyanide", LTI = true },
-					new UnnamedVessel.Owner() {name = "Nadav", LTI = true }
-				}
-			});
-
-			vesselList.Add(new UnnamedVessel() {
-				v = new Vessel() {
-					hull = new Hull() {
-						role = "Interceptor",
-						type = "Gladius",
-						subtype = "",
-						manufacturer = "AEGIS Dynamics"
-					}
-				},
-				owners = new List<UnnamedVessel.Owner>() {
-					new UnnamedVessel.Owner() {name = "Mazer Ludd", LTI = true },
-					new UnnamedVessel.Owner() {name = "Syxx", LTI = true }
-				}
-			});
+			using (MemoryStream stream = new MemoryStream()) {
+				ANWI.Messaging.Message msg = new ANWI.Messaging.Message(
+					ANWI.Messaging.Message.Routing.Target.VesselReg,
+					0,
+					new ANWI.Messaging.Request(ANWI.Messaging.Request.Type.GetVesselList));
+				MessagePackSerializer.Get<ANWI.Messaging.Message>().Pack(stream, msg);
+				socket.Send(stream.ToArray());
+			}
 		}
 	}
 }
+
+
+//vesselList.Add(new CategoryDivider() {
+//	text = "Capital"
+//});
+
+//vesselList.Add(new NamedVessel() {
+//	v = new Vessel() {
+//		name = "ANS Legend of Dave",
+//		hull = new Hull() {
+//			role = "Frigate",
+//			type = "Idris",
+//			subtype = "-P",
+//			symbol = "FF"
+//		},
+//		owner = "Fleet",
+//		isLTI = false,
+//		hullNumber = 10,
+//		status = Vessel.VesselStatus.ACTIVE
+//	}
+//});
+
+//vesselList.Add(new NamedVessel() {
+//	v = new Vessel() {
+//		name = "ANS Suffering is Relative",
+//		hull = new Hull() {
+//			role = "Corvette",
+//			type = "Polaris",
+//			subtype = "",
+//			symbol = "K"
+//		},
+//		owner = "Meia Cosmos",
+//		isLTI = true,
+//		hullNumber = 1,
+//		status = Vessel.VesselStatus.DESTROYED_WAITING_REPLACEMENT
+//	}
+//});
+
+//vesselList.Add(new NamedVessel() {
+//	v = new Vessel() {
+//		name = "ANS Everlasting Snowmew",
+//		hull = new Hull() {
+//			role = "Corvette",
+//			type = "Polaris",
+//			subtype = "",
+//			symbol = "K"
+//		},
+//		owner = "Spookerton",
+//		isLTI = true,
+//		hullNumber = 2,
+//		status = Vessel.VesselStatus.DRYDOCKED
+//	}
+//});
+
+//vesselList.Add(new CategoryDivider() {
+//	text = "Sub-Capital"
+//});
+
+//vesselList.Add(new NamedVessel() {
+//	v = new Vessel() {
+//		name = "ANS Queen Ludd's Revenge",
+//		hull = new Hull() {
+//			role = "Cutter",
+//			type = "Constellation",
+//			subtype = " Phoenix",
+//			symbol = "C"
+//		},
+//		owner = "Spookerton",
+//		isLTI = true,
+//		hullNumber = 5,
+//		status = Vessel.VesselStatus.ACTIVE
+//	}
+//});
+
+//vesselList.Add(new CategoryDivider() {
+//	text = "Small Multi-Crew"
+//});
+
+//vesselList.Add(new CategoryDivider() {
+//	text = "Fighters"
+//});
+
+//vesselList.Add(new UnnamedVessel() {
+//	v = new Vessel() {
+//		hull = new Hull() {
+//			role = "Fighter",
+//			type = "Hornet",
+//			subtype = " F7C",
+//			manufacturer = "Anvil Aerospace"
+//		}
+//	},
+//	owners = new List<UnnamedVessel.Owner>() {
+//		new UnnamedVessel.Owner() {name = "Cyanide", LTI = true },
+//		new UnnamedVessel.Owner() {name = "Nadav", LTI = true }
+//	}
+//});
+
+//vesselList.Add(new UnnamedVessel() {
+//	v = new Vessel() {
+//		hull = new Hull() {
+//			role = "Interceptor",
+//			type = "Gladius",
+//			subtype = "",
+//			manufacturer = "AEGIS Dynamics"
+//		}
+//	},
+//	owners = new List<UnnamedVessel.Owner>() {
+//		new UnnamedVessel.Owner() {name = "Mazer Ludd", LTI = true },
+//		new UnnamedVessel.Owner() {name = "Syxx", LTI = true }
+//	}
+//});

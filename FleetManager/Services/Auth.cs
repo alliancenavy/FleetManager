@@ -12,9 +12,12 @@ using Auth0.Windows;
 using MsgPack;
 using MsgPack.Serialization;
 using System.IO;
+using NLog;
 
 namespace FleetManager.Services {
 	public class Auth : WebSocketBehavior {
+		private static NLog.Logger logger = LogManager.GetLogger("Auth Service");
+
 		private Auth0Client auth0;
 
 		public Auth() {
@@ -22,21 +25,23 @@ namespace FleetManager.Services {
 		}
 
 		protected override void OnMessage(MessageEventArgs e) {
-			Console.WriteLine(e.Data);
-			
 			// Deserialize the message
-			ANWI.Credentials cred = JsonConvert.DeserializeObject<ANWI.Credentials>(e.Data);
+			ANWI.Credentials cred;
+
+			using (MemoryStream stream = new MemoryStream(e.RawData)) {
+				cred = MessagePackSerializer.Get<Credentials>().Unpack(stream);
+			}
 
 			// Log in the user
 			LoginUser(cred);
 		}
 
 		protected override void OnOpen() {
-			Console.WriteLine("Connection opened");
+			logger.Info("Connection opened");
 		}
 
 		protected override void OnClose(CloseEventArgs e) {
-			Console.WriteLine("Connection closed");
+			logger.Info("Connection closed");
 		}
 
 		private async void LoginUser(ANWI.Credentials cred) {
@@ -45,7 +50,7 @@ namespace FleetManager.Services {
 				Auth0User user = await auth0.LoginAsync("Username-Password-Authentication",
 					cred.username, cred.password);
 
-				Console.WriteLine("Successfully authenticated user.  Token: " + user.Auth0AccessToken);
+				logger.Info("Successfully authenticated user.  Token: " + user.Auth0AccessToken);
 
 				ANWI.AuthenticatedAccount account = new AuthenticatedAccount();
 				account.authToken = user.Auth0AccessToken;
@@ -66,7 +71,7 @@ namespace FleetManager.Services {
 
 				account.profile = Profile.FromDatamodel(dbUser, rates);
 
-				using (var stream = new MemoryStream()) {
+				using (MemoryStream stream = new MemoryStream()) {
 					MessagePackSerializer.Get<AuthenticatedAccount>().Pack(stream, account);
 					Send(stream.ToArray());
 				}
@@ -75,9 +80,9 @@ namespace FleetManager.Services {
 				failed.nickname = "";
 				failed.auth0_id = "";
 
-				Console.WriteLine("Failed to authenticate account with auth0.");
+				logger.Info("Failed to authenticate account with auth0.");
 
-				using (var stream = new MemoryStream()) {
+				using (MemoryStream stream = new MemoryStream()) {
 					MessagePackSerializer.Get<AuthenticatedAccount>().Pack(stream, failed);
 					Send(stream.ToArray());
 				}

@@ -84,7 +84,11 @@ namespace Client {
 		/// <param name="cred"></param>
 		private async void LogIn(ANWI.Credentials cred) {
 			ws.Connect();
-			ws.Send(JsonConvert.SerializeObject(cred));
+
+			using (MemoryStream stream = new MemoryStream()) {
+				MessagePackSerializer.Get<Credentials>().Pack(stream, cred);
+				ws.Send(stream.ToArray());
+			}
 		}
 
 		/// <summary>
@@ -96,9 +100,10 @@ namespace Client {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void OnMessage(object sender, MessageEventArgs e) {
-			MemoryStream stream = new MemoryStream(e.RawData);
-			AuthenticatedAccount account =
-				MessagePackSerializer.Get<AuthenticatedAccount>().Unpack(stream);
+			AuthenticatedAccount account = null;
+			using (MemoryStream stream = new MemoryStream(e.RawData)) {
+				account = MessagePackSerializer.Get<AuthenticatedAccount>().Unpack(stream);
+			}
 
 			// If the login failed the authToken will be an empty string
 			if(account.authToken == "") {
