@@ -15,16 +15,17 @@ namespace FleetManager.Services {
 	public class Main : WebSocketBehavior {
 		private static NLog.Logger logger = LogManager.GetLogger("Main Service");
 
-		private Dictionary<Type, Func<ANWI.Messaging.MessagePayload, 
-			ANWI.Messaging.MessagePayload>> msgProcessors = null;
+		private Dictionary<Type, Func<ANWI.Messaging.IMessagePayload, 
+			ANWI.Messaging.IMessagePayload>> msgProcessors = null;
 
 		public Main() {
 			logger.Info("Started");
 
 			// Build the message processor dictionary
-			msgProcessors = new Dictionary<Type, Func<ANWI.Messaging.MessagePayload, 
-				ANWI.Messaging.MessagePayload>>() {
-				{ typeof(ANWI.Messaging.Request), ProcessRequestMessage }
+			msgProcessors = new Dictionary<Type, Func<ANWI.Messaging.IMessagePayload, 
+				ANWI.Messaging.IMessagePayload>>() {
+				{ typeof(ANWI.Messaging.Request), ProcessRequestMessage },
+				{ typeof(ANWI.Messaging.ChangeNickname), ProcessChangeNickname }
 			};
 		}
 
@@ -36,14 +37,16 @@ namespace FleetManager.Services {
 
 			logger.Info("Message received. " + msg.payload.ToString());
 
-			ANWI.Messaging.MessagePayload p = 
+			ANWI.Messaging.IMessagePayload p = 
 				msgProcessors[msg.payload.GetType()](msg.payload);
 
 			ANWI.Messaging.Message response = new ANWI.Messaging.Message(msg.address, p);
 
-			using(MemoryStream stream = new MemoryStream()) {
-				MessagePackSerializer.Get<ANWI.Messaging.Message>().Pack(stream, response);
-				Send(stream.ToArray());
+			if (response != null) {
+				using (MemoryStream stream = new MemoryStream()) {
+					MessagePackSerializer.Get<ANWI.Messaging.Message>().Pack(stream, response);
+					Send(stream.ToArray());
+				}
 			}
 		}
 
@@ -61,7 +64,7 @@ namespace FleetManager.Services {
 			base.OnError(e);
 		}
 
-		private ANWI.Messaging.MessagePayload ProcessRequestMessage(ANWI.Messaging.MessagePayload p) {
+		private ANWI.Messaging.IMessagePayload ProcessRequestMessage(ANWI.Messaging.IMessagePayload p) {
 			ANWI.Messaging.Request req = p as ANWI.Messaging.Request;
 			switch(req.type) {
 				case ANWI.Messaging.Request.Type.GetVesselList: {
@@ -79,6 +82,25 @@ namespace FleetManager.Services {
 					break;
 			}
 
+			return null;
+		}
+
+		private ANWI.Messaging.IMessagePayload ProcessChangeNickname(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.ChangeNickname cn = p as ANWI.Messaging.ChangeNickname;
+
+			Datamodel.User user = null;
+			if(!Datamodel.User.FetchByAuth0(ref user, cn.auth0_id)) {
+				logger.Error("Failed to change name.  Could not select user.");
+				return null;
+			}
+
+			user.name = cn.newName;
+			if(!Datamodel.User.Store(user)) {
+				logger.Error("Failed to update name is database.");
+				return null;
+			}
+
+			logger.Info("Name successfully changed.");
 			return null;
 		}
 	}

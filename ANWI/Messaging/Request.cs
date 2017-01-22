@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ANWI.Messaging {
 
-	public class Request : MessagePayload {
+	public class Request : IMessagePayload {
 		public enum Type {
 			GetVesselList
 		}

@@ -43,8 +43,10 @@ namespace ANWI {
 		public static List<Rate> FromDatamodel(List<Datamodel.StruckRate> l) {
 			List<Rate> lout = new List<Rate>();
 
-			foreach(Datamodel.StruckRate r in l) {
-				lout.Add(FromDatamodel(r));
+			if (l != null) {
+				foreach (Datamodel.StruckRate r in l) {
+					lout.Add(FromDatamodel(r));
+				}
 			}
 
 			return lout;

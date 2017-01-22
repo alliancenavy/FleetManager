@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MsgPack.Serialization;
+using WebSocketSharp;
+using System.IO;
 
 namespace ANWI.Messaging {
 	public class Message {
@@ -17,29 +19,45 @@ namespace ANWI.Messaging {
 
 			public Target dest;
 			public int id;
+
+			public static readonly Routing NoReturn = new Routing() {
+				dest = Target.Unknown,
+				id = 0
+			};
 		}
 
 		public Routing address;
 
 		[MessagePackKnownType("rv", typeof(Request))]
 		[MessagePackKnownType("fvr", typeof(FullVesselReg))]
-		public MessagePayload payload;
+		[MessagePackKnownType("cn", typeof(ChangeNickname))]
+		public IMessagePayload payload;
 
 		public Message() {
-			address.dest = Routing.Target.Unknown;
-			address.id = 0;
 			payload = null;
 		}
 
-		public Message(Routing addr, MessagePayload data) {
+		public Message(Routing addr, IMessagePayload data) {
 			address = addr;
 			payload = data;
 		}
 
-		public Message(Routing.Target returnTo, int id, MessagePayload data) {
+		public Message(Routing.Target returnTo, int id, IMessagePayload data) {
 			address.dest = returnTo;
 			address.id = id;
 			payload = data;
+		}
+
+		public static void Send(WebSocket sock, Routing returnTo, IMessagePayload data) {
+			Message m = new Message(returnTo, data);
+			MemoryStream stream = new MemoryStream();
+			MessagePackSerializer.Get<Message>().Pack(stream, m);
+			sock.Send(stream.ToArray());
+		}
+
+		public static Message Receive(byte[] data) {
+			MemoryStream stream = new MemoryStream(data);
+			return MessagePackSerializer.Get<Message>().Unpack(stream);
 		}
 	}
 }

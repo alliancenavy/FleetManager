@@ -106,7 +106,7 @@ namespace ANWI.Database.Model
                 name: (string)reader["name"],
                 auth0: (string)reader["auth0"],
                 rank: Convert.ToInt32(reader["rank"]),
-                rate: Convert.ToInt32(reader["rate"]),
+                rate: reader["rate"] is DBNull ? 0 : Convert.ToInt32(reader["rate"]),
 
                 Rank: null,
                 Rate: null
@@ -114,7 +114,15 @@ namespace ANWI.Database.Model
             return result;
         }
 
-        public static bool Create(ref User output, string name, string auth0, int rank, int rate)
+		public static bool Create(ref User output, string name, string auth0, int rank) {
+			int result = DBI.DoAction($"insert into User (name, auth0, rank, rate) values ('{name}', '{auth0}', {rank}, null);");
+			if (result == 1) {
+				return User.FetchById(ref output, DBI.LastInsertRowId);
+			}
+			return false;
+		}
+
+		public static bool Create(ref User output, string name, string auth0, int rank, int rate)
         {
             int result = DBI.DoAction($"insert into User (name, auth0, rank, rate) values ('{name}', '{auth0}', {rank}, {rate});");
             if (result == 1)

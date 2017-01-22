@@ -7,7 +7,7 @@ using MsgPack.Serialization;
 
 namespace ANWI.Messaging {
 
-	public interface MessagePayload {
+	public interface IMessagePayload {
 		// Empty
 		// This is only required so MsgPack can serialize polymorphic types
 	}

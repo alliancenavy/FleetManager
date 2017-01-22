@@ -64,7 +64,7 @@ namespace Client {
 		/// <param name="e"></param>
 		private void ServiceRecButton_Click(object sender, RoutedEventArgs e) {
 			if (account != null && serviceRecord == null) {
-				serviceRecord = new ServiceRecord(account.profile);
+				serviceRecord = new ServiceRecord(account.profile, account.auth0_id, socket);
 				serviceRecord.Closed += (s,args) => { serviceRecord = null; };
 				serviceRecord.Show();
 			}

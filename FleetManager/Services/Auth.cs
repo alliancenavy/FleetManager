@@ -59,7 +59,21 @@ namespace FleetManager.Services {
 
 				// Get the main user profile
 				Datamodel.User dbUser = null;
-				Datamodel.User.FetchByAuth0(ref dbUser, account.auth0_id);
+				if(!Datamodel.User.FetchByAuth0(ref dbUser, account.auth0_id)) {
+					logger.Info("Profile not found for user " + account.auth0_id +
+						". It will be created.");
+
+					// Create a basic profile
+					if (!Datamodel.User.Create(ref dbUser,
+						user.Profile["name"].ToString(),
+						user.Profile["user_id"].ToString(),
+						1)) {
+						logger.Error("Failed to create profile for new user");
+
+						DenyLogin();
+						return;
+					}
+				}
 
 				// Get their full list of rates
 				List<Datamodel.StruckRate> rates = null;
@@ -72,18 +86,20 @@ namespace FleetManager.Services {
 					Send(stream.ToArray());
 				}
 			} catch (System.Net.Http.HttpRequestException e) {
-				ANWI.AuthenticatedAccount failed = new AuthenticatedAccount();
-				failed.nickname = "";
-				failed.auth0_id = "";
-
 				logger.Info("Failed to authenticate account with auth0.");
-
-				using (MemoryStream stream = new MemoryStream()) {
-					MessagePackSerializer.Get<AuthenticatedAccount>().Pack(stream, failed);
-					Send(stream.ToArray());
-				}
-
+				DenyLogin();
 				return;
+			}
+		}
+
+		private void DenyLogin() {
+			ANWI.AuthenticatedAccount failed = new AuthenticatedAccount();
+			failed.nickname = "";
+			failed.auth0_id = "";
+
+			using (MemoryStream stream = new MemoryStream()) {
+				MessagePackSerializer.Get<AuthenticatedAccount>().Pack(stream, failed);
+				Send(stream.ToArray());
 			}
 		}
 	}

@@ -38,22 +38,23 @@
         <TextBlock x:Name="Text_Nickname" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" Width="273" FontSize="20" FontWeight="Bold" Margin="10,0,0,0">
             <TextBlock.Text>
                 <MultiBinding StringFormat="{}{0} {1}">
-                    <Binding Path="wpfRank.abbrev"/>
-                    <Binding Path="nickname"/>
+                    <Binding Path="rank.abbrev"/>
+                    <Binding Path="nickname" UpdateSourceTrigger="PropertyChanged"/>
                 </MultiBinding>
             </TextBlock.Text>
         </TextBlock>
-        <Image x:Name="Image_Rank" HorizontalAlignment="Left" Height="55" Margin="10,30,0,0" VerticalAlignment="Top" Width="55" OpacityMask="Black" Source="{Binding Path=wpfRank.Icon}"/>
-        <TextBlock x:Name="Text_Rank" HorizontalAlignment="Left" Margin="130,35,0,0" TextWrapping="Wrap" Text="{Binding Path=wpfRank.name}" VerticalAlignment="Top" Width="177"/>
-        <TextBlock x:Name="Text_PrimaryRate" HorizontalAlignment="Left" Margin="130,51,0,0" TextWrapping="Wrap" Text="{Binding Path=wpfPrimaryRate.FullName}" VerticalAlignment="Top" Width="177"/>
+        <Image x:Name="Image_Rank" HorizontalAlignment="Left" Height="55" Margin="10,30,0,0" VerticalAlignment="Top" Width="55" OpacityMask="Black" Source="{Binding Path=rank.Icon}"/>
+        <TextBlock x:Name="Text_Rank" HorizontalAlignment="Left" Margin="130,35,0,0" TextWrapping="Wrap" Text="{Binding Path=rank.name}" VerticalAlignment="Top" Width="177"/>
+        <TextBlock x:Name="Text_PrimaryRate" HorizontalAlignment="Left" Margin="130,51,0,0" TextWrapping="Wrap" Text="{Binding Path=primaryRate.FullName}" VerticalAlignment="Top" Width="177"/>
         <TextBlock x:Name="Text_TimeInServe" HorizontalAlignment="Left" Margin="130,69,0,0" TextWrapping="Wrap" Text="Time In Service" VerticalAlignment="Top" Width="177"/>
         <TextBlock x:Name="Text_CurrentAssignment" HorizontalAlignment="Left" Margin="10,89,0,0" TextWrapping="Wrap" Text="ANS Unknown" VerticalAlignment="Top" Width="273"/>
-        <Image x:Name="Image_PrimaryRate" HorizontalAlignment="Left" Height="55" Margin="70,29,0,0" VerticalAlignment="Top" Width="55" OpacityMask="Black" Source="{Binding Path=wpfPrimaryRate.Icon}"/>
+        <Image x:Name="Image_PrimaryRate" HorizontalAlignment="Left" Height="55" Margin="70,29,0,0" VerticalAlignment="Top" Width="55" OpacityMask="Black" Source="{Binding Path=primaryRate.Icon}"/>
         <ListBox x:Name="List_Rates" HorizontalAlignment="Left" Height="170" Margin="10,130,0,0" VerticalAlignment="Top" Width="297" ItemTemplate="{DynamicResource RateTemplate}" ItemsSource="{Binding Path=wpfRates}"/>
         <ListBox x:Name="List_Awards" HorizontalAlignment="Left" Height="185" Margin="10,327,0,0" VerticalAlignment="Top" Width="297" ItemTemplate="{DynamicResource AwardTemplate}"/>
         <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Rates" VerticalAlignment="Top" Height="20" Width="95" FontSize="14" FontWeight="Bold" Margin="10,110,0,0"/>
         <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Awards" VerticalAlignment="Top" Height="20" Width="95" FontSize="14" FontWeight="Bold" Margin="10,305,0,0"/>
-        
+        <Button x:Name="Button_ChangeName" Content=">>" HorizontalAlignment="Left" Margin="290,5,0,0" VerticalAlignment="Top" Width="27" Height="25" Background="#FF316838" Foreground="White" Click="Button_ChangeName_Click" ToolTip="Change name"/>
+
     </Grid>
 </Window>
 

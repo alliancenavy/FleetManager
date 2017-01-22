@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ANWI.Messaging {
-	public class FullVesselReg : MessagePayload {
+	public class FullVesselReg : IMessagePayload {
 		public List<Vessel> vessels = null;
 
 		public FullVesselReg() {

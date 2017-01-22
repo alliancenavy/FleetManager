@@ -162,6 +162,11 @@ namespace ANWI.Database.Model
             return false;
         }
 
+		public static bool FetchUndesignated(ref StruckRate output, int userId) {
+			output = new StruckRate(0, userId, 0, 3, null, null);
+			return true;
+		}
+
         public static bool Store(StruckRate input)
         {
             int result = DBI.DoAction($"update StruckRate set user = {input.user}, rate = {input.rate}, rank = {input.rank} where id = {input.id};");
