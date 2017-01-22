@@ -20,6 +20,7 @@ INSERT INTO Rank (id, name, abrv, icon, ordering) VALUES (6, "Commodore", "CDRE"
 
 ---------------------------------------
 --Rate
+INSERT INTO Rate (id, name, abrv, icon) VALUES (0, "None", "N", "");
 INSERT INTO Rate (id, name, abrv, icon) VALUES (1, "Cargo Pilot", "CP", "");
 INSERT INTO Rate (id, name, abrv, icon) VALUES (2, "Fighter Pilot", "FP", "");
 INSERT INTO Rate (id, name, abrv, icon) VALUES (3, "Dropship Pilot", "DP", "");
@@ -32,7 +33,7 @@ INSERT INTO Rate (id, name, abrv, icon) VALUES (9, "Skipper", "SK", "");
 
 ---------------------------------------
 --Test Users
-INSERT INTO User (id, name, auth0, rank, rate) VALUES (0, "Fleet", "", 6, null);
+INSERT INTO User (id, name, auth0, rank, rate) VALUES (0, "Fleet", "", 6, 0);
 INSERT INTO User (id, name, auth0, rank, rate) VALUES (1, "Mazer Ludd", "58713654d89baa12399d5000", 5, null);
 
 ---------------------------------------
@@ -80,4 +81,5 @@ INSERT INTO Hull (id, vendor, role, series, symbol, ordering) VALUES (2, 1, 3, "
 
 ---------------------------------------
 --Owned vessels
-INSERT INTO UserShip (id, user, hull, insurance, number, name) VALUES (1, 0, 1, 0, 10, "ANS Legend of Dave");
+INSERT INTO UserShip (id, user, hull, insurance, number, name, status, statusDate) VALUES (1, 0, 1, 0, 10, "ANS Legend of Dave", 0, "2017-01-01");
+INSERT INTO UserShip (id, user, hull, insurance, number, name, status, statusDate) VALUES (2, 0, 2, 1, 1, "ANS Everlasting Snowmew", 1, date('now'));

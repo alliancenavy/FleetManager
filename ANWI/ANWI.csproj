@@ -90,6 +90,7 @@
     <Compile Include="Database\Model\User.cs" />
     <Compile Include="Database\Model\UserShip.cs" />
     <Compile Include="Hull.cs" />
+    <Compile Include="Messaging\FullVesselReg.cs" />
     <Compile Include="Messaging\MessagePayload.cs" />
     <Compile Include="Messaging\Message.cs" />
     <Compile Include="Messaging\Request.cs" />

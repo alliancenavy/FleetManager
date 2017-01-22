@@ -37,7 +37,6 @@ namespace Client {
 
 			public string manufacturer { get { return v.hull.manufacturer; } }
 			public string type { get { return v.hull.type; } }
-			public string subtype { get { return v.hull.subtype; } }
 			public int count { get { return owners.Count; } }
 		}
 	}

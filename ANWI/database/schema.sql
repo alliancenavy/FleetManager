@@ -94,5 +94,7 @@ create table if not exists UserShip (
  hull integer not null references Hull(id),
  insurance integer not null default 0,
  number integer not null default 0,
- name text not null unique
+ name text not null unique,
+ status integer not null default 0,
+ statusDate text not null
 );

@@ -60,14 +60,10 @@ namespace FleetManager.Services {
 				// Get the main user profile
 				Datamodel.User dbUser = null;
 				Datamodel.User.FetchByAuth0(ref dbUser, account.auth0_id);
-				dbUser.Acquire();
 
 				// Get their full list of rates
 				List<Datamodel.StruckRate> rates = null;
 				Datamodel.StruckRate.FetchByUserId(ref rates, dbUser.id);
-				foreach(Datamodel.StruckRate r in rates) {
-					r.Acquire();
-				}
 
 				account.profile = Profile.FromDatamodel(dbUser, rates);
 

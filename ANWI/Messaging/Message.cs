@@ -22,12 +22,18 @@ namespace ANWI.Messaging {
 		public Routing address;
 
 		[MessagePackKnownType("rv", typeof(Request))]
+		[MessagePackKnownType("fvr", typeof(FullVesselReg))]
 		public MessagePayload payload;
 
 		public Message() {
 			address.dest = Routing.Target.Unknown;
 			address.id = 0;
 			payload = null;
+		}
+
+		public Message(Routing addr, MessagePayload data) {
+			address = addr;
+			payload = data;
 		}
 
 		public Message(Routing.Target returnTo, int id, MessagePayload data) {

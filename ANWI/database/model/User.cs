@@ -64,11 +64,6 @@ namespace ANWI.Database.Model
             }
         }
 
-		public bool Acquire() {
-			return Rank.FetchById(ref _rank, rank)
-				&& StruckRate.FetchById(ref _rate, rate);
-		}
-
         #endregion
 
         #region Class-Members

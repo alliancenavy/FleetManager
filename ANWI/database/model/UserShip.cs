@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SQLite;
 
 namespace ANWI.Database.Model
@@ -17,11 +18,13 @@ namespace ANWI.Database.Model
         public int insurance;
         public int number;
         public string name;
+		public int status;
+		public string statusDate;
 
         private User _user;
         private Hull _hull;
 
-        private UserShip(int id, int user, int hull, int insurance, int number, string name, User User, Hull Hull)
+        private UserShip(int id, int user, int hull, int insurance, int number, string name, int status, string statusDate, User User, Hull Hull)
         {
             this.id = id;
             this.user = user;
@@ -29,6 +32,8 @@ namespace ANWI.Database.Model
             this.insurance = insurance;
             this.number = number;
             this.name = name;
+			this.status = status;
+			this.statusDate = statusDate;
             this._user = User;
             this._hull = Hull;
         }
@@ -79,47 +84,53 @@ namespace ANWI.Database.Model
                 insurance: 0,
                 number: 0,
                 name: "",
+				status: 0,
+				statusDate: "",
                 User: null,
                 Hull: null
             );
             return result;
         }
 
-        public static UserShip Factory(int id, int user, int hull, int insurance, int number, string name)
+        public static UserShip Factory(int id, int user, int hull, int insurance, int number, string name, int status, string statusDate)
         {
 
-            UserShip result = new UserShip(
-                id: id,
-                user: user,
-                hull: hull,
-                insurance: insurance,
-                number: number,
-                name: name,
+			UserShip result = new UserShip(
+				id: id,
+				user: user,
+				hull: hull,
+				insurance: insurance,
+				number: number,
+				name: name,
+				status: status,
+				statusDate: statusDate,
                 User: null,
                 Hull: null
             );
             return result;
         }
 
-        public static UserShip Factory(SQLiteDataReader reader)
-        {
-            UserShip result = new UserShip(
-                id: Convert.ToInt32(reader["id"]),
-                user: Convert.ToInt32(reader["user"]),
-                hull: Convert.ToInt32(reader["hull"]),
-                insurance: Convert.ToInt32(reader["insurance"]),
-                number: Convert.ToInt32(reader["number"]),
-                name: (string)reader["name"],
-                User: null,
-                Hull: null
-            );
+		public static UserShip Factory(SQLiteDataReader reader) {
+			UserShip result = new UserShip(
+				id: Convert.ToInt32(reader["id"]),
+				user: Convert.ToInt32(reader["user"]),
+				hull: Convert.ToInt32(reader["hull"]),
+				insurance: Convert.ToInt32(reader["insurance"]),
+				number: Convert.ToInt32(reader["number"]),
+				name: (string)reader["name"],
+				status: Convert.ToInt32(reader["status"]),
+				statusDate: (string)reader["statusDate"],
+				User: null,
+				Hull: null
+			);
             return result;
         }
 
-        public static bool Create(ref UserShip output, int user, int hull, int insurance, int number, string name)
+        public static bool Create(ref UserShip output, int user, int hull, int insurance, int number, string name, int status, string statusDate)
         {
-            int result = DBI.DoAction($"insert into UserShip (user, hull, insurance, number, name) values ({user}, {hull}, {insurance}, {number}, '{name}');");
-            if (result == 1)
+            int result = DBI.DoAction($"insert into UserShip (user, hull, insurance, number, name, status, statusDate) values ({user}, {hull}, {insurance}, {number}, '{name}', {status}, '{statusDate}');");
+
+			if (result == 1)
             {
                 return UserShip.FetchById(ref output, DBI.LastInsertRowId);
             }
@@ -148,9 +159,21 @@ namespace ANWI.Database.Model
             return false;
         }
 
+		public static bool FetchNotDestroyed(ref List<UserShip> output) {
+			output = new List<UserShip>();
+
+			SQLiteDataReader reader = DBI.DoQuery($"select * from UserShip;");
+			while(reader.Read()) {
+				UserShip us = UserShip.Factory(reader);
+				output.Add(us);
+			}
+
+			return true;
+		}
+
         public static bool Store(UserShip input)
         {
-            int result = DBI.DoAction($"update UserShip set name = '{input.name}', user = {input.user}, hull = {input.hull}, insurance = {input.insurance}, number = {input.number}, name = '{input.name}' where id = {input.id};");
+            int result = DBI.DoAction($"update UserShip set name = '{input.name}', user = {input.user}, hull = {input.hull}, insurance = {input.insurance}, number = {input.number}, name = '{input.name}', status = {input.status}, statusDate = '{input.statusDate}' where id = {input.id};");
             if (result == 1)
                 return true;
             return false;

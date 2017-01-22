@@ -63,10 +63,6 @@ namespace ANWI.Database.Model
             }
         }
 
-		public bool Acquire() {
-			return Rate.FetchById(ref _rate, rate);
-		}
-
         #endregion
 
         #region Class-Members

@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 namespace ANWI {
 	public class Vessel {
 		public enum VesselStatus {
-			ACTIVE,
-			DESTROYED,
-			DESTROYED_WAITING_REPLACEMENT,
-			DRYDOCKED
+			ACTIVE = 0,
+			DESTROYED = 1,
+			DESTROYED_WAITING_REPLACEMENT = 2,
+			DRYDOCKED = 3
 
 		}
 
@@ -39,6 +39,20 @@ namespace ANWI {
 						return "Unknown";
 				}
 			}
+		}
+
+		public static Vessel FromDatamodel(ANWI.Database.Model.UserShip dmship) {
+			Vessel v = new Vessel();
+
+			v.id = dmship.id;
+			v.owner = dmship.User.name;
+			v.hull = Hull.FromDatamodel(dmship.Hull);
+			v.name = dmship.name;
+			v.isLTI = Convert.ToBoolean(dmship.insurance);
+			v.hullNumber = dmship.number;
+			v.status = (VesselStatus)dmship.status;
+
+			return v;
 		}
 	}
 }

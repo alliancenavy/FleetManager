@@ -99,6 +99,7 @@ namespace Client {
 					break;
 
 				case ANWI.Messaging.Message.Routing.Target.VesselReg:
+					vesselRegister.DeliverMessage(msg);
 					break;
 
 				default:
