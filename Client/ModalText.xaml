@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="ModalText" Height="101" Width="300">
+        Title="ModalText" Height="111" Width="303.333" ResizeMode="NoResize">
     <Grid>
         <Button x:Name="Button_OK" Content="OK" HorizontalAlignment="Left" Margin="164,38,0,0" VerticalAlignment="Top" Width="57" Height="25" Background="#FF316838" Foreground="White" Click="Button_OK_Click"/>
         <Button x:Name="Button_Cancel" Content="Cancel" HorizontalAlignment="Left" Margin="226,38,0,0" VerticalAlignment="Top" Width="57" Height="25" Background="#FF316838" Foreground="White" Click="Button_Cancel_Click"/>

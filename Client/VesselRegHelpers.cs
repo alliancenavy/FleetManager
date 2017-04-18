@@ -8,6 +8,7 @@ using ANWI;
 namespace Client {
 	namespace VesselRegHelpers {
 		public class VesselRecord {
+			public bool isEditable { get; set; }
 		}
 
 		public class CategoryDivider : VesselRecord {

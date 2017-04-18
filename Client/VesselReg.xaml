@@ -7,7 +7,7 @@
         xmlns:helpers="clr-namespace:Client.VesselRegHelpers"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         mc:Ignorable="d"
-        Title="Vessel Register" Height="465.333" Width="437.5" ResizeMode="CanMinimize">
+        Title="Vessel Register" Height="520.333" Width="437.5" ResizeMode="CanMinimize">
 
     <Window.Resources>
 
@@ -18,7 +18,7 @@
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type helpers:NamedVessel}">
-            <Canvas x:Name="Base" HorizontalAlignment="Left" Height="90" VerticalAlignment="Top" Width="360" Background="#FFFFFFFF">
+            <Canvas x:Name="Base" HorizontalAlignment="Left" Height="90" VerticalAlignment="Top" Width="360" Background="#FFFFFFFF" Margin="175,-135,-103,0">
                 <Grid Height="54" Width="245" Canvas.Top="31" Canvas.Left="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -46,8 +46,8 @@
                     <TextBlock Text="{Binding Path=statusString}" Grid.Column="1" Grid.Row="1"/>
                     <TextBlock Text="{Binding Path=owner}" Grid.Column="1" Grid.Row="2"/>
                 </Grid>
-                <TextBlock Canvas.Left="10" TextWrapping="Wrap" Text="{Binding Path=name}" Canvas.Top="10" Width="313" FontSize="14" FontWeight="Bold"/>
-                <fa:ImageAwesome x:Name="LTIIcon" Icon="Medkit" Height="19" Canvas.Left="328" Width="22" Canvas.Top="10" ToolTip="LTI"/>
+                <TextBlock Canvas.Left="10" TextWrapping="Wrap" Text="{Binding Path=name}" Canvas.Top="10" Width="290" FontSize="14" FontWeight="Bold"/>
+                <fa:ImageAwesome x:Name="LTIIcon" Icon="Medkit" Height="19" Canvas.Left="305" Width="22" Canvas.Top="10" ToolTip="LTI"/>
                 <TextBlock Canvas.Left="260" TextWrapping="Wrap" Canvas.Top="48" Width="90" FontSize="24" FontWeight="Bold" FontFamily="Segoe UI Black" TextAlignment="Right">
                     <TextBlock.Text>
                         <MultiBinding StringFormat="{}{0}-{1}">
@@ -56,6 +56,18 @@
                         </MultiBinding>
                     </TextBlock.Text>
                 </TextBlock>
+                <Button x:Name="button" Canvas.Left="332" Canvas.Top="10" Width="20" IsEnabled="{Binding Path=isEditable}">
+                    <Button.Template>
+                        <ControlTemplate>
+                            <fa:ImageAwesome x:Name="Button_Edit" Icon="Pencil" Height="19" Canvas.Left="305" Width="22" Canvas.Top="10" ToolTip="Edit Ship"/>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsEnabled" Value="false">
+                                    <Setter Property="Opacity" Value="0.25"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
             </Canvas>
 
             <DataTemplate.Triggers>
@@ -107,10 +119,10 @@
 
     <Grid>
 
-        
         <ListBox x:Name="listBox" HorizontalAlignment="Left" Height="396" Margin="10,31,0,0" VerticalAlignment="Top" Width="392"  ItemsSource="{Binding Path=wpfVesselList}" />
         <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="10,5,0,0" TextWrapping="Wrap" Text="Registered Vessels" VerticalAlignment="Top" FontSize="16"/>
         <fa:ImageAwesome x:Name="Spinner" Icon="Cog" Spin="True" SpinDuration="10" Margin="145,190,188,192.333" Foreground="#FF316838" />
+        <Button x:Name="Button_NewShip" Content="New Ship" HorizontalAlignment="Left" Margin="311,432,0,0" VerticalAlignment="Top" Width="91" Height="25" Background="#FF316838" Foreground="White" Click="Button_NewShip_Click"/>
 
     </Grid>
 </Window>

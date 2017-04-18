@@ -99,8 +99,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="EditShip.xaml.cs">
+      <DependentUpon>EditShip.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ModalText.xaml.cs">
       <DependentUpon>ModalText.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="NewShip.xaml.cs">
+      <DependentUpon>NewShip.xaml</DependentUpon>
     </Compile>
     <Compile Include="ServiceRecord.xaml.cs">
       <DependentUpon>ServiceRecord.xaml</DependentUpon>
@@ -110,6 +116,10 @@
     </Compile>
     <Compile Include="VesselRegHelpers.cs" />
     <Compile Include="VesselRegTemplateSelector.cs" />
+    <Page Include="EditShip.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Login.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -130,6 +140,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="ModalText.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="NewShip.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
