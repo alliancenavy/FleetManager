@@ -13,8 +13,7 @@ namespace ANWI.Messaging {
 		public struct Routing {
 			public enum Target {
 				Unknown,
-				ServiceRecord,
-				VesselReg
+				Main
 			}
 
 			public Target dest;
@@ -24,13 +23,19 @@ namespace ANWI.Messaging {
 				dest = Target.Unknown,
 				id = 0
 			};
+
+			public Routing(Target t, int id) {
+				dest = t;
+				this.id = id;
+			}
 		}
 
 		public Routing address;
-
+	
 		[MessagePackKnownType("rv", typeof(Request))]
 		[MessagePackKnownType("fvr", typeof(FullVesselReg))]
 		[MessagePackKnownType("cn", typeof(ChangeNickname))]
+		[MessagePackKnownType("fol", typeof(FullOperationsList))]
 		public IMessagePayload payload;
 
 		public Message() {

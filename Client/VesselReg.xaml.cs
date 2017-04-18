@@ -41,12 +41,12 @@ namespace Client {
 		private void LoadVesselList() {
 
 			using (MemoryStream stream = new MemoryStream()) {
-				ANWI.Messaging.Message msg = new ANWI.Messaging.Message(
+				/*ANWI.Messaging.Message msg = new ANWI.Messaging.Message(
 					ANWI.Messaging.Message.Routing.Target.VesselReg,
 					0,
 					new ANWI.Messaging.Request(ANWI.Messaging.Request.Type.GetVesselList));
 				MessagePackSerializer.Get<ANWI.Messaging.Message>().Pack(stream, msg);
-				socket.Send(stream.ToArray());
+				socket.Send(stream.ToArray());*/
 			}
 		}
 

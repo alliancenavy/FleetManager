@@ -30,12 +30,10 @@ namespace FleetManager.Services {
 		}
 
 		protected override void OnMessage(MessageEventArgs e) {
-			ANWI.Messaging.Message msg = null;
-			using (MemoryStream stream = new MemoryStream(e.RawData)) {
-				msg = MessagePackSerializer.Get<ANWI.Messaging.Message>().Unpack(stream);
-			}
+			ANWI.Messaging.Message msg = ANWI.Messaging.Message.Receive(e.RawData);
 
 			logger.Info("Message received. " + msg.payload.ToString());
+			logger.Info(BitConverter.ToString(e.RawData));
 
 			ANWI.Messaging.IMessagePayload p = 
 				msgProcessors[msg.payload.GetType()](msg.payload);
@@ -67,7 +65,7 @@ namespace FleetManager.Services {
 		private ANWI.Messaging.IMessagePayload ProcessRequestMessage(ANWI.Messaging.IMessagePayload p) {
 			ANWI.Messaging.Request req = p as ANWI.Messaging.Request;
 			switch(req.type) {
-				case ANWI.Messaging.Request.Type.GetVesselList: {
+				case ANWI.Messaging.Request.Type.GetFleet: {
 						List<Datamodel.UserShip> all = null;
 						Datamodel.UserShip.FetchNotDestroyed(ref all);
 
@@ -79,7 +77,42 @@ namespace FleetManager.Services {
 
 						return new ANWI.Messaging.FullVesselReg(vessels);
 					}
-					break;
+
+				case ANWI.Messaging.Request.Type.GetOperations: {
+						List<Operation> ops = new List<Operation>();
+
+						ops.Add(new Operation() {
+							name = "Daily Homeguard",
+							type = Operation.Type.PATROL,
+							status = Operation.Status.ACTIVE,
+							currentMembers = 6,
+							neededMembers = 5,
+							totalSlots = 8,
+							id = 1238456
+						});
+
+						ops.Add(new Operation() {
+							name = "Attack Station",
+							type = Operation.Type.ASSAULT,
+							status = Operation.Status.STAGING,
+							currentMembers = 3,
+							neededMembers = 10,
+							totalSlots = 20,
+							id = 1203913
+						});
+
+						ops.Add(new Operation() {
+							name = "Unrep ANS Legend of Dave",
+							type = Operation.Type.LOGISTICS,
+							status = Operation.Status.DISMISSING,
+							currentMembers = 2,
+							neededMembers = 2,
+							totalSlots = 3,
+							id = 2357345
+						});
+
+						return new ANWI.Messaging.FullOperationsList(ops);
+					}
 			}
 
 			return null;
