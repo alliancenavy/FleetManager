@@ -47,15 +47,18 @@ namespace FleetManager.Services {
 		private async void LoginUser(ANWI.Credentials cred) {
 			// Authenticate the user with Auth0
 			try {
-				Auth0User user = await auth0.LoginAsync("Username-Password-Authentication",
-					cred.username, cred.password);
+				// TODO: temporarily removed actual check
+				//Auth0User user = await auth0.LoginAsync("Username-Password-Authentication",
+				//	cred.username, cred.password);
+				Auth0User user = new Auth0User();
+				user.Auth0AccessToken = "none";
 
 				logger.Info("Successfully authenticated user.  Token: " + user.Auth0AccessToken);
 
 				ANWI.AuthenticatedAccount account = new AuthenticatedAccount();
 				account.authToken = user.Auth0AccessToken;
-				account.auth0_id = user.Profile["user_id"].ToString();
-				account.nickname = user.Profile["nickname"].ToString();
+				account.auth0_id = "auth0|58713654d89baa12399d5000";//user.Profile["user_id"].ToString();
+				account.nickname = "Mazer Ludd";//user.Profile["nickname"].ToString();
 
 				// Get the main user profile
 				Datamodel.User dbUser = null;
@@ -65,8 +68,8 @@ namespace FleetManager.Services {
 
 					// Create a basic profile
 					if (!Datamodel.User.Create(ref dbUser,
-						user.Profile["name"].ToString(),
-						user.Profile["user_id"].ToString(),
+						"Mazer Ludd",//user.Profile["name"].ToString(),
+						"58713654d89baa12399d5000",//user.Profile["user_id"].ToString(),
 						1)) {
 						logger.Error("Failed to create profile for new user");
 
