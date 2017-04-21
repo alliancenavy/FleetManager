@@ -9,6 +9,8 @@
         mc:Ignorable="d"
         Title="Alliance Fleet Operations System" Height="760.916" Width="1113.333" ResizeMode="CanResizeWithGrip">
     <Window.Resources>
+        <BitmapImage x:Key="NoImageFound" UriSource="/images/no_image.png"/>
+
         <DataTemplate x:Key="RateTemplate">
             <Canvas Height="70" Width="265">
                 <Image HorizontalAlignment="Left" Height="70" VerticalAlignment="Top" Width="70" OpacityMask="Black" Source="{Binding Icon}"/>
@@ -70,7 +72,7 @@
         <DataTemplate x:Key="RosterTemplate">
             <Canvas HorizontalAlignment="Left" Height="60" VerticalAlignment="Top" Width="315" Background="White">
                 <Image x:Name="Image_Rank" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" OpacityMask="Black" Source="{Binding rank.Icon}" Canvas.Left="10" Canvas.Top="10"/>
-                <Image x:Name="Image_PrimaryRate" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" OpacityMask="Black" Source="{Binding primaryRate.Icon}" Canvas.Left="55" Canvas.Top="10"/>
+                <Image x:Name="Image_PrimaryRate" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" OpacityMask="Black" Source="{Binding Path=primaryRate.Icon, FallbackValue={StaticResource NoImageFound}}" Canvas.Left="55" Canvas.Top="10"/>
                 <TextBlock x:Name="Text_Name" TextWrapping="Wrap" Text="{Binding FullName}" VerticalAlignment="Top" Height="16" Canvas.Left="100" Canvas.Top="10" Width="205" FontWeight="Bold"/>
                 <TextBlock x:Name="Text_Assignment" TextWrapping="Wrap" Text="Unassigned" VerticalAlignment="Top" Height="16" Canvas.Left="100" Canvas.Top="31" Width="205"/>
             </Canvas>
