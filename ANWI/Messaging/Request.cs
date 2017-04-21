@@ -12,7 +12,8 @@ namespace ANWI.Messaging {
 		public enum Type {
 			None = 0,
 			GetFleet = 1,
-			GetOperations = 2
+			GetOperations = 2,
+			GetRoster = 3
 		}
 
 		public Type type { get; set; }

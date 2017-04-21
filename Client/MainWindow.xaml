@@ -7,7 +7,7 @@
         xmlns:vrghelpers="clr-namespace:Client.VesselRegHelpers"
         xmlns:fa="http://schemas.fontawesome.io/icons/" x:Class="Client.MainWindow"
         mc:Ignorable="d"
-        Title="Alliance Fleet Operations System" Height="721" Width="1128.333" ResizeMode="CanResizeWithGrip">
+        Title="Alliance Fleet Operations System" Height="760.916" Width="1113.333" ResizeMode="CanResizeWithGrip">
     <Window.Resources>
         <DataTemplate x:Key="RateTemplate">
             <Canvas Height="70" Width="265">
@@ -18,99 +18,6 @@
                     <TextBlock.Text>
                         <MultiBinding StringFormat="Expires: {0}">
                             <Binding Path="expires"/>
-                        </MultiBinding>
-                    </TextBlock.Text>
-                </TextBlock>
-            </Canvas>
-        </DataTemplate>
-
-        <DataTemplate DataType="{x:Type vrghelpers:CategoryDivider}">
-            <Canvas x:Name="Base" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="360" Background="#FFD4D4D4">
-                <TextBlock Canvas.Left="10" TextWrapping="Wrap" Text="{Binding Path=text}" Canvas.Top="3" Width="313" FontSize="16" FontWeight="Bold"/>
-            </Canvas>
-        </DataTemplate>
-
-        <DataTemplate DataType="{x:Type vrghelpers:NamedVessel}">
-            <Canvas x:Name="Base" HorizontalAlignment="Left" Height="90" VerticalAlignment="Top" Width="360" Background="#FFFFFFFF">
-                <Grid Height="54" Width="245" Canvas.Top="31" Canvas.Left="10">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock Text="Type: " Grid.Column="0" Grid.Row="0"/>
-                    <TextBlock Text="Status: " Grid.Column="0" Grid.Row="1"/>
-                    <TextBlock Text="Owner: " Grid.Column="0" Grid.Row="2"/>
-
-                    <TextBlock Grid.Column="1" Grid.Row="0">
-                        <TextBlock.Text>
-                            <MultiBinding StringFormat="{}{0} class {1}">
-                                <Binding Path="hull.type"/>
-                                <Binding Path="hull.role"/>
-                            </MultiBinding>
-                        </TextBlock.Text>
-                    </TextBlock>
-                    <TextBlock Text="{Binding Path=statusString}" Grid.Column="1" Grid.Row="1"/>
-                    <TextBlock Text="{Binding Path=owner}" Grid.Column="1" Grid.Row="2"/>
-                </Grid>
-                <TextBlock Canvas.Left="10" TextWrapping="Wrap" Text="{Binding Path=name}" Canvas.Top="10" Width="290" FontSize="14" FontWeight="Bold"/>
-                <fa:ImageAwesome x:Name="LTIIcon" Icon="Medkit" Height="19" Canvas.Right="10" Width="22" Canvas.Top="10" ToolTip="LTI"/>
-                <TextBlock Canvas.Right="10" TextWrapping="Wrap" Canvas.Top="48" Width="90" FontSize="24" FontWeight="Bold" FontFamily="Segoe UI Black" TextAlignment="Right">
-                    <TextBlock.Text>
-                        <MultiBinding StringFormat="{}{0}-{1}">
-                            <Binding Path="hull.symbol"/>
-                            <Binding Path="hullNumber"/>
-                        </MultiBinding>
-                    </TextBlock.Text>
-                </TextBlock>
-            </Canvas>
-
-            <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding Path=status}" Value="ACTIVE">
-                    <Setter TargetName="Base" Property="Background" Value="#FF8CF699"/>
-                </DataTrigger>
-
-                <DataTrigger Binding="{Binding Path=status}" Value="DESTROYED">
-                    <Setter TargetName="Base" Property="Background" Value="#FFFFADAD"/>
-                </DataTrigger>
-
-                <DataTrigger Binding="{Binding Path=status}" Value="DESTROYED_WAITING_REPLACEMENT">
-                    <Setter TargetName="Base" Property="Background" Value="#FFFFADAD"/>
-                </DataTrigger>
-
-                <DataTrigger Binding="{Binding Path=status}" Value="DRYDOCKED">
-                    <Setter TargetName="Base" Property="Background" Value="#FFFFD5AD"/>
-                </DataTrigger>
-
-                <DataTrigger Binding="{Binding Path=isLTI}" Value="false">
-                    <Setter TargetName="LTIIcon" Property="Visibility" Value="Hidden"/>
-                </DataTrigger>
-            </DataTemplate.Triggers>
-        </DataTemplate>
-
-        <DataTemplate DataType="{x:Type vrghelpers:UnnamedVessel}">
-            <Canvas HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="360" Background="White">
-                <TextBlock Canvas.Left="42" TextWrapping="Wrap" Canvas.Top="10" Width="243" FontSize="14" FontWeight="Bold">
-                    <TextBlock.Text>
-                        <MultiBinding StringFormat="{}{0}{1} {2}">
-                            <Binding Path="manufacturer"/>
-                            <Binding Path="type"/>
-                            <Binding Path="subtype"/>
-                        </MultiBinding>
-                    </TextBlock.Text>
-                </TextBlock>
-                <Expander x:Name="expander" Canvas.Top="10" Canvas.Left="10">
-                </Expander>
-                <TextBlock Canvas.Left="310" TextWrapping="Wrap" Canvas.Top="10" Width="40" FontSize="14" TextAlignment="Right">
-                    <TextBlock.Text>
-                        <MultiBinding StringFormat="x{0}">
-                            <Binding Path="count"/>
                         </MultiBinding>
                     </TextBlock.Text>
                 </TextBlock>
@@ -159,19 +66,27 @@
 
             </DataTemplate.Triggers>
         </DataTemplate>
+
+        <DataTemplate x:Key="RosterTemplate">
+            <Canvas HorizontalAlignment="Left" Height="60" VerticalAlignment="Top" Width="315" Background="White">
+                <Image x:Name="Image_Rank" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" OpacityMask="Black" Source="{Binding rank.Icon}" Canvas.Left="10" Canvas.Top="10"/>
+                <Image x:Name="Image_PrimaryRate" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" OpacityMask="Black" Source="{Binding primaryRate.Icon}" Canvas.Left="55" Canvas.Top="10"/>
+                <TextBlock x:Name="Text_Name" TextWrapping="Wrap" Text="{Binding FullName}" VerticalAlignment="Top" Height="16" Canvas.Left="100" Canvas.Top="10" Width="205" FontWeight="Bold"/>
+                <TextBlock x:Name="Text_Assignment" TextWrapping="Wrap" Text="Unassigned" VerticalAlignment="Top" Height="16" Canvas.Left="100" Canvas.Top="31" Width="205"/>
+            </Canvas>
+        </DataTemplate>
     </Window.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="5*"/>
-            <RowDefinition Height="168*"/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="374*"/>
-            <ColumnDefinition Width="420*"/>
+            <ColumnDefinition Width="365*"/>
             <ColumnDefinition Width="370*"/>
+            <ColumnDefinition Width="371*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock x:Name="Text_Nickname" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" FontSize="20" FontWeight="Bold" Margin="10,5,10,0" Grid.Row="1">
+        <TextBlock x:Name="Text_Nickname" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" FontSize="20" FontWeight="Bold" Margin="10,5,10.333,0">
             <TextBlock.Text>
                 <MultiBinding StringFormat="{}{0} {1}">
                     <Binding Path="wpfProfile.rank.abbrev"/>
@@ -179,46 +94,35 @@
                 </MultiBinding>
             </TextBlock.Text>
         </TextBlock>
-        <Image x:Name="Image_Rank" HorizontalAlignment="Left" Height="55" Margin="10,25,0,0" VerticalAlignment="Top" Width="55" OpacityMask="Black" Source="{Binding wpfProfile.rank.Icon}" Grid.Row="1"/>
-        <TextBlock x:Name="Text_Rank" Margin="130,30,10,0" TextWrapping="Wrap" Text="{Binding wpfProfile.rank.name}" VerticalAlignment="Top" Height="16" Grid.Row="1"/>
-        <TextBlock x:Name="Text_PrimaryRate" Margin="130,46,10,0" TextWrapping="Wrap" Text="{Binding wpfProfile.primaryRate.FullName}" VerticalAlignment="Top" Height="16" Grid.Row="1"/>
-        <TextBlock x:Name="Text_TimeInServe" Margin="130,64,10,0" TextWrapping="Wrap" Text="Time In Service" VerticalAlignment="Top" Height="16" Grid.Row="1"/>
-        <TextBlock x:Name="Text_CurrentAssignment" Margin="10,84,10,0" TextWrapping="Wrap" Text="ANS Unknown" VerticalAlignment="Top" Height="16" Grid.Row="1"/>
-        <Image x:Name="Image_PrimaryRate" HorizontalAlignment="Left" Height="55" Margin="70,24,0,0" VerticalAlignment="Top" Width="55" OpacityMask="Black" Source="{Binding wpfProfile.primaryRate.Icon}" Grid.Row="1"/>
-        <ListBox x:Name="List_Rates" Height="291" Margin="10,125,10,0" VerticalAlignment="Top" ItemTemplate="{DynamicResource RateTemplate}" ItemsSource="{Binding wpfProfile.wpfRates}" Grid.Row="1"/>
-        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Rates" VerticalAlignment="Top" Height="20" Width="95" FontSize="14" FontWeight="Bold" Margin="10,105,0,0" Grid.Row="1"/>
-        <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="30" FontSize="20" FontWeight="Bold" Margin="10,5,41.667,0" Grid.Column="1" Grid.Row="1">
-            <TextBlock.Text>Fleet Registry</TextBlock.Text>
+        <Image x:Name="Image_Rank" HorizontalAlignment="Left" Height="55" Margin="10,30,0,0" VerticalAlignment="Top" Width="55" OpacityMask="Black" Source="{Binding wpfProfile.rank.Icon}"/>
+        <TextBlock x:Name="Text_Rank" Margin="130,35,10.333,0" TextWrapping="Wrap" Text="{Binding wpfProfile.rank.name}" VerticalAlignment="Top" Height="16"/>
+        <TextBlock x:Name="Text_PrimaryRate" Margin="130,51,10.333,0" TextWrapping="Wrap" Text="{Binding wpfProfile.primaryRate.FullName}" VerticalAlignment="Top" Height="16"/>
+        <TextBlock x:Name="Text_TimeInServe" Margin="130,69,10.333,0" TextWrapping="Wrap" Text="Time In Service" VerticalAlignment="Top" Height="16"/>
+        <TextBlock x:Name="Text_CurrentAssignment" Margin="10,89,10.333,0" TextWrapping="Wrap" Text="ANS Unknown" VerticalAlignment="Top" Height="16"/>
+        <Image x:Name="Image_PrimaryRate" HorizontalAlignment="Left" Height="55" Margin="70,29,0,0" VerticalAlignment="Top" Width="55" OpacityMask="Black" Source="{Binding wpfProfile.primaryRate.Icon}"/>
+        <ListBox x:Name="List_Rates" Height="291" Margin="10,125,10.333,0" VerticalAlignment="Top" ItemTemplate="{DynamicResource RateTemplate}" ItemsSource="{Binding wpfProfile.wpfRates}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Rates" VerticalAlignment="Top" Height="20" Width="95" FontSize="14" FontWeight="Bold" Margin="10,105,0,0"/>
+        <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="30" FontSize="20" FontWeight="Bold" Margin="9.667,5,289.333,0" Grid.Column="1">
+            <TextBlock.Text>Roster</TextBlock.Text>
         </TextBlock>
-        <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="30" FontSize="20" FontWeight="Bold" Margin="10.333,5,55.333,0" Grid.Column="2" Grid.Row="1">
+        <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="30" FontSize="20" FontWeight="Bold" Margin="10.667,5,55.667,0" Grid.Column="2">
             <TextBlock.Text>Active Operations</TextBlock.Text>
         </TextBlock>
-        <ListBox x:Name="List_Fleet" Height="606" Margin="10,40,10.667,0" VerticalAlignment="Top" Grid.Column="1" ItemsSource="{Binding Path=wpfFleetList}" Grid.Row="1"/>
-        <fa:ImageAwesome x:Name="Spinner_Fleet" Icon="Cog" Spin="True" SpinDuration="10" Foreground="#FF316838" Grid.Column="1" Margin="158,243,149.667,304" Grid.Row="1" />
-        <ListBox x:Name="List_Ops" Grid.Column="2" Height="606" Margin="9.333,40,10.333,0" VerticalAlignment="Top" ItemTemplate="{DynamicResource OpTemplate}" ItemsSource="{Binding wpfOpList}" Grid.Row="1"/>
-        <fa:ImageAwesome x:Name="Spinner_Ops" Icon="Cog" Spin="True" SpinDuration="10" Foreground="#FF316838" Grid.Column="2" Margin="133.333,243,124.333,304" Grid.Row="1" />
-        <ListBox x:Name="List_Ships" Height="200" Margin="10,446,10,0" VerticalAlignment="Top" Grid.Row="1"/>
-        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Ships" VerticalAlignment="Top" Height="20" Width="95" FontSize="14" FontWeight="Bold" Margin="10,421,0,0" Grid.Row="1"/>
-        <Button x:Name="Button_RefreshFleet" Content="&gt;&gt;" Margin="0,5,9.667,0" VerticalAlignment="Top" Height="25" Background="#FF316838" Foreground="White" Click="Button_RefreshFleets_Click" ToolTip="Refresh Fleets" Grid.Column="1" HorizontalAlignment="Right" Width="27" Grid.Row="1"/>
-        <Button x:Name="Button_RefreshOps" Content="&gt;&gt;" Margin="0,5,10.333,0" VerticalAlignment="Top" Height="25" Background="#FF316838" Foreground="White" Click="Button_RefreshOps_Click" ToolTip="Refresh Ops" Grid.Column="2" HorizontalAlignment="Right" Width="27" Grid.Row="1"/>
-        <Menu x:Name="menu" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="1121" Grid.ColumnSpan="3" Grid.RowSpan="1">
-            <MenuItem Header="_File">
-                <MenuItem Header="_Quit"/>
-            </MenuItem>
-            <MenuItem Header="_Personnel">
-                <MenuItem Header="Nickname"/>
-                <MenuItem Header="Primary Rate"/>
-                <Separator/>
-                <MenuItem Header="Full Roster"/>
-            </MenuItem>
-            <MenuItem Header="_Fleet">
-                <MenuItem Header="Add Personal Ship"/>
-                <MenuItem Header="Add Org Ship"/>
-                <MenuItem Header="Edit Ship"/>
-            </MenuItem>
-            <MenuItem Header="_Operations">
-                <MenuItem Header="New Operation"/>
-            </MenuItem>
-        </Menu>
+        <ListBox x:Name="List_Roster" Height="606" Margin="9.667,40,10.333,0" VerticalAlignment="Top" Grid.Column="1" ItemTemplate="{DynamicResource RosterTemplate}" ItemsSource="{Binding Path=wpfRosterList}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+        <fa:ImageAwesome x:Name="Spinner_Roster" Icon="Cog" Spin="True" SpinDuration="10" Foreground="#FF316838" Grid.Column="1" Margin="157.667,243,149.333,304.333" />
+        <ListBox x:Name="List_Ops" Grid.Column="2" Height="606" Margin="9.667,40,10.667,0" VerticalAlignment="Top" ItemTemplate="{DynamicResource OpTemplate}" ItemsSource="{Binding wpfOpList}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+        <fa:ImageAwesome x:Name="Spinner_Ops" Icon="Cog" Spin="True" SpinDuration="10" Foreground="#FF316838" Grid.Column="2" Margin="133.667,243,124.667,304.333" />
+        <ListBox x:Name="List_Ships" Height="200" Margin="10,446,10.333,0" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Ships" VerticalAlignment="Top" Height="20" Width="95" FontSize="14" FontWeight="Bold" Margin="10,421,0,0"/>
+        <Button x:Name="Button_RefreshRoster" Content="&gt;&gt;" Margin="0,5,9.333,0" VerticalAlignment="Top" Height="25" Background="#FF316838" Foreground="White" Click="Button_RefreshRoster_Click" ToolTip="Refresh Roster" Grid.Column="1" HorizontalAlignment="Right" Width="27"/>
+        <Button x:Name="Button_RefreshOps" Content="&gt;&gt;" Margin="0,5,10.667,0" VerticalAlignment="Top" Height="25" Background="#FF316838" Foreground="White" Click="Button_RefreshOps_Click" ToolTip="Refresh Ops" Grid.Column="2" HorizontalAlignment="Right" Width="27"/>
+        <Button x:Name="Button_NewOp" Content="New Operation" HorizontalAlignment="Left" Margin="50.667,651,0,0" VerticalAlignment="Top" Width="130" Height="29" Background="#FF316838" Foreground="White" Click="Button_NewOp_Click" Grid.Column="2"/>
+        <Button x:Name="Button_OpenOp" Content="Open Operation" HorizontalAlignment="Left" Margin="185.667,651,0,0" VerticalAlignment="Top" Width="130" Height="29" Background="#FF316838" Foreground="White" Click="Button_OpenOp_Click" Grid.Column="2"/>
+        <Button x:Name="Button_NewShip" Content="New Ship" HorizontalAlignment="Left" Margin="45,651,0,0" VerticalAlignment="Top" Width="130" Height="29" Background="#FF316838" Foreground="White" Click="Button_NewShip_Click"/>
+        <Button x:Name="Button_EditShip" Content="Edit Ship" HorizontalAlignment="Left" Margin="180,651,0,0" VerticalAlignment="Top" Width="130" Height="29" Background="#FF316838" Foreground="White" Click="Button_EditShip_Click"/>
+        <RadioButton x:Name="Radio_Roster_Rank" Content="Rank" Grid.Column="1" Margin="0,20,55.333,0" VerticalAlignment="Top" GroupName="RosterSort" IsChecked="True" HorizontalAlignment="Right" Width="44" Height="15"/>
+        <RadioButton x:Name="Radio_Roster_Name" Content="Name" Grid.Column="1" HorizontalAlignment="Right" Margin="0,20,103.333,0" VerticalAlignment="Top" GroupName="RosterSort" IsChecked="False" Height="15" Width="50"/>
+        <TextBlock Grid.Column="1" HorizontalAlignment="Right" Margin="0,5,117.333,0" TextWrapping="Wrap" Text="Sort By" VerticalAlignment="Top" Height="16" Width="37"/>
+
     </Grid>
 </Window>

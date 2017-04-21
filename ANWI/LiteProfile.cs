@@ -1,0 +1,26 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Datamodel = ANWI.Database.Model;
+
+namespace ANWI {
+	public class LiteProfile {
+		public string nickname { get; set; }
+		public Rank rank { get; set; }
+		public Rate primaryRate { get; set; }
+
+		public static LiteProfile FromDatamodel(Datamodel.User u, Datamodel.StruckRate r) {
+			LiteProfile p = new LiteProfile();
+
+			p.nickname = u.name;
+			p.rank = Rank.FromDatamodel(u.Rank);
+			p.primaryRate = Rate.FromDatamodel(r);
+
+			return p;
+		}
+
+		public string FullName { get { return rank.abbrev + " " + nickname; } }
+	}
+}

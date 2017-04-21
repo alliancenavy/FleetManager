@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SQLite;
 
 namespace ANWI.Database.Model
@@ -132,7 +133,19 @@ namespace ANWI.Database.Model
             return false;
         }
 
-        public static bool FetchById(ref User output, int id)
+		public static bool FetchAll(ref List<User> output) {
+			output = new List<User>();
+
+			SQLiteDataReader reader = DBI.DoQuery($"select * from User where id != 0");
+			while(reader.Read()) {
+				User u = User.Factory(reader);
+				output.Add(u);
+			}
+
+			return true;
+		}
+
+		public static bool FetchById(ref User output, int id)
         {
             SQLiteDataReader reader = DBI.DoQuery($"select * from User where id = {id} limit 1;");
             if ( reader.Read() )

@@ -108,6 +108,9 @@
     <Compile Include="NewShip.xaml.cs">
       <DependentUpon>NewShip.xaml</DependentUpon>
     </Compile>
+    <Compile Include="OperationDetails.xaml.cs">
+      <DependentUpon>OperationDetails.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ServiceRecord.xaml.cs">
       <DependentUpon>ServiceRecord.xaml</DependentUpon>
     </Compile>
@@ -146,6 +149,10 @@
     <Page Include="NewShip.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="OperationDetails.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="ServiceRecord.xaml">
       <SubType>Designer</SubType>

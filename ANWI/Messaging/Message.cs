@@ -36,6 +36,7 @@ namespace ANWI.Messaging {
 		[MessagePackKnownType("fvr", typeof(FullVesselReg))]
 		[MessagePackKnownType("cn", typeof(ChangeNickname))]
 		[MessagePackKnownType("fol", typeof(FullOperationsList))]
+		[MessagePackKnownType("ros", typeof(FullRoster))]
 		public IMessagePayload payload;
 
 		public Message() {

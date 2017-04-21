@@ -27,12 +27,12 @@ namespace Client {
 
 		private readonly WebSocket socket;
 		private AuthenticatedAccount account = null;
-		private ObservableCollection<VesselRecord> fleetList = new ObservableCollection<VesselRecord>();
+		private ObservableCollection<LiteProfile> rosterList = new ObservableCollection<LiteProfile>();
 		private ObservableCollection<Operation> operationList = new ObservableCollection<Operation>();
 
 		#region Observable Members
 		public Profile wpfProfile { get { return account.profile; } }
-		public ObservableCollection<VesselRecord> wpfFleetList { get { return fleetList; } }
+		public ObservableCollection<LiteProfile> wpfRosterList { get { return rosterList; } }
 		public ObservableCollection<Operation> wpfOpList { get { return operationList; } }
 		#endregion
 
@@ -82,7 +82,7 @@ namespace Client {
 			socket.OnError += SocketError;
 			socket.Connect();
 
-			FetchFleet();
+			FetchRoster();
 			FetchOps();
 
 		}
@@ -93,8 +93,8 @@ namespace Client {
 			Application.Current.Shutdown();
 		}
 
-		private void Button_RefreshFleets_Click(object sender, RoutedEventArgs e) {
-			FetchFleet();
+		private void Button_RefreshRoster_Click(object sender, RoutedEventArgs e) {
+
 		}
 
 		private void Button_RefreshOps_Click(object sender, RoutedEventArgs e) {
@@ -110,6 +110,15 @@ namespace Client {
 				// TODO
 			}
 		}
+
+		private void Button_NewShip_Click(object sender, RoutedEventArgs e) {
+
+		}
+
+		private void Button_EditShip_Click(object sender, RoutedEventArgs e) {
+
+		}
+
 		#endregion
 
 		#region Sockets and Messaging
@@ -138,61 +147,53 @@ namespace Client {
 		/// </summary>
 		/// <param name="m">Incomming message</param>
 		private void ProcessMessage(ANWI.Messaging.Message m) {
-			if(m.payload is ANWI.Messaging.FullVesselReg) {
-				LoadFleet(m.payload as ANWI.Messaging.FullVesselReg);
+			if(m.payload is ANWI.Messaging.FullRoster) {
+				LoadRoster(m.payload as ANWI.Messaging.FullRoster);
 			} else if(m.payload is ANWI.Messaging.FullOperationsList) {
 				LoadOps(m.payload as ANWI.Messaging.FullOperationsList);
 			}
 		}
 
 		/// <summary>
-		/// Sends a request to the server for the full fleet registry
+		/// Sends a request to the server for the full member roster
 		/// </summary>
-		private void FetchFleet() {
+		private void FetchRoster() {
 			// Clear the old list
 			this.Dispatcher.Invoke(() => {
-				fleetList.Clear();
-				Spinner_Fleet.Visibility = Visibility.Visible;
+				rosterList.Clear();
+				Spinner_Roster.Visibility = Visibility.Visible;
 			});
 
 			// Send a request to the server
 			ANWI.Messaging.Message.Send(
 				socket, 
 				new ANWI.Messaging.Message.Routing(ANWI.Messaging.Message.Routing.Target.Main, 0),
-				new ANWI.Messaging.Request(ANWI.Messaging.Request.Type.GetFleet));
+				new ANWI.Messaging.Request(ANWI.Messaging.Request.Type.GetRoster));
 		}
 
 		/// <summary>
-		/// Response handler for the full fleet request.
-		/// Populates the global fleet list and also the profile ship list for ships owned
-		/// by the current user.
+		/// Response handler for the full roster request.
+		/// Populates the global roster list
 		/// </summary>
-		/// <param name="fvr"></param>
-		private void LoadFleet(ANWI.Messaging.FullVesselReg fvr) {
+		/// <param name="fr"></param>
+		private void LoadRoster(ANWI.Messaging.FullRoster fr) {
 			this.Dispatcher.Invoke(() => {
-				fleetList.Clear();
-				Spinner_Fleet.Visibility = Visibility.Hidden;
+				rosterList.Clear();
+				Spinner_Roster.Visibility = Visibility.Hidden;
 			});
 
-			// Sort the records by their ordering
-			fvr.vessels.Sort((a, b) => {
-				if (a.hull.ordering < b.hull.ordering)
+			// TODO: Sort by radio button instead of rank
+			fr.members.Sort((a, b) => {
+				if (a.rank.ordering > b.rank.ordering)
 					return -1;
-				else if (a.hull.ordering == b.hull.ordering)
+				else if (a.rank.ordering == b.rank.ordering)
 					return 0;
-				else return 1;
+				else return 0;
 			});
 
-			// Insert each vessel into the list
-			foreach(Vessel vessel in fvr.vessels) {
-				// For now 100 will be the boundary between named and unnamed vessels
-				if(vessel.hull.ordering < 100) {
-					NamedVessel vr = new NamedVessel();
-					vr.v = vessel;
-					this.Dispatcher.Invoke(() => { fleetList.Add(vr); });
-				} else {
-					// TODO
-				}
+			// Load all the records in
+			foreach (LiteProfile p in fr.members) {
+				this.Dispatcher.Invoke(() => { rosterList.Add(p); });
 			}
 		}
 

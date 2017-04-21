@@ -113,6 +113,21 @@ namespace FleetManager.Services {
 
 						return new ANWI.Messaging.FullOperationsList(ops);
 					}
+					
+				case ANWI.Messaging.Request.Type.GetRoster: {
+						List<Datamodel.User> all = null;
+						Datamodel.User.FetchAll(ref all);
+
+						List<LiteProfile> profiles = new List<LiteProfile>();
+
+						foreach (Datamodel.User user in all) {
+							Datamodel.StruckRate r = null;
+							Datamodel.StruckRate.FetchById(ref r, user.rate);
+							profiles.Add(LiteProfile.FromDatamodel(user, r));
+						}
+
+						return new ANWI.Messaging.FullRoster(profiles);
+					}
 			}
 
 			return null;
