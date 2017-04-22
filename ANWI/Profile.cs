@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Datamodel = ANWI.Database.Model;
+using MsgPack.Serialization;
 
 namespace ANWI {
 	/// <summary>
@@ -32,7 +33,17 @@ namespace ANWI {
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
+		[MessagePackIgnore]
 		public List<Rate> wpfRates { get { return rates; } }
+
+		public Profile() {
+			id = 0;
+			nickname = "";
+			rank = null;
+			rates = null;
+			primaryRate = null;
+			assignedShip = null;
+		}
 
 		public static Profile FromDatamodel(Datamodel.User u, List<Datamodel.StruckRate> r) {
 			Profile p = new Profile();
@@ -50,10 +61,6 @@ namespace ANWI {
 						break;
 					}
 				}
-			} else {
-				Datamodel.StruckRate undes = null;
-				Datamodel.StruckRate.FetchUndesignated(ref undes, u.id);
-				p.primaryRate = Rate.FromDatamodel(undes);
 			}
 
 			return p;
