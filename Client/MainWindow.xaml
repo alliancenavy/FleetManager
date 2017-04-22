@@ -88,6 +88,7 @@
             <ColumnDefinition Width="370*"/>
             <ColumnDefinition Width="371*"/>
         </Grid.ColumnDefinitions>
+
         <TextBlock x:Name="Text_Nickname" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" FontSize="20" FontWeight="Bold" Margin="10,5,10.333,0">
             <TextBlock.Text>
                 <MultiBinding StringFormat="{}{0} {1}">

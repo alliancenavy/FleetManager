@@ -82,6 +82,18 @@ namespace FleetManager.Services {
 						return acd;
 					}
 
+				case ANWI.Messaging.Request.Type.GetProfile: {
+						Datamodel.User u = null;
+						if(Datamodel.User.FetchById(ref u, req.id)) {
+							List<Datamodel.StruckRate> rates = null;
+							Datamodel.StruckRate.FetchByUserId(ref rates, u.id);
+							Profile profile = Profile.FromDatamodel(u, rates);
+
+							return new ANWI.Messaging.FullProfile(profile);
+						}
+					}
+					break;
+
 				case ANWI.Messaging.Request.Type.GetFleet: {
 						List<Datamodel.UserShip> all = null;
 						Datamodel.UserShip.FetchNotDestroyed(ref all);

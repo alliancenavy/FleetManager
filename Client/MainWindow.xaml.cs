@@ -81,10 +81,12 @@ namespace Client {
 					// Assigned ship
 					Profile p = account.profile;
 					if (p.assignedShip == null) {
-						Text_CurrentAssignment.Text = "No Current Assignment";
+						this.Dispatcher.Invoke(() => { Text_CurrentAssignment.Text = "No Current Assignment"; });
 					} else {
-						Text_CurrentAssignment.Text = p.assignedShip.name + " (" + p.assignedShip.hull.type
-							+ " class " + p.assignedShip.hull.role + ")";
+						this.Dispatcher.Invoke(() => {
+							Text_CurrentAssignment.Text = p.assignedShip.name + " (" + p.assignedShip.hull.type
+ + " class " + p.assignedShip.hull.role + ")";
+						});
 					}
 
 					// TODO: Time in service
@@ -145,10 +147,12 @@ namespace Client {
 		}
 
 		private void Button_SetPrimaryRate_Click(object sender, RoutedEventArgs e) {
-			Rate selected = (List_Rates.SelectedItem as Rate);
-			Confirm c = new Confirm($"Are you sure you want to change your rate from {currentProfile.primaryRate.FullName} to {selected.FullName}?");
-			c.yesAction += () => { SetPrimaryRate(currentProfile.id, selected.id); };
-			c.ShowDialog();
+			if (List_Rates.SelectedItem != null) {
+				Rate selected = (List_Rates.SelectedItem as Rate);
+				Confirm c = new Confirm($"Are you sure you want to change your rate from {currentProfile.primaryRate.FullName} to {selected.FullName}?");
+				c.yesAction += () => { SetPrimaryRate(currentProfile.id, selected.id); };
+				c.ShowDialog();
+			}
 		}
 
 		private void Button_ChangeRank_Click(object sender, RoutedEventArgs e) {
@@ -156,7 +160,13 @@ namespace Client {
 		}
 
 		private void Button_ViewJacket_Click(object sender, RoutedEventArgs e) {
-
+			if(List_Roster.SelectedItem != null) {
+				LiteProfile p = List_Roster.SelectedItem as LiteProfile;
+				ANWI.Messaging.Message.Send(
+					socket,
+					ANWI.Messaging.Message.Routing.Main,
+					new ANWI.Messaging.Request(ANWI.Messaging.Request.Type.GetProfile, p.id));
+			}
 		}
 
 		#endregion
