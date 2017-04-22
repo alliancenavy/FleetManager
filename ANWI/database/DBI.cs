@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.SQLite;
 using ANWI.Database.Model;
+using NLog;
 
 namespace ANWI.Database
 {
@@ -8,7 +9,9 @@ namespace ANWI.Database
     {
         static SQLiteConnection dbConn = null;
 
-        public static bool Open(string dbFileName = "fleetManager.sqlite3db")
+		private static NLog.Logger logger = LogManager.GetLogger("DBI");
+
+		public static bool Open(string dbFileName = "fleetManager.sqlite3db")
         {
             if (dbConn != null)
                 return false;
@@ -27,12 +30,14 @@ namespace ANWI.Database
         public static SQLiteDataReader DoQuery(string query)
         {
             Open();
+			logger.Info("Running query: " + query);
             return new SQLiteCommand(query, dbConn).ExecuteReader();
         }
 
         public static int DoAction(string query)
         {
             Open();
+			logger.Info("Running action: " + query);
             return new SQLiteCommand(query, dbConn).ExecuteNonQuery();
         }
 

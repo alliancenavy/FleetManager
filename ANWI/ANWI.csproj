@@ -53,6 +53,10 @@
       <HintPath>..\packages\MsgPack.Cli.0.8.0\lib\net45\MsgPack.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.4.6\lib\net45\NLog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -97,12 +101,16 @@
     <Compile Include="Messaging\AddRate.cs" />
     <Compile Include="Messaging\AllCommonData.cs" />
     <Compile Include="Messaging\ChangeNickname.cs" />
+    <Compile Include="Messaging\ConfirmProfileUpdated.cs" />
+    <Compile Include="Messaging\DeleteRate.cs" />
     <Compile Include="Messaging\FullOperationsList.cs" />
+    <Compile Include="Messaging\FullProfile.cs" />
     <Compile Include="Messaging\FullRoster.cs" />
     <Compile Include="Messaging\FullVesselReg.cs" />
     <Compile Include="Messaging\IMessagePayload.cs" />
     <Compile Include="Messaging\Message.cs" />
     <Compile Include="Messaging\Request.cs" />
+    <Compile Include="Messaging\SetPrimaryRate.cs" />
     <Compile Include="Operation.cs" />
     <Compile Include="Profile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

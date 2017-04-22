@@ -99,3 +99,7 @@ create table if not exists UserShip (
  status integer not null default 0,
  statusDate text not null
 );
+
+CREATE TRIGGER on_primary_rate_delete AFTER DELETE ON StruckRate BEGIN
+  UPDATE User SET rate = null WHERE rate = old.id;
+END;

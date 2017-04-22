@@ -19,20 +19,32 @@ using System.IO;
 using System.Collections.ObjectModel;
 using Client.VesselRegHelpers;
 using System.Threading;
+using System.ComponentModel;
 
 namespace Client {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : Window {
+	public partial class MainWindow : Window, INotifyPropertyChanged {
 
 		private readonly WebSocket socket;
 		private AuthenticatedAccount account = null;
+		private Profile currentProfile = null;
 		private ObservableCollection<LiteProfile> rosterList = new ObservableCollection<LiteProfile>();
 		private ObservableCollection<Operation> operationList = new ObservableCollection<Operation>();
 
+		public event PropertyChangedEventHandler PropertyChanged;
+
 		#region Observable Members
-		public Profile wpfProfile { get { return account.profile; } }
+		public Profile wpfProfile {
+			get { return currentProfile; }
+			set {
+				if (currentProfile != value) {
+					currentProfile = value;
+					NotifyPropertyChanged("wpfProfile");
+				}
+			}
+		}
 		public ObservableCollection<LiteProfile> wpfRosterList { get { return rosterList; } }
 		public ObservableCollection<Operation> wpfOpList { get { return operationList; } }
 		#endregion
@@ -64,18 +76,22 @@ namespace Client {
 
 			//
 			// Populate profile sidebar with non-bound information
-			{
-				// Assigned ship
-				Profile p = account.profile;
-				if (p.assignedShip == null) {
-					Text_CurrentAssignment.Text = "No Current Assignment";
-				} else {
-					Text_CurrentAssignment.Text = p.assignedShip.name + " (" + p.assignedShip.hull.type
-						+ " class " + p.assignedShip.hull.role + ")";
-				}
+			PropertyChanged += (sender, e) => {
+				if (e.PropertyName == "wpfProfile") {
+					// Assigned ship
+					Profile p = account.profile;
+					if (p.assignedShip == null) {
+						Text_CurrentAssignment.Text = "No Current Assignment";
+					} else {
+						Text_CurrentAssignment.Text = p.assignedShip.name + " (" + p.assignedShip.hull.type
+							+ " class " + p.assignedShip.hull.role + ")";
+					}
 
-				// TODO: Time in service
-			}
+					// TODO: Time in service
+				}
+			};
+
+			wpfProfile = account.profile;
 
 			// Open connection to the main service
 			socket = new WebSocket("ws://localhost:9000/main");
@@ -117,11 +133,25 @@ namespace Client {
 
 		private void Button_AddRate_Click(object sender, RoutedEventArgs e) {
 			AddRate ar = new AddRate();
-			ar.returnNewRate += AddRate;
+			ar.returnNewRate += (rateId, rank) => { AddRate(currentProfile.id, rateId, rank); };
 			ar.ShowDialog();
 		}
 
 		private void Button_DeleteRate_Click(object sender, RoutedEventArgs e) {
+			Rate selected = (List_Rates.SelectedItem as Rate);
+			Confirm c = new Confirm($"Are you sure you want to delete {selected.FullName} from {currentProfile.rank.abbrev} {currentProfile.nickname}?");
+			c.yesAction += () => { DeleteRate(currentProfile.id, selected.id); };
+			c.ShowDialog();
+		}
+
+		private void Button_SetPrimaryRate_Click(object sender, RoutedEventArgs e) {
+			Rate selected = (List_Rates.SelectedItem as Rate);
+			Confirm c = new Confirm($"Are you sure you want to change your rate from {currentProfile.primaryRate.FullName} to {selected.FullName}?");
+			c.yesAction += () => { SetPrimaryRate(currentProfile.id, selected.id); };
+			c.ShowDialog();
+		}
+
+		private void Button_ChangeRank_Click(object sender, RoutedEventArgs e) {
 
 		}
 
@@ -152,11 +182,25 @@ namespace Client {
 
 		#region Helpers
 
-		private void AddRate(int rateId, int rank) {
+		private void AddRate(int userId, int rateId, int rank) {
 			ANWI.Messaging.Message.Send(
 				socket,
-				ANWI.Messaging.Message.Routing.NoReturn,
-				new ANWI.Messaging.AddRate(account.profile.id, rateId, rank));
+				ANWI.Messaging.Message.Routing.Main,
+				new ANWI.Messaging.AddRate(userId, rateId, rank));
+		}
+
+		private void DeleteRate(int userId, int rateId) {
+			ANWI.Messaging.Message.Send(
+				socket,
+				ANWI.Messaging.Message.Routing.Main,
+				new ANWI.Messaging.DeleteRate(userId, rateId));
+		}
+
+		private void SetPrimaryRate(int userId, int rateId) {
+			ANWI.Messaging.Message.Send(
+				socket,
+				ANWI.Messaging.Message.Routing.Main,
+				new ANWI.Messaging.SetPrimaryRate(userId, rateId));
 		}
 
 		/// <summary>
@@ -181,12 +225,18 @@ namespace Client {
 		/// </summary>
 		/// <param name="m">Incomming message</param>
 		private void ProcessMessage(ANWI.Messaging.Message m) {
-			if(m.payload is ANWI.Messaging.FullRoster) {
+			if (m.payload is ANWI.Messaging.FullRoster) {
 				LoadRoster(m.payload as ANWI.Messaging.FullRoster);
-			} else if(m.payload is ANWI.Messaging.FullOperationsList) {
+			} else if (m.payload is ANWI.Messaging.FullOperationsList) {
 				LoadOps(m.payload as ANWI.Messaging.FullOperationsList);
-			} else if(m.payload is ANWI.Messaging.AllCommonData) {
+			} else if (m.payload is ANWI.Messaging.AllCommonData) {
 				CommonData.LoadAll(m.payload as ANWI.Messaging.AllCommonData);
+			} else if (m.payload is ANWI.Messaging.ConfirmProfileUpdated) {
+				ANWI.Messaging.ConfirmProfileUpdated cpu = m.payload as ANWI.Messaging.ConfirmProfileUpdated;
+				FetchProfile(cpu.userId);
+			} else if (m.payload is ANWI.Messaging.FullProfile) {
+				ANWI.Messaging.FullProfile fp = m.payload as ANWI.Messaging.FullProfile;
+				wpfProfile = fp.profile;
 			}
 		}
 
@@ -267,7 +317,20 @@ namespace Client {
 			}
 		}
 
+		private void FetchProfile(int userId) {
+			ANWI.Messaging.Message.Send(
+				socket,
+				ANWI.Messaging.Message.Routing.Main,
+				new ANWI.Messaging.Request(ANWI.Messaging.Request.Type.GetProfile, userId));
+		}
+
 		#endregion
+
+		public void NotifyPropertyChanged(string name) {
+			if(PropertyChanged != null) {
+				PropertyChanged(this, new PropertyChangedEventArgs(name));
+			}
+		}
 
 	}
 }

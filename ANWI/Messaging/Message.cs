@@ -44,6 +44,10 @@ namespace ANWI.Messaging {
 		[MessagePackKnownType("ros", typeof(FullRoster))]
 		[MessagePackKnownType("acd", typeof(AllCommonData))]
 		[MessagePackKnownType("ar", typeof(AddRate))]
+		[MessagePackKnownType("dr", typeof(DeleteRate))]
+		[MessagePackKnownType("fpro", typeof(FullProfile))]
+		[MessagePackKnownType("cpu", typeof(ConfirmProfileUpdated))]
+		[MessagePackKnownType("spr", typeof(SetPrimaryRate))]
 		public IMessagePayload payload;
 
 		public Message() {

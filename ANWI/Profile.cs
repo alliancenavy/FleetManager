@@ -27,7 +27,7 @@ namespace ANWI {
 		}
 		public Rank rank { get; set; }
 		public List<Rate> rates = null;
-		public Rate primaryRate { get; set; }
+		public Rate primaryRate { get; set; } = Rate.UNDESIGNATED;
 		public Vessel assignedShip = null;
 
 		public event PropertyChangedEventHandler PropertyChanged;

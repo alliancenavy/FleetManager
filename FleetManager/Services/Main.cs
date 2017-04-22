@@ -26,7 +26,9 @@ namespace FleetManager.Services {
 				ANWI.Messaging.IMessagePayload>>() {
 				{ typeof(ANWI.Messaging.Request), ProcessRequestMessage },
 				{ typeof(ANWI.Messaging.ChangeNickname), ProcessChangeNickname },
-				{ typeof(ANWI.Messaging.AddRate), ProcessAddRate }
+				{ typeof(ANWI.Messaging.AddRate), ProcessAddRate },
+				{ typeof(ANWI.Messaging.DeleteRate), ProcessDeleteRate },
+				{ typeof(ANWI.Messaging.SetPrimaryRate), ProcessSetPrimaryRate }
 			};
 		}
 
@@ -167,13 +169,52 @@ namespace FleetManager.Services {
 			ANWI.Messaging.AddRate ar = p as ANWI.Messaging.AddRate;
 
 			Datamodel.StruckRate sr = null;
-			if(Datamodel.StruckRate.CreateOrUpdate(ref sr, ar.userId, ar.rateId, ar.rank)) {
-				logger.Info($"Added rate {ar.rateId} at rank {ar.rank} to user {ar.userId}");
+			if (Datamodel.StruckRate.FetchByUserRate(ref sr, ar.userId, ar.rateId)) {
+				sr.rank = ar.rank;
+				if (Datamodel.StruckRate.Store(sr)) {
+					logger.Info($"Updated ate {ar.rateId} to rank {ar.rank} to user {ar.userId}");
+				} else {
+					logger.Error($"Failed to update rate {ar.rateId} for user {ar.userId}");
+				}
 			} else {
-				logger.Error($"Failed to add rate {ar.rateId} to user {ar.userId}");
+				if (Datamodel.StruckRate.Create(ref sr, ar.userId, ar.rateId, ar.rank)) {
+					logger.Info($"Added rate {ar.rateId} at rank {ar.rank} to user {ar.userId}");
+				} else {
+					logger.Error($"Failed to add rate {ar.rateId} to user {ar.userId}");
+				}
 			}
 
-			return null;
+			return new ANWI.Messaging.ConfirmProfileUpdated(ar.userId);
+		}
+
+		private ANWI.Messaging.IMessagePayload ProcessDeleteRate(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.DeleteRate dr = p as ANWI.Messaging.DeleteRate;
+
+			if(Datamodel.StruckRate.DeleteById(dr.rateId)) {
+				logger.Info($"Delete rate {dr.rateId} from user {dr.userId}");
+			} else {
+				logger.Error($"Failed to delete rate {dr.rateId} from user {dr.userId}");
+			}
+
+			return new ANWI.Messaging.ConfirmProfileUpdated(dr.userId);
+		}
+
+		private ANWI.Messaging.IMessagePayload ProcessSetPrimaryRate(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.SetPrimaryRate spr = p as ANWI.Messaging.SetPrimaryRate;
+
+			Datamodel.User u = null;
+			if(Datamodel.User.FetchById(ref u, spr.userId)) {
+				u.rate = spr.rateId;
+				if(Datamodel.User.Store(u)) {
+					logger.Info($"Update primary rate on user {spr.userId} to {spr.rateId}");
+				} else {
+					logger.Error($"Failed to update primary rate on user {spr.userId} to {spr.rateId}");
+				}
+			} else {
+				logger.Error($"Could not set primary rate: no user with id {spr.userId} found");
+			}
+
+			return new ANWI.Messaging.ConfirmProfileUpdated(spr.userId);
 		}
 	}
 }

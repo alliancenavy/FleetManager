@@ -103,6 +103,9 @@
       <DependentUpon>AddRate.xaml</DependentUpon>
     </Compile>
     <Compile Include="CommonData.cs" />
+    <Compile Include="Confirm.xaml.cs">
+      <DependentUpon>Confirm.xaml</DependentUpon>
+    </Compile>
     <Compile Include="EditShip.xaml.cs">
       <DependentUpon>EditShip.xaml</DependentUpon>
     </Compile>
@@ -124,6 +127,10 @@
     <Compile Include="VesselRegHelpers.cs" />
     <Compile Include="VesselRegTemplateSelector.cs" />
     <Page Include="AddRate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Confirm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
