@@ -59,10 +59,11 @@ create table if not exists AssignmentRole (
 drop table if exists StruckRate;
 
 create table if not exists StruckRate (
- id integer not null primary key autoincrement,
+ id integer not null,
  user integer not null references User(id),
  rate integer not null references Rate(id),
- rank integer not null default 0
+ rank integer not null default 0,
+ primary key(user, rate)
 );
 
 drop table if exists User;

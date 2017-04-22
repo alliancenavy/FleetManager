@@ -24,6 +24,11 @@ namespace ANWI.Messaging {
 				id = 0
 			};
 
+			public static readonly Routing Main = new Routing() {
+				dest = Target.Main,
+				id = 0
+			};
+
 			public Routing(Target t, int id) {
 				dest = t;
 				this.id = id;
@@ -37,6 +42,8 @@ namespace ANWI.Messaging {
 		[MessagePackKnownType("cn", typeof(ChangeNickname))]
 		[MessagePackKnownType("fol", typeof(FullOperationsList))]
 		[MessagePackKnownType("ros", typeof(FullRoster))]
+		[MessagePackKnownType("acd", typeof(AllCommonData))]
+		[MessagePackKnownType("ar", typeof(AddRate))]
 		public IMessagePayload payload;
 
 		public Message() {

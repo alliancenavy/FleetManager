@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SQLite;
 
 namespace ANWI.Database.Model
@@ -81,6 +82,17 @@ namespace ANWI.Database.Model
             }
             return false;
         }
+
+		public static bool FetchAll(ref List<Rank> output) {
+			output = new List<Rank>();
+
+			SQLiteDataReader reader = DBI.DoQuery($"select * from Rank order by ordering asc");
+			while(reader.Read()) {
+				output.Add(Rank.Factory(reader));
+			}
+
+			return true;
+		}
 
         public static bool FetchById(ref Rank output, int id)
         {

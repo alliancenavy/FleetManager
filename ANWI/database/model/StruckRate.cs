@@ -119,6 +119,14 @@ namespace ANWI.Database.Model
             return false;
         }
 
+		public static bool CreateOrUpdate(ref StruckRate output, int user, int rate, int rank) {
+			int result = DBI.DoAction($"update StruckRate set rank={rank} where user={user} and rate={rate}; insert or ignore into StruckRate (user, rate, rank) values ({user}, {rate}, {rank});");
+			if (result == 1) {
+				return StruckRate.FetchById(ref output, DBI.LastInsertRowId);
+			}
+			return false;
+		}
+
         public static bool FetchById(ref StruckRate output, int id)
         {
             SQLiteDataReader reader = DBI.DoQuery($"select * from StruckRate where id = {id} limit 1;");

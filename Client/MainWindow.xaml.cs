@@ -18,6 +18,7 @@ using MsgPack.Serialization;
 using System.IO;
 using System.Collections.ObjectModel;
 using Client.VesselRegHelpers;
+using System.Threading;
 
 namespace Client {
 	/// <summary>
@@ -82,6 +83,9 @@ namespace Client {
 			socket.OnError += SocketError;
 			socket.Connect();
 
+			// Note: blocking
+			FetchCommonData();
+
 			FetchRoster();
 			FetchOps();
 
@@ -94,7 +98,7 @@ namespace Client {
 		}
 
 		private void Button_RefreshRoster_Click(object sender, RoutedEventArgs e) {
-
+			FetchRoster();
 		}
 
 		private void Button_RefreshOps_Click(object sender, RoutedEventArgs e) {
@@ -111,11 +115,17 @@ namespace Client {
 			}
 		}
 
-		private void Button_NewShip_Click(object sender, RoutedEventArgs e) {
+		private void Button_AddRate_Click(object sender, RoutedEventArgs e) {
+			AddRate ar = new AddRate();
+			ar.returnNewRate += AddRate;
+			ar.ShowDialog();
+		}
+
+		private void Button_DeleteRate_Click(object sender, RoutedEventArgs e) {
 
 		}
 
-		private void Button_EditShip_Click(object sender, RoutedEventArgs e) {
+		private void Button_ViewJacket_Click(object sender, RoutedEventArgs e) {
 
 		}
 
@@ -142,6 +152,30 @@ namespace Client {
 
 		#region Helpers
 
+		private void AddRate(int rateId, int rank) {
+			ANWI.Messaging.Message.Send(
+				socket,
+				ANWI.Messaging.Message.Routing.NoReturn,
+				new ANWI.Messaging.AddRate(account.profile.id, rateId, rank));
+		}
+
+		/// <summary>
+		/// Gets commonly used data like the list of ranks and rates from the server
+		/// for storing globally.
+		/// Waits in a loop until the response is received so the program can't move
+		/// forward without the data.
+		/// </summary>
+		private void FetchCommonData() {
+			ANWI.Messaging.Message.Send(
+				socket,
+				ANWI.Messaging.Message.Routing.Main,
+				new ANWI.Messaging.Request(ANWI.Messaging.Request.Type.GetCommonData));
+
+			while(!CommonData.loaded) {
+				Thread.Sleep(10);
+			}
+		}
+
 		/// <summary>
 		/// Processes messages meant to be delivered to the main window
 		/// </summary>
@@ -151,6 +185,8 @@ namespace Client {
 				LoadRoster(m.payload as ANWI.Messaging.FullRoster);
 			} else if(m.payload is ANWI.Messaging.FullOperationsList) {
 				LoadOps(m.payload as ANWI.Messaging.FullOperationsList);
+			} else if(m.payload is ANWI.Messaging.AllCommonData) {
+				CommonData.LoadAll(m.payload as ANWI.Messaging.AllCommonData);
 			}
 		}
 
@@ -167,7 +203,7 @@ namespace Client {
 			// Send a request to the server
 			ANWI.Messaging.Message.Send(
 				socket, 
-				new ANWI.Messaging.Message.Routing(ANWI.Messaging.Message.Routing.Target.Main, 0),
+				ANWI.Messaging.Message.Routing.Main,
 				new ANWI.Messaging.Request(ANWI.Messaging.Request.Type.GetRoster));
 		}
 
@@ -210,7 +246,7 @@ namespace Client {
 			// Send a request to the server
 			ANWI.Messaging.Message.Send(
 				socket,
-				new ANWI.Messaging.Message.Routing(ANWI.Messaging.Message.Routing.Target.Main, 0),
+				ANWI.Messaging.Message.Routing.Main,
 				new ANWI.Messaging.Request(ANWI.Messaging.Request.Type.GetOperations));
 		}
 
@@ -230,6 +266,8 @@ namespace Client {
 				this.Dispatcher.Invoke(() => { operationList.Add(op); });
 			}
 		}
+
 		#endregion
+
 	}
 }

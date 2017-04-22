@@ -10,13 +10,16 @@ namespace ANWI.Messaging {
 	public class Request : IMessagePayload {
 		
 		public enum Type {
-			None = 0,
-			GetFleet = 1,
-			GetOperations = 2,
-			GetRoster = 3
+			None,
+			GetCommonData,
+			GetProfile,
+			GetFleet,
+			GetOperations,
+			GetRoster
 		}
 
 		public Type type { get; set; }
+		public int id { get; set; }
 
 		public Request() {
 			type = Type.None;
@@ -24,6 +27,12 @@ namespace ANWI.Messaging {
 
 		public Request(Type t) {
 			type = t;
+			id = 0;
+		}
+
+		public Request(Type t, int i) {
+			type = t;
+			id = i;
 		}
 
 		public override string ToString() {

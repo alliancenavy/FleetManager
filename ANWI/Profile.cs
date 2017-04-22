@@ -12,6 +12,7 @@ namespace ANWI {
 	/// Incudings things like name, rank, rates, etc
 	/// </summary>
 	public class Profile : INotifyPropertyChanged {
+		public int id;
 		private string _nickname;
 		public string nickname {
 			get {
@@ -36,6 +37,7 @@ namespace ANWI {
 		public static Profile FromDatamodel(Datamodel.User u, List<Datamodel.StruckRate> r) {
 			Profile p = new Profile();
 
+			p.id = u.id;
 			p.nickname = u.name;
 			p.rank = Rank.FromDatamodel(u.Rank);
 			p.rates = Rate.FromDatamodel(r);

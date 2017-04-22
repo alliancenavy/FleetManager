@@ -7,6 +7,7 @@ using Datamodel = ANWI.Database.Model;
 
 namespace ANWI {
 	public class LiteProfile {
+		public int id { get; set; }
 		public string nickname { get; set; }
 		public Rank rank { get; set; }
 		public Rate primaryRate { get; set; }
@@ -14,6 +15,7 @@ namespace ANWI {
 		public static LiteProfile FromDatamodel(Datamodel.User u, Datamodel.StruckRate r) {
 			LiteProfile p = new LiteProfile();
 
+			p.id = u.id;
 			p.nickname = u.name;
 			p.rank = Rank.FromDatamodel(u.Rank);
 			p.primaryRate = Rate.FromDatamodel(r);

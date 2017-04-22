@@ -25,7 +25,8 @@ namespace FleetManager.Services {
 			msgProcessors = new Dictionary<Type, Func<ANWI.Messaging.IMessagePayload, 
 				ANWI.Messaging.IMessagePayload>>() {
 				{ typeof(ANWI.Messaging.Request), ProcessRequestMessage },
-				{ typeof(ANWI.Messaging.ChangeNickname), ProcessChangeNickname }
+				{ typeof(ANWI.Messaging.ChangeNickname), ProcessChangeNickname },
+				{ typeof(ANWI.Messaging.AddRate), ProcessAddRate }
 			};
 		}
 
@@ -65,16 +66,26 @@ namespace FleetManager.Services {
 		private ANWI.Messaging.IMessagePayload ProcessRequestMessage(ANWI.Messaging.IMessagePayload p) {
 			ANWI.Messaging.Request req = p as ANWI.Messaging.Request;
 			switch(req.type) {
+				case ANWI.Messaging.Request.Type.GetCommonData: {
+						ANWI.Messaging.AllCommonData acd = new ANWI.Messaging.AllCommonData();
+
+						List<Datamodel.Rank> allRanks = null;
+						Datamodel.Rank.FetchAll(ref allRanks);
+						acd.ranks = allRanks.ConvertAll<Rank>(Rank.FromDatamodel);
+
+						List<Datamodel.Rate> allRates = null;
+						Datamodel.Rate.FetchAll(ref allRates);
+						acd.rates = allRates.ConvertAll<Rate>(Rate.FromDatamodel);
+
+						return acd;
+					}
+
 				case ANWI.Messaging.Request.Type.GetFleet: {
 						List<Datamodel.UserShip> all = null;
 						Datamodel.UserShip.FetchNotDestroyed(ref all);
 
-						List<Vessel> vessels = new List<Vessel>();
-
-						foreach(Datamodel.UserShip dmship in all) {
-							vessels.Add(Vessel.FromDatamodel(dmship));
-						}
-
+						List<Vessel> vessels = all.ConvertAll<Vessel>(Vessel.FromDatamodel);
+				
 						return new ANWI.Messaging.FullVesselReg(vessels);
 					}
 
@@ -149,6 +160,19 @@ namespace FleetManager.Services {
 			}
 
 			logger.Info("Name successfully changed.");
+			return null;
+		}
+
+		private ANWI.Messaging.IMessagePayload ProcessAddRate(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.AddRate ar = p as ANWI.Messaging.AddRate;
+
+			Datamodel.StruckRate sr = null;
+			if(Datamodel.StruckRate.CreateOrUpdate(ref sr, ar.userId, ar.rateId, ar.rank)) {
+				logger.Info($"Added rate {ar.rateId} at rank {ar.rank} to user {ar.userId}");
+			} else {
+				logger.Error($"Failed to add rate {ar.rateId} to user {ar.userId}");
+			}
+
 			return null;
 		}
 	}

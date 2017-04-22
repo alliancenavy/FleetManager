@@ -94,6 +94,8 @@
     <Compile Include="Database\Model\UserShip.cs" />
     <Compile Include="Hull.cs" />
     <Compile Include="LiteProfile.cs" />
+    <Compile Include="Messaging\AddRate.cs" />
+    <Compile Include="Messaging\AllCommonData.cs" />
     <Compile Include="Messaging\ChangeNickname.cs" />
     <Compile Include="Messaging\FullOperationsList.cs" />
     <Compile Include="Messaging\FullRoster.cs" />

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SQLite;
 
 namespace ANWI.Database.Model
@@ -76,6 +77,17 @@ namespace ANWI.Database.Model
             }
             return false;
         }
+
+		public static bool FetchAll(ref List<Rate> output) {
+			output = new List<Rate>();
+
+			SQLiteDataReader reader = DBI.DoQuery($"select * from Rate order by id asc");
+			while(reader.Read()) {
+				output.Add(Rate.Factory(reader));
+			}
+
+			return true;
+		}
 
         public static bool FetchById(ref Rate output, int id)
         {

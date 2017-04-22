@@ -32,7 +32,9 @@ namespace ANWI {
 
 		public string FullName { get { return name + " " + getClass() + " Class"; } }
 
-		public string Icon { get { return "images/rates/" + abbrev + rank.ToString() + ".png";  } }
+		public string FullAbbrev { get { return abbrev + rank.ToString(); } }
+
+		public string Icon { get { return "images/rates/" + FullAbbrev + ".png";  } }
 
 		public static Rate FromDatamodel(Datamodel.StruckRate sr) {
 			if (sr == null) {
@@ -51,6 +53,19 @@ namespace ANWI {
 			}
 		}
 
+		public static Rate FromDatamodel(Datamodel.Rate dr) {
+			Rate r = new Rate();
+
+			r.id = dr.id;
+			r.name = dr.name;
+			r.abbrev = dr.abrv;
+			r.rank = 3;
+			r.date = "TODO";
+			r.expires = "TODO";
+
+			return r;
+		}
+
 		public static List<Rate> FromDatamodel(List<Datamodel.StruckRate> l) {
 			List<Rate> lout = new List<Rate>();
 
@@ -61,6 +76,31 @@ namespace ANWI {
 			}
 
 			return lout;
+		}
+
+		public override int GetHashCode() {
+			return id.GetHashCode();
+		}
+
+		public bool Equals(Rate other) {
+			if (other is Rate)
+				return other == this;
+			else return false;
+		}
+
+		public sealed override bool Equals(object other) {
+			if (other is Rate)
+				return (other as Rate).id == this.id;
+			else
+				return base.Equals(other);
+		}
+
+		public static bool operator ==(Rate a, Rate b) {
+			return a.id == b.id;
+		}
+
+		public static bool operator !=(Rate a, Rate b) {
+			return a.id != b.id;
 		}
 	}
 }
