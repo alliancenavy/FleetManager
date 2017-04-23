@@ -35,6 +35,10 @@ namespace Client {
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
+		#region Other Windows
+		private FleetRegistry fleetReg = null;
+		#endregion
+
 		#region Observable Members
 		public Profile wpfProfile {
 			get { return currentProfile; }
@@ -173,6 +177,13 @@ namespace Client {
 			}
 		}
 
+		private void Button_OpenFleetReg_Click(object sender, RoutedEventArgs e) {
+			if (fleetReg == null) {
+				fleetReg = new FleetRegistry(socket);
+				fleetReg.Show();
+			}
+		}
+
 		#endregion
 
 		#region Sockets and Messaging
@@ -182,6 +193,11 @@ namespace Client {
 			switch(msg.address.dest) {
 				case ANWI.Messaging.Message.Routing.Target.Main:
 					ProcessMessage(msg);
+					break;
+
+				case ANWI.Messaging.Message.Routing.Target.FleetReg:
+					if (fleetReg != null)
+						fleetReg.DeliverMessage(msg);
 					break;
 
 				default:

@@ -13,7 +13,9 @@ namespace ANWI.Messaging {
 		public struct Routing {
 			public enum Target {
 				Unknown,
-				Main
+				Main,
+				FleetReg,
+				OpDetail
 			}
 
 			public Target dest;
@@ -26,6 +28,11 @@ namespace ANWI.Messaging {
 
 			public static readonly Routing Main = new Routing() {
 				dest = Target.Main,
+				id = 0
+			};
+
+			public static readonly Routing FleetReg = new Routing() {
+				dest = Target.FleetReg,
 				id = 0
 			};
 

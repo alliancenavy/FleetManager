@@ -7,7 +7,7 @@
         xmlns:vrghelpers="clr-namespace:Client.VesselRegHelpers"
         xmlns:fa="http://schemas.fontawesome.io/icons/" x:Class="Client.MainWindow"
         mc:Ignorable="d"
-        Title="Alliance Fleet Operations System" Height="760.916" Width="1113.333" ResizeMode="CanResizeWithGrip">
+        Title="Alliance Fleet Operations System" Height="760.916" Width="1113.333" ResizeMode="CanMinimize">
     <Window.Resources>
         <BitmapImage x:Key="NoImageFound" UriSource="/images/no_image.png"/>
 
@@ -118,9 +118,9 @@
             <TextBlock.Text>Active Operations</TextBlock.Text>
         </TextBlock>
         <ListBox x:Name="List_Roster" Height="606" Margin="9.667,40,10.333,0" VerticalAlignment="Top" Grid.Column="1" ItemTemplate="{DynamicResource RosterTemplate}" ItemsSource="{Binding Path=wpfRosterList}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
-        <fa:ImageAwesome x:Name="Spinner_Roster" Height="120" Icon="Cog" Spin="True" SpinDuration="10" Foreground="#FF316838" Grid.Column="1" Margin="157.667,243,149.333,304.333" />
+        <fa:ImageAwesome x:Name="Spinner_Roster" Height="120" Icon="Cog" Spin="True" SpinDuration="10" Foreground="#FF316838" Grid.Column="1" Margin="157.667,243,149.333,304.333" Visibility="Hidden"/>
         <ListBox x:Name="List_Ops" Grid.Column="2" Height="606" Margin="9.667,40,10.667,0" VerticalAlignment="Top" ItemTemplate="{DynamicResource OpTemplate}" ItemsSource="{Binding wpfOpList}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
-        <fa:ImageAwesome x:Name="Spinner_Ops" Height="120" Icon="Cog" Spin="True" SpinDuration="10" Foreground="#FF316838" Grid.Column="2" Margin="133.667,243,124.667,304.333" />
+        <fa:ImageAwesome x:Name="Spinner_Ops" Height="120" Icon="Cog" Spin="True" SpinDuration="10" Foreground="#FF316838" Grid.Column="2" Margin="133.667,243,124.667,304.333" Visibility="Hidden"/>
         <ListBox x:Name="List_Awards" Height="200" Margin="10,446,10.333,0" VerticalAlignment="Top"/>
         <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Awards" VerticalAlignment="Top" Height="20" Width="95" FontSize="14" FontWeight="Bold" Margin="10,421,0,0"/>
         <Button x:Name="Button_RefreshRoster" Content="&gt;&gt;" Margin="0,5,9.333,0" VerticalAlignment="Top" Height="25" Background="#FF316838" Foreground="White" Click="Button_RefreshRoster_Click" ToolTip="Refresh Roster" Grid.Column="1" HorizontalAlignment="Right" Width="27"/>
@@ -167,6 +167,7 @@
                 <ColumnDefinition Width="22*"/>
             </Grid.ColumnDefinitions>
             <Button x:Name="Button_ViewJacket" Grid.Column="0" Grid.Row="0" Content="View Jacket" HorizontalAlignment="Left" VerticalAlignment="Top" Width="110" Height="29" Background="#FF316838" Foreground="White" Click="Button_ViewJacket_Click"/>
+            <Button x:Name="Button_OpenFleetReg" Grid.Column="2" Grid.Row="0" Content="Fleet Registry" HorizontalAlignment="Center" VerticalAlignment="Top" Width="110" Height="29" Background="#FFB9AC60" Foreground="White" Click="Button_OpenFleetReg_Click" Margin="0.333,0,1,0"/>
         </Grid>
     </Grid>
 </Window>

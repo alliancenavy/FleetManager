@@ -1,13 +1,13 @@
-﻿<Window x:Class="Client.VesselReg"
+﻿<local:MailboxWindow
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         xmlns:helpers="clr-namespace:Client.VesselRegHelpers"
-        xmlns:fa="http://schemas.fontawesome.io/icons/"
+        xmlns:fa="http://schemas.fontawesome.io/icons/" x:Class="Client.FleetRegistry"
         mc:Ignorable="d"
-        Title="Vessel Register" Height="520.333" Width="437.5" ResizeMode="CanMinimize">
+        Title="FleetRegistry" Height="560.167" Width="842.5" ResizeMode="CanMinimize">
 
     <Window.Resources>
 
@@ -18,7 +18,7 @@
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type helpers:NamedVessel}">
-            <Canvas x:Name="Base" HorizontalAlignment="Left" Height="90" VerticalAlignment="Top" Width="360" Background="#FFFFFFFF" Margin="175,-135,-103,0">
+            <Canvas x:Name="Base" HorizontalAlignment="Left" Height="90" VerticalAlignment="Top" Width="360" Background="#FFFFFFFF">
                 <Grid Height="54" Width="245" Canvas.Top="31" Canvas.Left="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -47,7 +47,7 @@
                     <TextBlock Text="{Binding Path=owner}" Grid.Column="1" Grid.Row="2"/>
                 </Grid>
                 <TextBlock Canvas.Left="10" TextWrapping="Wrap" Text="{Binding Path=name}" Canvas.Top="10" Width="290" FontSize="14" FontWeight="Bold"/>
-                <fa:ImageAwesome x:Name="LTIIcon" Icon="Medkit" Height="19" Canvas.Left="305" Width="22" Canvas.Top="10" ToolTip="LTI"/>
+                <fa:ImageAwesome x:Name="LTIIcon" Icon="Medkit" Height="19" Canvas.Right="10" Width="22" Canvas.Top="10" ToolTip="LTI"/>
                 <TextBlock Canvas.Left="260" TextWrapping="Wrap" Canvas.Top="48" Width="90" FontSize="24" FontWeight="Bold" FontFamily="Segoe UI Black" TextAlignment="Right">
                     <TextBlock.Text>
                         <MultiBinding StringFormat="{}{0}-{1}">
@@ -56,18 +56,6 @@
                         </MultiBinding>
                     </TextBlock.Text>
                 </TextBlock>
-                <Button x:Name="button" Canvas.Left="332" Canvas.Top="10" Width="20" IsEnabled="{Binding Path=isEditable}">
-                    <Button.Template>
-                        <ControlTemplate>
-                            <fa:ImageAwesome x:Name="Button_Edit" Icon="Pencil" Height="19" Canvas.Left="305" Width="22" Canvas.Top="10" ToolTip="Edit Ship"/>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsEnabled" Value="false">
-                                    <Setter Property="Opacity" Value="0.25"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
             </Canvas>
 
             <DataTemplate.Triggers>
@@ -118,11 +106,31 @@
     </Window.Resources>
 
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="46*"/>
+            <ColumnDefinition Width="47*"/>
+        </Grid.ColumnDefinitions>
 
-        <ListBox x:Name="listBox" HorizontalAlignment="Left" Height="396" Margin="10,31,0,0" VerticalAlignment="Top" Width="392"  ItemsSource="{Binding Path=wpfVesselList}" />
-        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="10,5,0,0" TextWrapping="Wrap" Text="Registered Vessels" VerticalAlignment="Top" FontSize="16"/>
-        <fa:ImageAwesome x:Name="Spinner" Icon="Cog" Spin="True" SpinDuration="10" Margin="145,190,188,192.333" Foreground="#FF316838" />
-        <Button x:Name="Button_NewShip" Content="New Ship" HorizontalAlignment="Left" Margin="311,432,0,0" VerticalAlignment="Top" Width="91" Height="25" Background="#FF316838" Foreground="White" Click="Button_NewShip_Click"/>
+        <ListBox x:Name="List_Fleet" HorizontalAlignment="Left" Height="393" Margin="10,34,0,0" VerticalAlignment="Top" Width="395"  ItemsSource="{Binding Path=wpfVesselList}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="Registered Vessels" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Height="30" Width="290"/>
+        <fa:ImageAwesome x:Name="Spinner" Icon="Cog" Spin="True" SpinDuration="10" Margin="-185,170,267.333,236" Foreground="#FF316838" Grid.ColumnSpan="2" Visibility="Hidden"/>
+        <Button x:Name="Button_RefreshRegistry" Content="&gt;&gt;" Margin="0,4,9,0" VerticalAlignment="Top" Height="25" Background="#FF316838" Foreground="White" Click="Button_RefreshRegistry_Click" ToolTip="Refresh Registry" HorizontalAlignment="Right" Width="27"/>
+        <Grid HorizontalAlignment="Left" Height="88" Margin="10,432,0,0" VerticalAlignment="Top" Width="392">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="5*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="130*"/>
+                <ColumnDefinition Width="135*"/>
+                <ColumnDefinition Width="127*"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="Button_NewShip" Grid.Column="0" Grid.Row="0" Content="New Ship" HorizontalAlignment="Left" VerticalAlignment="Top" Width="125" Height="29" Background="#FF316838" Foreground="White" Click="Button_NewShip_Click"/>
+            <Button x:Name="Button_EditShip" Grid.Column="1" Grid.Row="0" Content="Edit Ship" HorizontalAlignment="Left" VerticalAlignment="Top" Width="125" Height="29" Background="#FF316838" Foreground="White" Click="Button_EditShip_Click"/>
+            <Button x:Name="Button_ViewShip" Grid.Column="2" Grid.Row="0" Content="View Ship" HorizontalAlignment="Left" VerticalAlignment="Top" Width="125" Height="29" Background="#FF316838" Foreground="White" Click="Button_ViewShip_Click" Margin="0.333,0,0,0"/>
+            <Button x:Name="Button_Close" Grid.Column="2" Grid.Row="1" Content="Close" HorizontalAlignment="Left" VerticalAlignment="Top" Width="125" Height="29" Background="#FFB9AC60" Foreground="White" Click="Button_Close_Click" Margin="0.333,0,0,0"/>
+        </Grid>
+        <TextBlock HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="{Binding currentVessel, FallbackValue=[No Ship Selected]}" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Height="30" Width="290" Grid.Column="1"/>
 
     </Grid>
-</Window>
+</local:MailboxWindow>

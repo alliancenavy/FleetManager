@@ -112,6 +112,10 @@
     <Compile Include="EditShip.xaml.cs">
       <DependentUpon>EditShip.xaml</DependentUpon>
     </Compile>
+    <Compile Include="FleetRegistry.xaml.cs">
+      <DependentUpon>FleetRegistry.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MailboxWindow.cs" />
     <Compile Include="ModalText.xaml.cs">
       <DependentUpon>ModalText.xaml</DependentUpon>
     </Compile>
@@ -123,9 +127,6 @@
     </Compile>
     <Compile Include="ServiceRecord.xaml.cs">
       <DependentUpon>ServiceRecord.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="VesselReg.xaml.cs">
-      <DependentUpon>VesselReg.xaml</DependentUpon>
     </Compile>
     <Compile Include="VesselRegHelpers.cs" />
     <Compile Include="VesselRegTemplateSelector.cs" />
@@ -142,6 +143,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="EditShip.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FleetRegistry.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -177,10 +182,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="ServiceRecord.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="VesselReg.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
