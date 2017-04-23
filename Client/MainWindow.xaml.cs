@@ -47,6 +47,8 @@ namespace Client {
 		}
 		public ObservableCollection<LiteProfile> wpfRosterList { get { return rosterList; } }
 		public ObservableCollection<Operation> wpfOpList { get { return operationList; } }
+
+		public Privs userPrivileges { get { return account.profile.privs; } }
 		#endregion
 
 		#region Initialization

@@ -95,6 +95,7 @@
     <Compile Include="Database\Model\Rate.cs" />
     <Compile Include="Database\Model\StruckRate.cs" />
     <Compile Include="Database\Model\User.cs" />
+    <Compile Include="Database\Model\UserPrivs.cs" />
     <Compile Include="Database\Model\UserShip.cs" />
     <Compile Include="Hull.cs" />
     <Compile Include="LiteProfile.cs" />
@@ -113,6 +114,7 @@
     <Compile Include="Messaging\Request.cs" />
     <Compile Include="Messaging\SetPrimaryRate.cs" />
     <Compile Include="Operation.cs" />
+    <Compile Include="Privs.cs" />
     <Compile Include="Profile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rank.cs" />

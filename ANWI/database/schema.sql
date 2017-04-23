@@ -100,6 +100,18 @@ create table if not exists UserShip (
  statusDate text not null
 );
 
+drop table if exists UserPrivs;
+
+create table if not exists UserPrivs (
+ user integer not null references User(id),
+ canPromote integer not null default 0,
+ canCertify integer not null default 0
+);
+
 CREATE TRIGGER on_primary_rate_delete AFTER DELETE ON StruckRate BEGIN
   UPDATE User SET rate = null WHERE rate = old.id;
+END;
+
+CREATE TRIGGER new_user_privs AFTER INSERT ON User BEGIN
+	INSERT INTO UserPrivs (user, canPromote, canCertify) VALUES (new.id,0,0);
 END;

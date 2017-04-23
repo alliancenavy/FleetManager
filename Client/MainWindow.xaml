@@ -138,9 +138,9 @@
                 <ColumnDefinition Width="25*"/>
                 <ColumnDefinition Width="22*"/>
             </Grid.ColumnDefinitions>
-            <Button x:Name="Button_AddRate" Grid.Column="0" Grid.Row="0" Content="Add Rate" HorizontalAlignment="Left" VerticalAlignment="Top" Width="110" Height="29" Background="#FF316838" Foreground="White" Click="Button_AddRate_Click"/>
-            <Button x:Name="Button_DeleteRate" Grid.Column="1" Grid.Row="0" Content="Delete Rate" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_DeleteRate_Click" HorizontalAlignment="Center" Width="110"/>
-            <Button x:Name="Button_ChangeRank" Grid.Row="1" Content="Change Rank" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_ChangeRank_Click" HorizontalAlignment="Left" Width="110"/>
+            <Button x:Name="Button_AddRate" Grid.Column="0" Grid.Row="0" Content="Add Rate" HorizontalAlignment="Left" VerticalAlignment="Top" Width="110" Height="29" Background="#FF316838" Foreground="White" Click="Button_AddRate_Click" IsEnabled="{Binding userPrivileges.canCertify}"/>
+            <Button x:Name="Button_DeleteRate" Grid.Column="1" Grid.Row="0" Content="Delete Rate" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_DeleteRate_Click" HorizontalAlignment="Center" Width="110" IsEnabled="{Binding userPrivileges.canCertify}"/>
+            <Button x:Name="Button_ChangeRank" Grid.Row="1" Content="Change Rank" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_ChangeRank_Click" HorizontalAlignment="Left" Width="110" IsEnabled="{Binding userPrivileges.canPromote}"/>
             <Button x:Name="Button_SetPrimaryRate" Grid.Column="2" Grid.Row="0" Content="Set Primary Rate" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_SetPrimaryRate_Click" HorizontalAlignment="Left" Width="110" Margin="0.333,0,-0.333,0"/>
         </Grid>
         <Grid HorizontalAlignment="Left" Height="70" Margin="10.667,651,0,0" VerticalAlignment="Top" Width="350" Grid.Column="2">

@@ -43,6 +43,7 @@ INSERT INTO User (id, name, auth0, rank, rate) VALUES (6, "Blaine Banjo", "auth0
 INSERT INTO User (id, name, auth0, rank, rate) VALUES (7, "Someone Useless", "auth0|58713654d89baa12399d5127", 1, null);
 INSERT INTO User (id, name, auth0, rank, rate) VALUES (8, "Versety Sterling", "auth0|58713654d89baa12399d5128", 1, null);
 INSERT INTO User (id, name, auth0, rank, rate) VALUES (9, "Karen Fielding", "auth0|58713654d89baa12399d5129", 2, null);
+INSERT INTO User (id, name, auth0, rank, rate) VALUES (10, "Ronox Templar", "auth0|58713654d89baa12399d5130", 1, null);
 
 ---------------------------------------
 --Struck rates for Users
@@ -69,6 +70,19 @@ UPDATE User SET rate=9 WHERE id=6;
 UPDATE User SET rate=10 WHERE id=7;
 UPDATE User SET rate=11 WHERE id=8;
 UPDATE User SET rate=12 WHERE id=9;
+
+---------------------------------------
+--Privs for Users
+INSERT INTO UserPrivs (user, canPromote, canCertify) VALUES (0,0,0);
+INSERT INTO UserPrivs (user, canPromote, canCertify) VALUES (1,1,1);
+INSERT INTO UserPrivs (user, canPromote, canCertify) VALUES (2,0,0);
+INSERT INTO UserPrivs (user, canPromote, canCertify) VALUES (3,0,0);
+INSERT INTO UserPrivs (user, canPromote, canCertify) VALUES (4,0,0);
+INSERT INTO UserPrivs (user, canPromote, canCertify) VALUES (5,0,0);
+INSERT INTO UserPrivs (user, canPromote, canCertify) VALUES (6,0,0);
+INSERT INTO UserPrivs (user, canPromote, canCertify) VALUES (7,0,0);
+INSERT INTO UserPrivs (user, canPromote, canCertify) VALUES (8,0,0);
+INSERT INTO UserPrivs (user, canPromote, canCertify) VALUES (9,0,0);
 
 ---------------------------------------
 --Assignment roles

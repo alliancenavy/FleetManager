@@ -20,8 +20,9 @@ namespace ANWI.Database.Model
 
         private Rank _rank;
         private StruckRate _rate;
+		private UserPrivs _privs;
 
-        private User(int id, string name, string auth0, int rank, int rate, Rank Rank, StruckRate Rate)
+        private User(int id, string name, string auth0, int rank, int rate, Rank Rank, StruckRate Rate, UserPrivs privs)
         {
             this.id = id;
             this.name = name;
@@ -31,6 +32,7 @@ namespace ANWI.Database.Model
 
             this._rank = Rank;
             this._rate = Rate;
+			this._privs = privs;
         }
 
         #endregion
@@ -65,6 +67,18 @@ namespace ANWI.Database.Model
             }
         }
 
+		public UserPrivs Privs {
+			get {
+				if (_privs == null)
+					UserPrivs.FetchByUser(ref _privs, id);
+				return _privs;
+			}
+
+			set {
+				_privs = value;
+			}
+		}
+
         #endregion
 
         #region Class-Members
@@ -79,7 +93,8 @@ namespace ANWI.Database.Model
                 rate: -1,
 
                 Rank: null,
-                Rate: null
+                Rate: null,
+				privs: null
             );
             return result;
         }
@@ -95,7 +110,8 @@ namespace ANWI.Database.Model
                 rate: rate,
 
                 Rank: null,
-                Rate: null
+                Rate: null,
+				privs: null
             );
             return result;
         }
@@ -110,7 +126,8 @@ namespace ANWI.Database.Model
                 rate: reader["rate"] is DBNull ? 0 : Convert.ToInt32(reader["rate"]),
 
                 Rank: null,
-                Rate: null
+                Rate: null,
+				privs: null
             );
             return result;
         }

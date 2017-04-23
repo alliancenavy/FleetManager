@@ -30,6 +30,7 @@ namespace ANWI {
 		public List<Rate> rates = null;
 		public Rate primaryRate { get; set; } = Rate.UNDESIGNATED;
 		public Vessel assignedShip = null;
+		public Privs privs { get; set; } = null;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
@@ -52,6 +53,7 @@ namespace ANWI {
 			p.nickname = u.name;
 			p.rank = Rank.FromDatamodel(u.Rank);
 			p.rates = Rate.FromDatamodel(r);
+			p.privs = Privs.FromDatamodel(u.Privs);
 
 			// Go through the rate array and find which one matches the primary
 			if (r != null) {
