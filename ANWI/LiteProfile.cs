@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Datamodel = ANWI.Database.Model;
+using MsgPack.Serialization;
 
 namespace ANWI {
 	public class LiteProfile {
@@ -11,6 +12,9 @@ namespace ANWI {
 		public string nickname { get; set; }
 		public Rank rank { get; set; }
 		public Rate primaryRate { get; set; }
+
+		[MessagePackIgnore]
+		public bool isMe { get; set; } = false;
 
 		public static LiteProfile FromDatamodel(Datamodel.User u, Datamodel.StruckRate r) {
 			LiteProfile p = new LiteProfile();

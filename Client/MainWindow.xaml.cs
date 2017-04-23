@@ -156,7 +156,9 @@ namespace Client {
 		}
 
 		private void Button_ChangeRank_Click(object sender, RoutedEventArgs e) {
-
+			ChangeRank cr = new ChangeRank();
+			cr.ReturnNewRank += (rank) => { ChangeRank(currentProfile.id, rank); };
+			cr.ShowDialog();
 		}
 
 		private void Button_ViewJacket_Click(object sender, RoutedEventArgs e) {
@@ -211,6 +213,13 @@ namespace Client {
 				socket,
 				ANWI.Messaging.Message.Routing.Main,
 				new ANWI.Messaging.SetPrimaryRate(userId, rateId));
+		}
+
+		private void ChangeRank(int userId, int rankId) {
+			ANWI.Messaging.Message.Send(
+				socket,
+				ANWI.Messaging.Message.Routing.Main,
+				new ANWI.Messaging.ChangeRank(userId, rankId));
 		}
 
 		/// <summary>
@@ -289,7 +298,11 @@ namespace Client {
 
 			// Load all the records in
 			foreach (LiteProfile p in fr.members) {
-				this.Dispatcher.Invoke(() => { rosterList.Add(p); });
+				this.Dispatcher.Invoke(() => {
+					if (p.id == account.profile.id)
+						p.isMe = true;
+					rosterList.Add(p);
+				});
 			}
 		}
 

@@ -102,6 +102,9 @@
     <Compile Include="AddRate.xaml.cs">
       <DependentUpon>AddRate.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ChangeRank.xaml.cs">
+      <DependentUpon>ChangeRank.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CommonData.cs" />
     <Compile Include="Confirm.xaml.cs">
       <DependentUpon>Confirm.xaml</DependentUpon>
@@ -127,6 +130,10 @@
     <Compile Include="VesselRegHelpers.cs" />
     <Compile Include="VesselRegTemplateSelector.cs" />
     <Page Include="AddRate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ChangeRank.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -235,6 +242,9 @@
     <Resource Include="images\rates\SK1.png" />
     <Resource Include="images\rates\SK2.png" />
     <Resource Include="images\rates\SK3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\rates\UD3.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />

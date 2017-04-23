@@ -48,6 +48,7 @@ namespace ANWI.Messaging {
 		[MessagePackKnownType("fpro", typeof(FullProfile))]
 		[MessagePackKnownType("cpu", typeof(ConfirmProfileUpdated))]
 		[MessagePackKnownType("spr", typeof(SetPrimaryRate))]
+		[MessagePackKnownType("cr", typeof(ChangeRank))]
 		public IMessagePayload payload;
 
 		public Message() {

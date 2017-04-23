@@ -17,7 +17,7 @@ namespace ANWI {
 		public static Rate UNDESIGNATED = new Rate() {
 			id = 0,
 			name = "Undesignated Spaceman",
-			abbrev = "UN",
+			abbrev = "UD",
 			rank = 3
 		};
 

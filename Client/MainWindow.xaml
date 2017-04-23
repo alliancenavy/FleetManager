@@ -70,12 +70,18 @@
         </DataTemplate>
 
         <DataTemplate x:Key="RosterTemplate">
-            <Canvas HorizontalAlignment="Left" Height="60" VerticalAlignment="Top" Width="315" Background="White">
+            <Canvas x:Name="Base" HorizontalAlignment="Left" Height="60" VerticalAlignment="Top" Width="315" Background="White">
                 <Image x:Name="Image_Rank" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" OpacityMask="Black" Source="{Binding rank.Icon}" Canvas.Left="10" Canvas.Top="10"/>
                 <Image x:Name="Image_PrimaryRate" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" OpacityMask="Black" Source="{Binding Path=primaryRate.Icon, FallbackValue={StaticResource NoImageFound}}" Canvas.Left="55" Canvas.Top="10"/>
                 <TextBlock x:Name="Text_Name" TextWrapping="Wrap" Text="{Binding FullName}" VerticalAlignment="Top" Height="16" Canvas.Left="100" Canvas.Top="10" Width="205" FontWeight="Bold"/>
                 <TextBlock x:Name="Text_Assignment" TextWrapping="Wrap" Text="Unassigned" VerticalAlignment="Top" Height="16" Canvas.Left="100" Canvas.Top="31" Width="205"/>
             </Canvas>
+
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Path=isMe}" Value="true">
+                    <Setter TargetName="Base" Property="Background" Value="#FFE0E0E0"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
         </DataTemplate>
     </Window.Resources>
 
@@ -162,6 +168,5 @@
             </Grid.ColumnDefinitions>
             <Button x:Name="Button_ViewJacket" Grid.Column="0" Grid.Row="0" Content="View Jacket" HorizontalAlignment="Left" VerticalAlignment="Top" Width="110" Height="29" Background="#FF316838" Foreground="White" Click="Button_ViewJacket_Click"/>
         </Grid>
-
     </Grid>
 </Window>

@@ -28,7 +28,8 @@ namespace FleetManager.Services {
 				{ typeof(ANWI.Messaging.ChangeNickname), ProcessChangeNickname },
 				{ typeof(ANWI.Messaging.AddRate), ProcessAddRate },
 				{ typeof(ANWI.Messaging.DeleteRate), ProcessDeleteRate },
-				{ typeof(ANWI.Messaging.SetPrimaryRate), ProcessSetPrimaryRate }
+				{ typeof(ANWI.Messaging.SetPrimaryRate), ProcessSetPrimaryRate },
+				{ typeof(ANWI.Messaging.ChangeRank), ProcessChangeRank }
 			};
 		}
 
@@ -203,7 +204,7 @@ namespace FleetManager.Services {
 			ANWI.Messaging.DeleteRate dr = p as ANWI.Messaging.DeleteRate;
 
 			if(Datamodel.StruckRate.DeleteById(dr.rateId)) {
-				logger.Info($"Delete rate {dr.rateId} from user {dr.userId}");
+				logger.Info($"Deleted rate {dr.rateId} from user {dr.userId}");
 			} else {
 				logger.Error($"Failed to delete rate {dr.rateId} from user {dr.userId}");
 			}
@@ -218,7 +219,7 @@ namespace FleetManager.Services {
 			if(Datamodel.User.FetchById(ref u, spr.userId)) {
 				u.rate = spr.rateId;
 				if(Datamodel.User.Store(u)) {
-					logger.Info($"Update primary rate on user {spr.userId} to {spr.rateId}");
+					logger.Info($"Updated primary rate on user {spr.userId} to {spr.rateId}");
 				} else {
 					logger.Error($"Failed to update primary rate on user {spr.userId} to {spr.rateId}");
 				}
@@ -227,6 +228,24 @@ namespace FleetManager.Services {
 			}
 
 			return new ANWI.Messaging.ConfirmProfileUpdated(spr.userId);
+		}
+
+		private ANWI.Messaging.IMessagePayload ProcessChangeRank(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.ChangeRank cr = p as ANWI.Messaging.ChangeRank;
+
+			Datamodel.User u = null;
+			if(Datamodel.User.FetchById(ref u, cr.userId)) {
+				u.rank = cr.rankId;
+				if(Datamodel.User.Store(u)) {
+					logger.Info($"Updated rank of user {cr.userId} to {cr.rankId}");
+				} else {
+					logger.Error($"Failed to update rank of user {cr.userId}");
+				}
+			} else {
+				logger.Error($"Could not set rank: no user with id {cr.userId} found");
+			}
+
+			return new ANWI.Messaging.ConfirmProfileUpdated(cr.userId);
 		}
 	}
 }
