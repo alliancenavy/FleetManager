@@ -17,7 +17,9 @@ namespace Client {
 
 		public class NamedVessel : VesselRecord {
 			public Vessel v;
+			public VesselDetails details { get; set; } = null;
 
+			public int id { get { return v.id; } }
 			public string statusString { get { return v.statusString; } }
 			public string owner { get { return v.owner; } }
 			public string name { get { return v.name; } }

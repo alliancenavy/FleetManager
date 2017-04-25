@@ -128,8 +128,8 @@ namespace ANWI.Database.Model
                 user:  Convert.ToInt32(reader["user"]),
                 ship:  Convert.ToInt32(reader["ship"]),
                 role:  Convert.ToInt32(reader["role"]),
-                from:  Convert.ToInt32(reader["from"]),
-                until: Convert.ToInt32(reader["until"]),
+                from:  Convert.ToInt32(reader["start"]),
+                until: 0,//Convert.ToInt32(reader["until"]),
 
                 User: null,
                 Ship: null,
@@ -158,6 +158,15 @@ namespace ANWI.Database.Model
             }
             return false;
         }
+
+		public static bool FetchCurrentAssignment(ref Assignment output, int userId) {
+			SQLiteDataReader reader = DBI.DoQuery($"select id, user, ship, role, start, COALESCE(until, 0) from Assignment where user = {userId} and until is null limit 1;");
+			if(reader.Read()) {
+				output = Assignment.Factory(reader);
+				return true;
+			}
+			return false;
+		}
 
         public static bool Store(Assignment input)
         {

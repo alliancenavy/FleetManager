@@ -125,9 +125,6 @@
     <Compile Include="OperationDetails.xaml.cs">
       <DependentUpon>OperationDetails.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ServiceRecord.xaml.cs">
-      <DependentUpon>ServiceRecord.xaml</DependentUpon>
-    </Compile>
     <Compile Include="VesselRegHelpers.cs" />
     <Compile Include="VesselRegTemplateSelector.cs" />
     <Page Include="AddRate.xaml">
@@ -180,10 +177,6 @@
     <Page Include="OperationDetails.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="ServiceRecord.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

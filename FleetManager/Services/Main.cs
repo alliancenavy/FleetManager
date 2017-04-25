@@ -88,7 +88,9 @@ namespace FleetManager.Services {
 						if(Datamodel.User.FetchById(ref u, req.id)) {
 							List<Datamodel.StruckRate> rates = null;
 							Datamodel.StruckRate.FetchByUserId(ref rates, u.id);
-							Profile profile = Profile.FromDatamodel(u, rates);
+							Datamodel.Assignment assign = null;
+							Datamodel.Assignment.FetchCurrentAssignment(ref assign, u.id);
+							Profile profile = Profile.FromDatamodel(u, rates, assign);
 
 							return new ANWI.Messaging.FullProfile(profile);
 						}
@@ -144,15 +146,23 @@ namespace FleetManager.Services {
 						List<Datamodel.User> all = null;
 						Datamodel.User.FetchAll(ref all);
 
-						List<LiteProfile> profiles = new List<LiteProfile>();
-
-						foreach (Datamodel.User user in all) {
-							Datamodel.StruckRate r = null;
-							Datamodel.StruckRate.FetchById(ref r, user.rate);
-							profiles.Add(LiteProfile.FromDatamodel(user, r));
-						}
+						List<LiteProfile> profiles = LiteProfile.FromDatamodel(all);
 
 						return new ANWI.Messaging.FullRoster(profiles);
+					}
+
+				case ANWI.Messaging.Request.Type.GetShipDetail: {
+						VesselDetails details = new VesselDetails();
+
+						List<Datamodel.User> output = null;
+						Datamodel.User.FetchAllByAssignment(ref output, req.id, true);
+						details.shipsCompany = LiteProfile.FromDatamodel(output);
+
+						output = null;
+						Datamodel.User.FetchAllByAssignment(ref output, req.id, false);
+						details.embarked = LiteProfile.FromDatamodel(output);
+
+						return new ANWI.Messaging.FullVesselDetails(details);
 					}
 			}
 

@@ -13,35 +13,13 @@ namespace ANWI.Database.Model
 
         public int id;
         public string name;
-        public int rate;
+        public bool isCompany;
 
-        private Rate _rate;
-
-        private AssignmentRole(int id, string name, int rate, Rate Rate)
+        private AssignmentRole(int id, string name, bool isCompany)
         {
             this.id = id;
             this.name = name;
-            this.rate = rate;
-
-            this._rate = Rate;
-        }
-
-        #endregion
-
-        #region Instance-Members
-
-        public Rate Rate
-        {
-            get
-            {
-                if (_rate == null)
-                    Rate.FetchById(ref _rate, rate);
-                return _rate;
-            }
-            set
-            {
-                _rate = value;
-            }
+            this.isCompany = isCompany;
         }
 
         #endregion
@@ -53,21 +31,17 @@ namespace ANWI.Database.Model
             AssignmentRole result = new AssignmentRole(
                 id: -1,
                 name: "",
-                rate: -1,
-
-                Rate: null
+                isCompany: false
             );
             return result;
         }
 
-        public static AssignmentRole Factory(int id, string name, int rate)
+        public static AssignmentRole Factory(int id, string name, bool isCompany)
         {
             AssignmentRole result = new AssignmentRole(
                 id: id,
                 name: name,
-                rate: rate,
-
-                Rate: null
+                isCompany: isCompany
             );
             return result;
         }
@@ -77,16 +51,14 @@ namespace ANWI.Database.Model
             AssignmentRole result = new AssignmentRole(
                 id: Convert.ToInt32(reader["id"]),
                 name: (string)reader["name"],
-                rate: Convert.ToInt32(reader["rate"]),
-
-                Rate: null
+                isCompany: Convert.ToBoolean(reader["isCompany"])
             );
             return result;
         }
 
-        public static bool Create(ref AssignmentRole output, string name, int rate)
+        public static bool Create(ref AssignmentRole output, string name, bool isCompany)
         {
-            int result = DBI.DoAction($"insert into AssignmentRole (name, rate) values('{name}', {rate});");
+            int result = DBI.DoAction($"insert into AssignmentRole (name, isCompany) values('{name}', {isCompany});");
             if (result == 1)
             {
                 return AssignmentRole.FetchById(ref output, DBI.LastInsertRowId);
@@ -118,7 +90,7 @@ namespace ANWI.Database.Model
 
         public static bool Store(AssignmentRole input)
         {
-            int result = DBI.DoAction($"update AssignmentRole set name = '{input.name}', rate = {input.rate} where id = {input.id};");
+            int result = DBI.DoAction($"update AssignmentRole set name = '{input.name}', isCompany = {input.isCompany} where id = {input.id};");
             if (result == 1)
                 return true;
             return false;

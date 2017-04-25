@@ -53,7 +53,7 @@ drop table if exists AssignmentRole;
 create table if not exists AssignmentRole (
  id integer not null primary key autoincrement,
  name text not null unique,
- rate integer not null references Rate(id)
+ isCompany integer not null
 );
 
 drop table if exists StruckRate;
@@ -84,7 +84,7 @@ create table if not exists Assignment (
  ship integer not null references UserShip(id),
  role integer not null references AssignmentRole(id),
  start integer not null default 0,
- until integer not null default 0
+ until integer default null
 );
 
 drop table if exists UserShip;

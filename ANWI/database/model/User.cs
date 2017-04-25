@@ -162,6 +162,19 @@ namespace ANWI.Database.Model
 			return true;
 		}
 
+		public static bool FetchAllByAssignment(ref List<User> output, int shipId, bool company) {
+			output = new List<User>();
+
+			int isCompany = Convert.ToInt32(company);
+			SQLiteDataReader reader = DBI.DoQuery($"SELECT u.id, u.name, u.auth0, u.rank, u.rate FROM User u, Assignment a, AssignmentRole ar WHERE a.user = u.id AND a.role = ar.id AND ar.isCompany = {isCompany} AND a.ship = {shipId};");
+			while(reader.Read()) {
+				User u = User.Factory(reader);
+				output.Add(u);
+			}
+
+			return true;
+		}
+
 		public static bool FetchById(ref User output, int id)
         {
             SQLiteDataReader reader = DBI.DoQuery($"select * from User where id = {id} limit 1;");

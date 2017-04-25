@@ -27,6 +27,18 @@ namespace ANWI {
 			return p;
 		}
 
+		public static List<LiteProfile> FromDatamodel(List<Datamodel.User> users) {
+			List<LiteProfile> output = new List<LiteProfile>();
+
+			foreach (Datamodel.User u in users) {
+				Datamodel.StruckRate r = null;
+				Datamodel.StruckRate.FetchById(ref r, u.rate);
+				output.Add(LiteProfile.FromDatamodel(u, r));
+			}
+
+			return output;
+		}
+
 		public string FullName { get { return rank.abbrev + " " + nickname; } }
 	}
 }

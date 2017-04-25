@@ -82,7 +82,10 @@ namespace FleetManager.Services {
 				List<Datamodel.StruckRate> rates = null;
 				Datamodel.StruckRate.FetchByUserId(ref rates, dbUser.id);
 
-				account.profile = Profile.FromDatamodel(dbUser, rates);
+				Datamodel.Assignment assign = null;
+				Datamodel.Assignment.FetchCurrentAssignment(ref assign, dbUser.id);
+
+				account.profile = Profile.FromDatamodel(dbUser, rates, assign);
 
 				using (MemoryStream stream = new MemoryStream()) {
 					MessagePackSerializer.Get<AuthenticatedAccount>().Pack(stream, account);

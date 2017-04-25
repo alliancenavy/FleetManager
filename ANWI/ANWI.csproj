@@ -83,6 +83,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assignment.cs" />
     <Compile Include="AuthenticatedAccount.cs" />
     <Compile Include="Credentials.cs" />
     <Compile Include="Database\DBI.cs" />
@@ -108,6 +109,7 @@
     <Compile Include="Messaging\FullOperationsList.cs" />
     <Compile Include="Messaging\FullProfile.cs" />
     <Compile Include="Messaging\FullRoster.cs" />
+    <Compile Include="Messaging\FullVesselDetails.cs" />
     <Compile Include="Messaging\FullVesselReg.cs" />
     <Compile Include="Messaging\IMessagePayload.cs" />
     <Compile Include="Messaging\Message.cs" />
@@ -121,6 +123,7 @@
     <Compile Include="Rate.cs" />
     <Compile Include="RosterEntry.cs" />
     <Compile Include="Vessel.cs" />
+    <Compile Include="VesselDetails.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Database\schema.sql" />

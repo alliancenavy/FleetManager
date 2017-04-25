@@ -107,7 +107,7 @@
         <TextBlock x:Name="Text_Rank" Margin="130,35,10.333,0" TextWrapping="Wrap" Text="{Binding wpfProfile.rank.name}" VerticalAlignment="Top" Height="16"/>
         <TextBlock x:Name="Text_PrimaryRate" Margin="130,51,10.333,0" TextWrapping="Wrap" Text="{Binding wpfProfile.primaryRate.FullName}" VerticalAlignment="Top" Height="16"/>
         <TextBlock x:Name="Text_TimeInServe" Margin="130,69,10.333,0" TextWrapping="Wrap" Text="Time In Service" VerticalAlignment="Top" Height="16"/>
-        <TextBlock x:Name="Text_CurrentAssignment" Margin="10,89,10.333,0" TextWrapping="Wrap" Text="ANS Unknown" VerticalAlignment="Top" Height="16"/>
+        <TextBlock x:Name="Text_CurrentAssignment" Margin="10,89,10.333,0" TextWrapping="Wrap" Text="{Binding Path=wpfProfile.assignment.FullText, FallbackValue='No Current Assignment', TargetNullValue='No Current Assignment'}" VerticalAlignment="Top" Height="16"/>
         <Image x:Name="Image_PrimaryRate" HorizontalAlignment="Left" Height="55" Margin="70,29,0,0" VerticalAlignment="Top" Width="55" OpacityMask="Black" Source="{Binding wpfProfile.primaryRate.Icon}"/>
         <ListBox x:Name="List_Rates" Height="291" Margin="10,125,10.333,0" VerticalAlignment="Top" ItemTemplate="{DynamicResource RateTemplate}" ItemsSource="{Binding wpfProfile.wpfRates}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
         <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Rates" VerticalAlignment="Top" Height="20" Width="95" FontSize="14" FontWeight="Bold" Margin="10,105,0,0"/>

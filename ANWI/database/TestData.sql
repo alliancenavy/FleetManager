@@ -86,6 +86,34 @@ INSERT INTO UserPrivs (user, canPromote, canCertify) VALUES (9,0,0);
 
 ---------------------------------------
 --Assignment roles
+INSERT INTO AssignmentRole (id, name, isCompany) VALUES (0, "Commanding Officer", 1);
+INSERT INTO AssignmentRole (id, name, isCompany) VALUES (1, "First Officer", 1);
+INSERT INTO AssignmentRole (id, name, isCompany) VALUES (2, "Chief Engineer", 1);
+INSERT INTO AssignmentRole (id, name, isCompany) VALUES (3, "Commander, Air Group", 0);
+INSERT INTO AssignmentRole (id, name, isCompany) VALUES (4, "Commander, Marine Detachment", 0);
+INSERT INTO AssignmentRole (id, name, isCompany) VALUES (5, "Helmsman", 1);
+INSERT INTO AssignmentRole (id, name, isCompany) VALUES (6, "Gunner", 1);
+INSERT INTO AssignmentRole (id, name, isCompany) VALUES (7, "Drone Operator", 1);
+INSERT INTO AssignmentRole (id, name, isCompany) VALUES (8, "Fireman", 1);
+INSERT INTO AssignmentRole (id, name, isCompany) VALUES (9, "Mechanic", 1);
+INSERT INTO AssignmentRole (id, name, isCompany) VALUES (10, "Crewman", 1);
+INSERT INTO AssignmentRole (id, name, isCompany) VALUES (11, "Pilot", 0);
+INSERT INTO AssignmentRole (id, name, isCompany) VALUES (12, "Air Crewman", 0);
+INSERT INTO AssignmentRole (id, name, isCompany) VALUES (13, "Marine", 0);
+
+---------------------------------------
+--Assignments
+INSERT INTO Assignment (id, user, ship, role) VALUES (1, 1, 1, 1);
+INSERT INTO Assignment (id, user, ship, role) VALUES (2, 2, 1, 4);
+INSERT INTO Assignment (id, user, ship, role) VALUES (3, 3, 1, 0);
+INSERT INTO Assignment (id, user, ship, role) VALUES (4, 4, 1, 11);
+INSERT INTO Assignment (id, user, ship, role) VALUES (5, 5, 1, 12);
+INSERT INTO Assignment (id, user, ship, role) VALUES (6, 6, 1, 3);
+INSERT INTO Assignment (id, user, ship, role) VALUES (7, 7, 1, 8);
+INSERT INTO Assignment (id, user, ship, role) VALUES (8, 8, 1, 13);
+INSERT INTO Assignment (id, user, ship, role) VALUES (9, 9, 1, 2);
+INSERT INTO Assignment (id, user, ship, role) VALUES (10, 10, 1, 13);
+
 
 ---------------------------------------
 --Hull Vendors
