@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ANWI {
 	public class VesselDetails {
-		public List<LiteProfile> shipsCompany;
-		public List<LiteProfile> embarked;
+		public List<LiteProfile> shipsCompany { get; set; }
+		public List<LiteProfile> embarked { get; set; }
 	}
 }

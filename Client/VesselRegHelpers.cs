@@ -27,6 +27,9 @@ namespace Client {
 			public bool isLTI { get { return v.isLTI; } }
 			public int hullNumber { get { return v.hullNumber; } }
 			public Hull hull { get { return v.wpfHull; } }
+
+			public string DetailName { get { return $"{hull.symbol}-{hullNumber}: {name}"; } }
+			public string DetailType { get { return $"{hull.type} class {hull.role}"; } }
 		}
 
 		public class UnnamedVessel : VesselRecord {

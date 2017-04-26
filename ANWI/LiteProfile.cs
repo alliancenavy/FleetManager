@@ -12,6 +12,7 @@ namespace ANWI {
 		public string nickname { get; set; }
 		public Rank rank { get; set; }
 		public Rate primaryRate { get; set; }
+		public string assignmentText { get; set; }
 
 		[MessagePackIgnore]
 		public bool isMe { get; set; } = false;

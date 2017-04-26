@@ -143,8 +143,8 @@ INSERT INTO HullRole (id, name, abrv, icon) VALUES (7, "Cutter", "C", "");
 ---------------------------------------
 --Hulls
 INSERT INTO Hull (id, vendor, role, series, symbol, ordering) VALUES (1, 2, 4, "Idris-P", "FF", 10);
-INSERT INTO Hull (id, vendor, role, series, symbol, ordering) VALUES (3, 1, 7, "Constellation Phoenix", "C", 30);
 INSERT INTO Hull (id, vendor, role, series, symbol, ordering) VALUES (2, 1, 3, "Polaris", "K", 12);
+INSERT INTO Hull (id, vendor, role, series, symbol, ordering) VALUES (3, 1, 7, "Constellation Phoenix", "M", 30);
 
 ---------------------------------------
 --Owned vessels

@@ -124,7 +124,7 @@ namespace Client {
 		}
 
 		private void Button_Close_Click(object sender, RoutedEventArgs e) {
-
+			this.Close();
 		}
 
 		private void Button_RefreshRegistry_Click(object sender, RoutedEventArgs e) {
