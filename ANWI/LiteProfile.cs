@@ -8,38 +8,74 @@ using MsgPack.Serialization;
 
 namespace ANWI {
 	public class LiteProfile {
+		#region Instance Variables
 		public int id { get; set; }
 		public string nickname { get; set; }
-		public Rank rank { get; set; }
-		public Rate primaryRate { get; set; }
-		public string assignmentText { get; set; }
+
+		private int _rankId;
+		private Rank _rank = null;
+		public Rank rank {
+			get {
+				if(_rank == null) {
+					_rank = Rank.FetchById(_rankId);
+				}
+				return _rank;
+			}
+			set { _rank = value; }
+		}
+
+		private int _primaryRateId;
+		private Rate _primaryRate = null;
+		public Rate primaryRate {
+			get {
+				if(_primaryRate == null) {
+					_primaryRate = Rate.FetchUsersRate(id, _primaryRateId);
+				}
+				return _primaryRate;
+			}
+			set { _primaryRate = value; }
+		}
+
+		private Assignment _assignment = null;
+		public Assignment assignment {
+			get {
+				if(_assignment == null) {
+					_assignment = Assignment.FetchCurrentAssignment(id);
+				}
+				return _assignment;
+			}
+			set { _assignment = value; }
+		}
 
 		[MessagePackIgnore]
 		public bool isMe { get; set; } = false;
+		#endregion
 
-		public static LiteProfile FromDatamodel(Datamodel.User u, Datamodel.StruckRate r) {
-			LiteProfile p = new LiteProfile();
-
-			p.id = u.id;
-			p.nickname = u.name;
-			p.rank = Rank.FromDatamodel(u.Rank);
-			p.primaryRate = Rate.FromDatamodel(r);
-
-			return p;
-		}
-
-		public static List<LiteProfile> FromDatamodel(List<Datamodel.User> users) {
-			List<LiteProfile> output = new List<LiteProfile>();
-
-			foreach (Datamodel.User u in users) {
-				Datamodel.StruckRate r = null;
-				Datamodel.StruckRate.FetchById(ref r, u.rate);
-				output.Add(LiteProfile.FromDatamodel(u, r));
-			}
-
-			return output;
-		}
-
+		#region WPF Helpers
 		public string FullName { get { return rank.abbrev + " " + nickname; } }
+		#endregion
+
+		#region Constructors
+		private LiteProfile() {
+			id = 0;
+			nickname = "";
+			_rankId = 0;
+			_primaryRateId = 0;
+		}
+
+		private LiteProfile(Datamodel.User u) {
+			id = u.id;
+			nickname = u.name;
+			_rankId = u.rank;
+			_primaryRateId = u.rate;
+		}
+
+		public static List<LiteProfile> FetchAll() {
+			List<Datamodel.User> dbUsers = null;
+			Datamodel.User.FetchAll(ref dbUsers);
+
+			return dbUsers.ConvertAll<LiteProfile>((a) => { return new LiteProfile(a); });
+		}
+		#endregion
 	}
 }

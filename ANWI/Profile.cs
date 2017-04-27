@@ -1,78 +1,123 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Datamodel = ANWI.Database.Model;
 using MsgPack.Serialization;
+using Datamodel = ANWI.Database.Model;
 
 namespace ANWI {
+
 	/// <summary>
 	/// A user's profile.
 	/// Incudings things like name, rank, rates, etc
 	/// </summary>
-	public class Profile : INotifyPropertyChanged {
+	public class Profile {
+
+		#region Instance Variables
 		public int id;
-		private string _nickname;
-		public string nickname {
+		public string nickname { get; set; }
+
+		private int _rankId;
+		private Rank _rank = null;
+		public Rank rank {
 			get {
-				return _nickname;
-			}
-			set {
-				if (_nickname != value) {
-					_nickname = value;
-					NotifyPropertyChanged("nickname");
+				if(_rank == null) {
+					_rank = Rank.FetchById(_rankId);
 				}
+				return _rank;
+			}
+			set { _rank = value; }
+		}
+
+		private List<Rate> _rates = null;
+		public List<Rate> rates {
+			get {
+				if(_rates == null) {
+					_rates = Rate.FetchUserRates(id);
+				}
+				return _rates;
+			}
+			set { _rates = value; }
+		}
+
+		private int _primaryRateId;
+		private Rate _primaryRate = null;
+		public Rate primaryRate {
+			get {
+				if(_primaryRate == null) {
+					_primaryRate = Rate.FetchUsersRate(id, _primaryRateId);
+				}
+				return _primaryRate;
+			}
+			set { _primaryRate = value; }
+		}
+
+		private Assignment _assignment = null;
+		public Assignment assignment {
+			get {
+				if(_assignment == null) {
+					_assignment = Assignment.FetchCurrentAssignment(id);
+				}
+				return _assignment;
 			}
 		}
-		public Rank rank { get; set; }
-		public List<Rate> rates = null;
-		public Rate primaryRate { get; set; } = Rate.UNDESIGNATED;
-		public Assignment assignment { get; set; } = null;
-		public Privs privs { get; set; } = null;
 
-		public event PropertyChangedEventHandler PropertyChanged;
+		private List<Assignment> _assignmentHistory = null;
+		public List<Assignment> assignmentHistory {
+			get {
+				if(_assignmentHistory == null) {
+					// TODO
+				}
+				return _assignmentHistory;
+			}
+			set { _assignmentHistory = value; }
+		}
 
-		[MessagePackIgnore]
-		public List<Rate> wpfRates { get { return rates; } }
+		private Privs _privs = null;
+		public Privs privs {
+			get {
+				if(_privs == null) {
+					_privs = Privs.FetchByUser(id);
+				}
+				return _privs;
+			}
+			set { _privs = value; }
+		}
+		#endregion
 
-		public Profile() {
+		#region Constructors
+		private Profile() {
 			id = 0;
 			nickname = "";
-			rank = null;
-			rates = null;
-			primaryRate = null;
-			assignment = null;
 		}
 
-		public static Profile FromDatamodel(Datamodel.User u, List<Datamodel.StruckRate> r, Datamodel.Assignment a) {
-			Profile p = new Profile();
-
-			p.id = u.id;
-			p.nickname = u.name;
-			p.rank = Rank.FromDatamodel(u.Rank);
-			p.rates = Rate.FromDatamodel(r);
-			p.privs = Privs.FromDatamodel(u.Privs);
-			p.assignment = Assignment.FromDatamodel(a);
-
-			// Go through the rate array and find which one matches the primary
-			if (r != null) {
-				for (int i = 0; i < r.Count; ++i) {
-					if (r[i].id == u.rate) {
-						p.primaryRate = Rate.FromDatamodel(r[i]);
-						break;
-					}
-				}
-			}
-
-			return p;
+		private Profile(Datamodel.User user) {
+			id = user.id;
+			nickname = user.name;
+			_rankId = user.rank;
+			_primaryRateId = user.rate;
 		}
 
-		protected void NotifyPropertyChanged(string name) {
-			if(PropertyChanged != null) {
-				PropertyChanged(this, new PropertyChangedEventArgs(name));
+		public static Profile FetchById(int id) {
+			Datamodel.User u = null;
+			if(Datamodel.User.FetchById(ref u, id)) {
+				return new Profile(u);
+			} else {
+				return null;
 			}
 		}
+
+		public static Profile FetchByAuth0(string auth0) {
+			Datamodel.User u = null;
+			if(Datamodel.User.FetchByAuth0(ref u, auth0)) {
+				return new Profile(u);
+			} else {
+				return null;
+			}
+		}
+
+
+		#endregion
 	}
 }

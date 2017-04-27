@@ -117,7 +117,7 @@ namespace ANWI.Database.Model
 			return false;
 		}
 
-		public static bool FetchNotDestroyed(ref List<UserShip> output) {
+		public static bool FetchRegistry(ref List<UserShip> output) {
 			output = new List<UserShip>();
 
 			SQLiteDataReader reader = DBI.DoQuery($"select * from UserShip;");

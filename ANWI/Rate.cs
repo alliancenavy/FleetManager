@@ -6,80 +6,113 @@ using System.Threading.Tasks;
 using Datamodel = ANWI.Database.Model;
 
 namespace ANWI {
-	public class Rate { 
-		public int id;
-		public string name;
-		public string abbrev;
-		public int rank;
-		public string date { get; set; }
-		public string expires;
+	public class Rate {
+		#region Instance Variables
+		public int rateId;
+		public int struckId;
+		public string name { get; set; }
+		public string abbrev { get; set; }
+		public int rank { get; set; }
+		// TODO: dates
+		#endregion
 
+		#region Constants
 		public static Rate UNDESIGNATED = new Rate() {
-			id = 0,
+			rateId = 0,
+			struckId = -1,
 			name = "Undesignated Spaceman",
 			abbrev = "UD",
 			rank = 3
 		};
+		#endregion
 
-		public string getClass() {
-			if (rank == 1)
-				return "1st";
-			else if (rank == 2)
-				return "2nd";
-			else
-				return "3rd";
+		#region WPF Helpers
+		public string classString {
+			get {
+				if (rank == 1)
+					return "1st";
+				else if (rank == 2)
+					return "2nd";
+				else
+					return "3rd";
+			}
 		}
 
-		public string FullName { get { return name + " " + getClass() + " Class"; } }
+		public string fullName { get { return $"{name} {classString} Class"; } }
 
-		public string FullAbbrev { get { return abbrev + rank.ToString(); } }
+		public string fullAbbrev { get { return $"{abbrev}{rank.ToString()}"; } }
 
-		public string Icon { get { return "images/rates/" + FullAbbrev + ".png";  } }
+		public string icon { get { return $"images/rates/{fullAbbrev}.png"; } }
+		#endregion
 
-		public static Rate FromDatamodel(Datamodel.StruckRate sr) {
-			if (sr == null) {
-				return UNDESIGNATED;
+		#region Constructors
+		public Rate() {
+			rateId = 0;
+			struckId = -1;
+			name = "";
+			abbrev = "";
+			rank = 0;
+		}
+
+		private Rate(Datamodel.Rate r) {
+			rateId = r.id;
+			struckId = -1;
+			name = r.name;
+			abbrev = r.abrv;
+			rank = 3;
+		}
+
+		private Rate(Datamodel.StruckRate sr) {
+			rateId = sr.rate;
+			struckId = sr.id;
+			rank = sr.rank;
+
+			Datamodel.Rate r = null;
+			if (!Datamodel.Rate.FetchById(ref r, rateId))
+				throw new ArgumentException("Struck rate does not have a valid rate id");
+
+			name = r.name;
+			abbrev = r.abrv;
+		}
+
+		public static Rate FetchByRateId(int id) {
+			Datamodel.Rate r = null;
+			if(Datamodel.Rate.FetchById(ref r, id)) {
+				return new Rate(r);
 			} else {
-				Rate r = new Rate();
-
-				r.id = sr.id;
-				r.name = sr.Rate.name;
-				r.abbrev = sr.Rate.abrv;
-				r.rank = sr.rank;
-				r.date = "TODO";
-				r.expires = "TODO";
-
-				return r;
+				return null;
 			}
 		}
 
-		public static Rate FromDatamodel(Datamodel.Rate dr) {
-			Rate r = new Rate();
-
-			r.id = dr.id;
-			r.name = dr.name;
-			r.abbrev = dr.abrv;
-			r.rank = 3;
-			r.date = "TODO";
-			r.expires = "TODO";
-
-			return r;
+		public static List<Rate> FetchAllRates() {
+			List<Datamodel.Rate> dbRates = null;
+			Datamodel.Rate.FetchAll(ref dbRates);
+			return dbRates.ConvertAll<Rate>((a) => { return new ANWI.Rate(a); });
 		}
 
-		public static List<Rate> FromDatamodel(List<Datamodel.StruckRate> l) {
-			List<Rate> lout = new List<Rate>();
-
-			if (l != null) {
-				foreach (Datamodel.StruckRate r in l) {
-					lout.Add(FromDatamodel(r));
-				}
+		public static Rate FetchUsersRate(int userId, int rateId) {
+			Datamodel.StruckRate sr = null;
+			if(Datamodel.StruckRate.FetchByUserRate(ref sr, userId, rateId)) {
+				return new Rate(sr);
+			} else {
+				return null;
 			}
-
-			return lout;
 		}
 
+		public static List<Rate> FetchUserRates(int userId) {
+			List<Datamodel.StruckRate> dbRates = null;
+			if (Datamodel.StruckRate.FetchByUserId(ref dbRates, userId)) {
+				return dbRates.ConvertAll<Rate>((a) => { return new ANWI.Rate(a); });
+			} else {
+				return null;
+			}
+		}
+
+		#endregion
+
+		#region Equality
 		public override int GetHashCode() {
-			return id.GetHashCode();
+			return rateId.GetHashCode();
 		}
 
 		public bool Equals(Rate other) {
@@ -102,5 +135,6 @@ namespace ANWI {
 		public static bool operator !=(Rate a, Rate b) {
 			return a.id != b.id;
 		}
+		#endregion
 	}
 }
