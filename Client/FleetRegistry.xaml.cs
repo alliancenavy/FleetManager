@@ -47,7 +47,7 @@ namespace Client {
 			socket = ws;
 
 			base.AddProcessor(typeof(ANWI.Messaging.FullVesselReg), LoadVesselList);
-			base.AddProcessor(typeof(ANWI.Messaging.FullVesselDetails), LoadVesselDetail);
+			base.AddProcessor(typeof(ANWI.Messaging.FullVessel), LoadVesselDetail);
 
 			FetchVesselList();
 		}
@@ -95,7 +95,7 @@ namespace Client {
 			ANWI.Messaging.Message.Send(
 				socket,
 				ANWI.Messaging.Message.Routing.FleetReg,
-				new ANWI.Messaging.Request(ANWI.Messaging.Request.Type.GetShipDetail, id));
+				new ANWI.Messaging.Request(ANWI.Messaging.Request.Type.GetVesselDetail, id));
 		}
 
 		private void LoadVesselDetail(ANWI.Messaging.IMessagePayload m) {
@@ -104,7 +104,7 @@ namespace Client {
 				Button_ViewShip.IsEnabled = true;
 			});
 
-			ANWI.Messaging.FullVesselDetails fvd = m as ANWI.Messaging.FullVesselDetails;
+			ANWI.Messaging.FullVessel fvd = m as ANWI.Messaging.FullVessel;
 			currentVessel.details = fvd.details;
 			NotifyPropertyChanged("wpfCurrentVessel");
 		}

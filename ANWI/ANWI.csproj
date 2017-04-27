@@ -100,6 +100,7 @@
     <Compile Include="Database\Model\UserShip.cs" />
     <Compile Include="Hull.cs" />
     <Compile Include="LiteProfile.cs" />
+    <Compile Include="LiteVessel.cs" />
     <Compile Include="Messaging\AddRate.cs" />
     <Compile Include="Messaging\AllCommonData.cs" />
     <Compile Include="Messaging\ChangeNickname.cs" />
@@ -109,7 +110,7 @@
     <Compile Include="Messaging\FullOperationsList.cs" />
     <Compile Include="Messaging\FullProfile.cs" />
     <Compile Include="Messaging\FullRoster.cs" />
-    <Compile Include="Messaging\FullVesselDetails.cs" />
+    <Compile Include="Messaging\FullVessel.cs" />
     <Compile Include="Messaging\FullVesselReg.cs" />
     <Compile Include="Messaging\IMessagePayload.cs" />
     <Compile Include="Messaging\Message.cs" />
@@ -122,8 +123,8 @@
     <Compile Include="Rank.cs" />
     <Compile Include="Rate.cs" />
     <Compile Include="RosterEntry.cs" />
+    <Compile Include="SharedEnums.cs" />
     <Compile Include="Vessel.cs" />
-    <Compile Include="VesselDetails.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Database\schema.sql" />

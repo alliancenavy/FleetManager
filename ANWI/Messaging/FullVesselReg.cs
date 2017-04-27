@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace ANWI.Messaging {
 	public class FullVesselReg : IMessagePayload {
-		public List<Vessel> vessels = null;
+		public List<LiteVessel> vessels = null;
 
 		public FullVesselReg() {
 			vessels = null;
 		}
 
-		public FullVesselReg(List<Vessel> v) {
+		public FullVesselReg(List<LiteVessel> v) {
 			vessels = v;
 		}
 

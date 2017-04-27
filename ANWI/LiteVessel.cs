@@ -12,9 +12,19 @@ namespace ANWI {
 		public string owner { get; set; }
 		public string name { get; set; }
 		public bool isLTI { get; set; }
-		public string hullNumber { get; set; }
-		public string hullDesc { get; set; }
 		public VesselStatus status { get; set; }
+
+		private int _hullId;
+		private Hull _hull = null;
+		public Hull hull {
+			get {
+				if(_hull == null) {
+					_hull = Hull.FetchById(_hullId);
+				}
+				return _hull;
+			}
+			set { _hull = value; }
+		}
 		#endregion
 
 		#region Constructors
@@ -23,8 +33,6 @@ namespace ANWI {
 			owner = "";
 			name = "";
 			isLTI = false;
-			hullNumber = "";
-			hullDesc = "";
 			status = VesselStatus.ACTIVE;
 		}
 
@@ -39,11 +47,7 @@ namespace ANWI {
 				throw new ArgumentException("Ship does not have valid owner ID");
 			owner = u.name;
 
-			Datamodel.Hull h = null;
-			if (!Datamodel.Hull.FetchById(ref h, s.hull))
-				throw new ArgumentException("Ship does not have valid hull ID");
-			hullNumber = $"{h.symbol}-{s.number}";
-			hullDesc = $"{h.series} class {h.role}";
+			_hullId = s.hull;
 		}
 
 		public static LiteVessel FetchById(int id) {

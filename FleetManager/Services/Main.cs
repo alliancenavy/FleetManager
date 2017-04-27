@@ -151,7 +151,7 @@ namespace FleetManager.Services {
 						return new ANWI.Messaging.FullRoster(profiles);
 					}
 
-				case ANWI.Messaging.Request.Type.GetShipDetail: {
+				case ANWI.Messaging.Request.Type.GetVesselDetail: {
 						VesselDetails details = new VesselDetails();
 
 						List<Datamodel.User> output = null;
@@ -162,7 +162,7 @@ namespace FleetManager.Services {
 						Datamodel.User.FetchAllByAssignment(ref output, req.id, false);
 						details.embarked = LiteProfile.FromDatamodel(output);
 
-						return new ANWI.Messaging.FullVesselDetails(details);
+						return new ANWI.Messaging.FullVessel(details);
 					}
 			}
 

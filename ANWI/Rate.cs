@@ -123,17 +123,17 @@ namespace ANWI {
 
 		public sealed override bool Equals(object other) {
 			if (other is Rate)
-				return (other as Rate).id == this.id;
+				return (other as Rate).rateId == this.rateId;
 			else
 				return base.Equals(other);
 		}
 
 		public static bool operator ==(Rate a, Rate b) {
-			return a.id == b.id;
+			return a.rateId == b.rateId;
 		}
 
 		public static bool operator !=(Rate a, Rate b) {
-			return a.id != b.id;
+			return a.rateId != b.rateId;
 		}
 		#endregion
 	}

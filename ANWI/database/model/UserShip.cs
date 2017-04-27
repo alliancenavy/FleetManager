@@ -77,9 +77,7 @@ namespace ANWI.Database.Model
 				number: Convert.ToInt32(reader["number"]),
 				name: (string)reader["name"],
 				status: Convert.ToInt32(reader["status"]),
-				statusDate: (string)reader["statusDate"],
-				User: null,
-				Hull: null
+				statusDate: (string)reader["statusDate"]
 			);
 			return result;
 		}
