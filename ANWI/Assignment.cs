@@ -14,17 +14,30 @@ namespace ANWI {
 
 		private int _shipId;
 		public string shipName { get; set; }
+		public string shipHullNumber { get; set; }
 
 		private int _roleId;
 		public string roleName { get; set; }
 		public bool roleIsCompany { get; set; }
 
-		// TODO: dates
+		public DateTime startDate { get; set; }
+		public bool hasEndDate { get; set; }
+		public DateTime endDate { get; set; }
 		#endregion
-
+		
 		#region WPF Helpers
-		public string fullText { get { return $"{roleName} on {shipName}"; } }
+		public string fullText { get { return $"{roleName} on {shipName} ({startDateFormatted})"; } }
 		public string shortText { get { return roleName; } }
+		public string startDateFormatted { get { return startDate.ToString("dd MMM yyyy"); } }
+		public string endDateFormatted {
+			get {
+				if (hasEndDate)
+					return endDate.ToString("dd MMM yyyy");
+				else
+					return "Present";
+			}
+		}
+		public string dateRange { get { return $"{startDateFormatted} - {endDateFormatted}"; } }
 		#endregion
 
 		#region Constructors
@@ -36,6 +49,7 @@ namespace ANWI {
 			_roleId = 0;
 			roleName = "";
 			roleIsCompany = false;
+			hasEndDate = false;
 		}
 
 		private Assignment(Datamodel.Assignment a) {
@@ -44,10 +58,11 @@ namespace ANWI {
 			_userId = a.user;
 
 			_shipId = a.ship;
-			Datamodel.UserShip ship = null;
-			if (!Datamodel.UserShip.FetchById(ref ship, _shipId))
+			Vessel ship = Vessel.FetchById(_shipId);
+			if (ship == null)
 				throw new ArgumentException("Assignment does not have valid ship ID");
 			shipName = ship.name;
+			shipHullNumber = ship.fullHullNumber;
 
 			_roleId = a.role;
 			Datamodel.AssignmentRole role = null;
@@ -55,6 +70,14 @@ namespace ANWI {
 				throw new ArgumentException("Assignment does not have valid role ID");
 			roleName = role.name;
 			roleIsCompany = role.isCompany;
+
+			startDate = DateTimeOffset.FromUnixTimeSeconds(a.from).DateTime; 
+			if (a.until != -1) {
+				hasEndDate = true;
+				endDate = DateTimeOffset.FromUnixTimeSeconds(a.until).DateTime;
+			} else {
+				hasEndDate = false;
+			}
 		}
 
 		public static Assignment FetchById(int id) {
@@ -73,6 +96,12 @@ namespace ANWI {
 			} else {
 				return null;
 			}
+		}
+
+		public static List<Assignment> FetchAssignmentHistory(int userId) {
+			List<Datamodel.Assignment> history = null;
+			Datamodel.Assignment.FetchAssignmentHistory(ref history, userId);
+			return history.ConvertAll<Assignment>((a) => { return new Assignment(a); });
 		}
 		#endregion
 	}

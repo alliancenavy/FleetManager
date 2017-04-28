@@ -103,7 +103,8 @@ INSERT INTO AssignmentRole (id, name, isCompany) VALUES (13, "Marine", 0);
 
 ---------------------------------------
 --Assignments
-INSERT INTO Assignment (id, user, ship, role) VALUES (1, 1, 1, 1);
+INSERT INTO Assignment (id, user, ship, role, start, until) VALUES (0, 1, 2, 2, 1483228800, 1488326400);
+INSERT INTO Assignment (id, user, ship, role, start) VALUES (1, 1, 1, 1, 1488326400);
 INSERT INTO Assignment (id, user, ship, role) VALUES (2, 2, 1, 4);
 INSERT INTO Assignment (id, user, ship, role) VALUES (3, 3, 1, 0);
 INSERT INTO Assignment (id, user, ship, role) VALUES (4, 4, 1, 11);

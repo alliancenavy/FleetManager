@@ -29,6 +29,10 @@ namespace ANWI {
 		}
 		#endregion
 
+		#region WPF Helpers
+		public string fullHullNumber { get { return $"{hull.symbol}-{hullNumber}"; } }
+		#endregion
+
 		#region Constructors
 		public LiteVessel() {
 			id = 0;

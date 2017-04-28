@@ -69,7 +69,7 @@ namespace ANWI {
 		public List<Assignment> assignmentHistory {
 			get {
 				if(DBI.IsOpen() && _assignmentHistory == null) {
-					// TODO
+					_assignmentHistory = Assignment.FetchAssignmentHistory(id);
 				}
 				return _assignmentHistory;
 			}

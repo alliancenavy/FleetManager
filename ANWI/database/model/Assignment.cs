@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Data.SQLite;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace ANWI.Database.Model
 {
@@ -15,10 +17,10 @@ namespace ANWI.Database.Model
 		public int user;
 		public int ship;
 		public int role;
-		public int from;
-		public int until;
+		public long from;
+		public long until;
 
-		private Assignment(int id, int user, int ship, int role, int from, int until)
+		private Assignment(int id, int user, int ship, int role, long from, long until)
 		{
 			this.id = id;
 			this.user = user;
@@ -39,13 +41,13 @@ namespace ANWI.Database.Model
 				user: -1,
 				ship: -1,
 				role: -1,
-				from: 0,
-				until: 0
+				from: -1,
+				until: -1
 			);
 			return result;
 		}
 
-		public static Assignment Factory(int id, int user, int ship, int role, int from, int until)
+		public static Assignment Factory(int id, int user, int ship, int role, long from, long until)
 		{
 
 			Assignment result = new Assignment(
@@ -66,13 +68,13 @@ namespace ANWI.Database.Model
 				user:  Convert.ToInt32(reader["user"]),
 				ship:  Convert.ToInt32(reader["ship"]),
 				role:  Convert.ToInt32(reader["role"]),
-				from:  Convert.ToInt32(reader["start"]),
-				until: 0//Convert.ToInt32(reader["until"]),
+				from:  Convert.ToInt64(reader["start"]),
+				until: Convert.ToInt64(reader["until"])
 			);
 			return result;
 		}
 
-		public static bool Create(ref Assignment output, int user, int ship, int role, int from, int until)
+		public static bool Create(ref Assignment output, int user, int ship, int role, long from, long until)
 		{
 			int result = DBI.DoAction($"insert into Assignment (user, ship, role, from, until) values({user}, {ship}, {role}, {from}, {until});");
 			if (result == 1)
@@ -84,7 +86,7 @@ namespace ANWI.Database.Model
 
 		public static bool FetchById(ref Assignment output, int id)
 		{
-			SQLiteDataReader reader = DBI.DoQuery($"select * from Assignment where id = {id} limit 1;");
+			SQLiteDataReader reader = DBI.DoQuery($"select id, user, ship, role, start, COALESCE(until, -1) as until from Assignment where id = {id} limit 1;");
 			if (reader.Read())
 			{
 				output = Assignment.Factory(reader);
@@ -94,12 +96,24 @@ namespace ANWI.Database.Model
 		}
 
 		public static bool FetchCurrentAssignment(ref Assignment output, int userId) {
-			SQLiteDataReader reader = DBI.DoQuery($"select id, user, ship, role, start, COALESCE(until, 0) from Assignment where user = {userId} and until is null limit 1;");
+			SQLiteDataReader reader = DBI.DoQuery($"select id, user, ship, role, start, COALESCE(until, -1) as until from Assignment where user = {userId} and until is null limit 1;");
 			if(reader.Read()) {
 				output = Assignment.Factory(reader);
 				return true;
 			}
 			return false;
+		}
+
+		public static bool FetchAssignmentHistory(ref List<Assignment> output, int userId) {
+			output = new List<Assignment>();
+
+			SQLiteDataReader reader = DBI.DoQuery($"select id, user, ship, role, start, COALESCE(until, -1) as until from Assignment where user = {userId} order by start desc;");
+			while(reader.Read()) {
+				Assignment a = Assignment.Factory(reader);
+				output.Add(a);
+			}
+
+			return true;
 		}
 
 		public static bool Store(Assignment input)

@@ -54,7 +54,8 @@ namespace ANWI {
 		#endregion
 
 		#region WPF Helpers
-		public string detailName { get { return $"{hull.symbol}-{hullNumber}: {name}"; } }
+		public string fullHullNumber { get { return $"{hull.symbol}-{hullNumber}"; } }
+		public string detailName { get { return $"{fullHullNumber}: {name}"; } }
 		public string detailType { get { return $"{hull.name} class {hull.role}"; } }
 		#endregion
 

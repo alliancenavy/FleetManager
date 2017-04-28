@@ -48,14 +48,7 @@
                 </Grid>
                 <TextBlock Canvas.Left="10" TextWrapping="Wrap" Text="{Binding Path=name}" Canvas.Top="10" Width="290" FontSize="14" FontWeight="Bold"/>
                 <fa:ImageAwesome x:Name="LTIIcon" Icon="Medkit" Height="19" Canvas.Right="10" Width="22" Canvas.Top="10" ToolTip="LTI"/>
-                <TextBlock Canvas.Left="260" TextWrapping="Wrap" Canvas.Top="48" Width="90" FontSize="24" FontWeight="Bold" FontFamily="Segoe UI Black" TextAlignment="Right">
-                    <TextBlock.Text>
-                        <MultiBinding StringFormat="{}{0}-{1}">
-                            <Binding Path="hull.symbol"/>
-                            <Binding Path="hullNumber"/>
-                        </MultiBinding>
-                    </TextBlock.Text>
-                </TextBlock>
+                <TextBlock Canvas.Left="260" TextWrapping="Wrap" Text="{Binding fullHullNumber}" Canvas.Top="48" Width="90" FontSize="24" FontWeight="Bold" FontFamily="Segoe UI Black" TextAlignment="Right"/>
             </Canvas>
 
             <DataTemplate.Triggers>

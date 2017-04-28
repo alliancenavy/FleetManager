@@ -80,25 +80,6 @@ namespace Client {
 			this.DataContext = this;
 			InitializeComponent();
 
-			//
-			// Populate profile sidebar with non-bound information
-	//		PropertyChanged += (sender, e) => {
-	//			if (e.PropertyName == "wpfProfile") {
-	//				// Assigned ship
-	//				Profile p = account.profile;
-	//				if (p.assignment == null) {
-	//					this.Dispatcher.Invoke(() => { Text_CurrentAssignment.Text = "No Current Assignment"; });
-	//				} else {
-	//					this.Dispatcher.Invoke(() => {
-	//						Text_CurrentAssignment.Text = p.assignedShip.name + " (" + p.assignedShip.hull.type
- //+ " class " + p.assignedShip.hull.role + ")";
-	//					});
-	//				}
-
-	//				// TODO: Time in service
-	//			}
-	//		};
-
 			wpfProfile = account.profile;
 
 			// Open connection to the main service

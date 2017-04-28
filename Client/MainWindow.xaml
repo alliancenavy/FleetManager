@@ -83,6 +83,14 @@
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
+
+        <DataTemplate x:Key="AssignmentTemplate">
+            <Canvas HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" Width="315" Background="White">
+                <TextBlock Canvas.Left="9" TextWrapping="Wrap" Text="{Binding shipHullNumber}" Canvas.Top="8" Width="90" FontSize="24" FontWeight="Bold" FontFamily="Segoe UI Black" TextAlignment="Right" Height="30"/>
+                <TextBlock Canvas.Left="111" TextWrapping="Wrap" Text="{Binding roleName}" Canvas.Top="8" Width="194"/>
+                <TextBlock Canvas.Left="111" TextWrapping="Wrap" Text="{Binding dateRange}" Canvas.Top="24" Width="194"/>
+            </Canvas>
+        </DataTemplate>
     </Window.Resources>
 
     <Grid>
@@ -121,8 +129,8 @@
         <fa:ImageAwesome x:Name="Spinner_Roster" Height="120" Icon="Cog" Spin="True" SpinDuration="10" Foreground="#FF316838" Grid.Column="1" Margin="157.667,243,149.333,304.333" Visibility="Hidden"/>
         <ListBox x:Name="List_Ops" Grid.Column="2" Height="606" Margin="9.667,40,10.667,0" VerticalAlignment="Top" ItemTemplate="{DynamicResource OpTemplate}" ItemsSource="{Binding wpfOpList}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
         <fa:ImageAwesome x:Name="Spinner_Ops" Height="120" Icon="Cog" Spin="True" SpinDuration="10" Foreground="#FF316838" Grid.Column="2" Margin="133.667,243,124.667,304.333" Visibility="Hidden"/>
-        <ListBox x:Name="List_Awards" Height="200" Margin="10,446,10.333,0" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Awards" VerticalAlignment="Top" Height="20" Width="95" FontSize="14" FontWeight="Bold" Margin="10,421,0,0"/>
+        <ListBox x:Name="List_Assignments" Height="200" Margin="10,446,10.333,0" VerticalAlignment="Top"  ItemTemplate="{DynamicResource AssignmentTemplate}" ItemsSource="{Binding wpfProfile.assignmentHistory}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Assignments" VerticalAlignment="Top" Height="20" Width="95" FontSize="14" FontWeight="Bold" Margin="10,421,0,0"/>
         <Button x:Name="Button_RefreshRoster" Content="&gt;&gt;" Margin="0,5,9.333,0" VerticalAlignment="Top" Height="25" Background="#FF316838" Foreground="White" Click="Button_RefreshRoster_Click" ToolTip="Refresh Roster" Grid.Column="1" HorizontalAlignment="Right" Width="27"/>
         <Button x:Name="Button_RefreshOps" Content="&gt;&gt;" Margin="0,5,10.667,0" VerticalAlignment="Top" Height="25" Background="#FF316838" Foreground="White" Click="Button_RefreshOps_Click" ToolTip="Refresh Ops" Grid.Column="2" HorizontalAlignment="Right" Width="27"/>
         <RadioButton x:Name="Radio_Roster_Rank" Content="Rank" Grid.Column="1" Margin="0,20,55.333,0" VerticalAlignment="Top" GroupName="RosterSort" IsChecked="True" HorizontalAlignment="Right" Width="44" Height="15"/>
