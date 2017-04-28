@@ -27,6 +27,10 @@ namespace ANWI.Database
             dbConn.Close();
         }
 
+		public static bool IsOpen() {
+			return dbConn != null;
+		}
+
         public static SQLiteDataReader DoQuery(string query)
         {
             Open();

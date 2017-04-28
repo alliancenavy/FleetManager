@@ -10,7 +10,7 @@
     <Window.Resources>
         <DataTemplate x:Key="RankItemTemplate">
             <Canvas HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="210" Background="White">
-                <Image Height="30" Width="30" Source="{Binding Path=Icon}"/>
+                <Image Height="30" Width="30" Source="{Binding Path=icon}"/>
                 <TextBlock Canvas.Left="35" TextWrapping="Wrap" Canvas.Top="7" Width="175">
                     <TextBlock.Text>
                         <MultiBinding StringFormat="{}{0} - {1} ({2})">

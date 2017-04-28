@@ -28,7 +28,7 @@ namespace Client {
 			this.DataContext = this;
 			InitializeComponent();
 
-			RosterEntry re = new RosterEntry();
+			/*RosterEntry re = new RosterEntry();
 			re.name = "Mazer Ludd";
 			re.rank = new Rank();
 			re.rank.abbrev = "CAPT";
@@ -36,7 +36,7 @@ namespace Client {
 			re.primaryRate = new Rate();
 			re.primaryRate.abbrev = "SK";
 			re.primaryRate.rank = 2;
-			roster.Add(re);
+			roster.Add(re);*/
 		}
 	}
 }

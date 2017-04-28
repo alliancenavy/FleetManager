@@ -7,26 +7,30 @@ using Datamodel = ANWI.Database.Model;
 
 namespace ANWI {
 	public class Privs {
+		#region Instance Variables
 		public bool canPromote { get; set; }
 		public bool canCertify { get; set; }
+		#endregion
 
+		#region Constructors
 		public Privs() {
 			canPromote = false;
 			canCertify = false;
 		}
 
-		public Privs(bool promote, bool certify) {
-			canPromote = promote;
-			canCertify = certify;
+		private Privs(Datamodel.UserPrivs p) {
+			canPromote = p.canPromote;
+			canCertify = p.canCertify;
 		}
 
-		public static Privs FromDatamodel(Datamodel.UserPrivs p) {
-			Privs output = new Privs();
-
-			output.canPromote = p.canPromote;
-			output.canCertify = p.canCertify;
-
-			return output;
+		public static Privs FetchByUser(int userId) {
+			Datamodel.UserPrivs p = null;
+			if(Datamodel.UserPrivs.FetchByUser(ref p, userId)) {
+				return new Privs(p);
+			} else {
+				return null;
+			}
 		}
+		#endregion
 	}
 }

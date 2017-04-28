@@ -5,41 +5,94 @@ using System.Text;
 using System.Threading.Tasks;
 using Datamodel = ANWI.Database.Model;
 using MsgPack.Serialization;
+using ANWI.Database;
 
 namespace ANWI {
 	public class LiteProfile {
+		#region Instance Variables
 		public int id { get; set; }
 		public string nickname { get; set; }
-		public Rank rank { get; set; }
-		public Rate primaryRate { get; set; }
-		public string assignmentText { get; set; }
+
+		private int _rankId;
+		private Rank _rank = null;
+		public Rank rank {
+			get {
+				if(_rank == null) {
+					_rank = Rank.FetchById(_rankId);
+				}
+				return _rank;
+			}
+			set { _rank = value; }
+		}
+
+		private int _primaryRateId;
+		private Rate _primaryRate = null;
+		public Rate primaryRate {
+			get {
+				if(DBI.IsOpen() && _primaryRate == null) {
+					_primaryRate = Rate.FetchUsersRate(id, _primaryRateId);
+				}
+				return _primaryRate;
+			}
+			set { _primaryRate = value; }
+		}
+
+		private Assignment _assignment = null;
+		public Assignment assignment {
+			get {
+				if(DBI.IsOpen() && _assignment == null) {
+					_assignment = Assignment.FetchCurrentAssignment(id);
+				}
+				return _assignment;
+			}
+			set { _assignment = value; }
+		}
 
 		[MessagePackIgnore]
 		public bool isMe { get; set; } = false;
+		#endregion
 
-		public static LiteProfile FromDatamodel(Datamodel.User u, Datamodel.StruckRate r) {
-			LiteProfile p = new LiteProfile();
+		#region WPF Helpers
+		public string fullName { get { return rank.abbrev + " " + nickname; } }
+		#endregion
 
-			p.id = u.id;
-			p.nickname = u.name;
-			p.rank = Rank.FromDatamodel(u.Rank);
-			p.primaryRate = Rate.FromDatamodel(r);
-
-			return p;
+		#region Constructors
+		public LiteProfile() {
+			id = 0;
+			nickname = "";
+			_rankId = 0;
+			_primaryRateId = 0;
 		}
 
-		public static List<LiteProfile> FromDatamodel(List<Datamodel.User> users) {
-			List<LiteProfile> output = new List<LiteProfile>();
+		private LiteProfile(Datamodel.User u) {
+			id = u.id;
+			nickname = u.name;
+			_rankId = u.rank;
+			_primaryRateId = u.rate;
+		}
 
-			foreach (Datamodel.User u in users) {
-				Datamodel.StruckRate r = null;
-				Datamodel.StruckRate.FetchById(ref r, u.rate);
-				output.Add(LiteProfile.FromDatamodel(u, r));
+		public static LiteProfile FetchById(int id) {
+			Datamodel.User u = null;
+			if(Datamodel.User.FetchById(ref u, id)) {
+				return new LiteProfile(u);
+			} else {
+				return null;
 			}
-
-			return output;
 		}
 
-		public string FullName { get { return rank.abbrev + " " + nickname; } }
+		public static List<LiteProfile> FetchAll() {
+			List<Datamodel.User> dbUsers = null;
+			Datamodel.User.FetchAll(ref dbUsers);
+
+			return dbUsers.ConvertAll<LiteProfile>((a) => { return new LiteProfile(a); });
+		}
+
+		public static List<LiteProfile> FetchByAssignment(int shipId, bool company) {
+			List<Datamodel.User> dbUsers = null;
+			Datamodel.User.FetchAllByAssignment(ref dbUsers, shipId, company);
+
+			return dbUsers.ConvertAll<LiteProfile>((a) => { return new LiteProfile(a); });
+		}
+		#endregion
 	}
 }

@@ -7,7 +7,7 @@
         xmlns:helpers="clr-namespace:Client.VesselRegHelpers"
         xmlns:fa="http://schemas.fontawesome.io/icons/" x:Class="Client.FleetRegistry"
         mc:Ignorable="d"
-        Title="FleetRegistry" Height="725.333" Width="787.5" ResizeMode="CanMinimize">
+        Title="Fleet Registry" Height="725.333" Width="787.5" ResizeMode="CanMinimize">
 
     <Window.Resources>
 
@@ -38,12 +38,12 @@
                     <TextBlock Grid.Column="1" Grid.Row="0">
                         <TextBlock.Text>
                             <MultiBinding StringFormat="{}{0} class {1}">
-                                <Binding Path="hull.type"/>
+                                <Binding Path="hull.name"/>
                                 <Binding Path="hull.role"/>
                             </MultiBinding>
                         </TextBlock.Text>
                     </TextBlock>
-                    <TextBlock Text="{Binding Path=statusString}" Grid.Column="1" Grid.Row="1"/>
+                    <TextBlock Text="{Binding Path=status.ToFriendlyString()}" Grid.Column="1" Grid.Row="1"/>
                     <TextBlock Text="{Binding Path=owner}" Grid.Column="1" Grid.Row="2"/>
                 </Grid>
                 <TextBlock Canvas.Left="10" TextWrapping="Wrap" Text="{Binding Path=name}" Canvas.Top="10" Width="290" FontSize="14" FontWeight="Bold"/>
@@ -106,9 +106,9 @@
 
         <DataTemplate x:Key="CrewTemplate">
             <Canvas x:Name="Base" HorizontalAlignment="Left" Height="45" VerticalAlignment="Top" Width="305" Background="White">
-                <Image x:Name="Image_Rank" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="25" OpacityMask="Black" Source="{Binding rank.Icon}" Canvas.Left="10" Canvas.Top="10"/>
-                <TextBlock x:Name="Text_Name" TextWrapping="Wrap" Text="{Binding FullName}" VerticalAlignment="Top" Height="16" Canvas.Left="40" Canvas.Top="7" Width="250" FontWeight="Bold"/>
-                <TextBlock x:Name="Text_Assignment" TextWrapping="Wrap" Text="{Binding Path=assignmentText, FallbackValue='Unassigned'}" VerticalAlignment="Top" Height="16" Canvas.Left="40" Canvas.Top="23" Width="250"/>
+                <Image x:Name="Image_Rank" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="25" OpacityMask="Black" Source="{Binding rank.icon}" Canvas.Left="10" Canvas.Top="10"/>
+                <TextBlock x:Name="Text_Name" TextWrapping="Wrap" Text="{Binding fullName}" VerticalAlignment="Top" Height="16" Canvas.Left="40" Canvas.Top="7" Width="250" FontWeight="Bold"/>
+                <TextBlock x:Name="Text_Assignment" TextWrapping="Wrap" Text="{Binding Path=assignment.shortText, FallbackValue='Unassigned'}" VerticalAlignment="Top" Height="16" Canvas.Left="40" Canvas.Top="23" Width="250"/>
             </Canvas>
         </DataTemplate>
     </Window.Resources>
@@ -137,23 +137,23 @@
             <Button x:Name="Button_ViewShip" Grid.Column="1" Grid.Row="0" Content="View Ship" HorizontalAlignment="Center" VerticalAlignment="Top" Width="125" Height="29" Background="#FF316838" Foreground="White" Click="Button_ViewShip_Click" Margin="5,0,4.667,0"/>
             <Button x:Name="Button_Close" Grid.Column="2" Content="Close" HorizontalAlignment="Right" VerticalAlignment="Top" Width="125" Height="29" Background="#FFB9AC60" Foreground="White" Click="Button_Close_Click"/>
         </Grid>
-        <TextBlock HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="{Binding wpfCurrentVessel.DetailName, FallbackValue='[No Ship Selected]'}" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Height="30" Width="290" Grid.Column="1"/>
-        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="10,30,0,0" TextWrapping="Wrap" Text="{Binding wpfCurrentVessel.DetailType}" VerticalAlignment="Top" Width="290" FontWeight="Bold" Height="16"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="{Binding currentVessel.detailName, FallbackValue='[No Ship Selected]'}" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Height="30" Width="290" Grid.Column="1"/>
+        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="10,30,0,0" TextWrapping="Wrap" Text="{Binding currentVessel.detailType}" VerticalAlignment="Top" Width="290" FontWeight="Bold" Height="16"/>
         <!--<fa:ImageAwesome x:Name="LTIIcon" Icon="Medkit" Canvas.Right="10" Canvas.Top="10" ToolTip="LTI" Grid.Column="1" Margin="381,10,10.333,494"/>-->
         <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="10,46,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="290" Height="16"/>
-        <ListBox x:Name="List_Company" HorizontalAlignment="Left" Height="250" Margin="10,151,0,0" VerticalAlignment="Top" Width="341" ItemTemplate="{DynamicResource CrewTemplate}" ItemsSource="{Binding wpfCurrentVessel.details.shipsCompany}" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Column="1"/>
+        <ListBox x:Name="List_Company" HorizontalAlignment="Left" Height="250" Margin="10,151,0,0" VerticalAlignment="Top" Width="341" ItemTemplate="{DynamicResource CrewTemplate}" ItemsSource="{Binding currentVessel.shipsCompany}" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Column="1"/>
         <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="10,130,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="290" FontWeight="Bold" Height="16">
             <TextBlock.Text>
                 <MultiBinding StringFormat="Ship's Company: {0}" FallbackValue="Ship's Company">
-                    <Binding Path="wpfCurrentVessel.details.shipsCompany.Count"/>
+                    <Binding Path="currentVessel.shipsCompany.Count"/>
                 </MultiBinding>
             </TextBlock.Text>
         </TextBlock>
-        <ListBox x:Name="List_Embarked" HorizontalAlignment="Left" Height="250" Margin="10,427,0,0" VerticalAlignment="Top" Width="341" ItemTemplate="{DynamicResource CrewTemplate}" ItemsSource="{Binding wpfCurrentVessel.details.embarked}" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Column="1"/>
+        <ListBox x:Name="List_Embarked" HorizontalAlignment="Left" Height="250" Margin="10,427,0,0" VerticalAlignment="Top" Width="341" ItemTemplate="{DynamicResource CrewTemplate}" ItemsSource="{Binding currentVessel.shipsEmbarked}" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Column="1"/>
         <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="10,406,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="290" FontWeight="Bold" Height="16">
             <TextBlock.Text>
                 <MultiBinding StringFormat="Embarked Personnel: {0}" FallbackValue="Embarked Personnel">
-                    <Binding Path="wpfCurrentVessel.details.embarked.Count"/>
+                    <Binding Path="currentVessel.shipsEmbarked.Count"/>
                 </MultiBinding>
             </TextBlock.Text>
         </TextBlock>

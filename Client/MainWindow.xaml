@@ -13,8 +13,8 @@
 
         <DataTemplate x:Key="RateTemplate">
             <Canvas Height="70" Width="265">
-                <Image HorizontalAlignment="Left" Height="70" VerticalAlignment="Top" Width="70" OpacityMask="Black" Source="{Binding Icon}"/>
-                <TextBlock Canvas.Left="70" TextWrapping="Wrap" Text="{Binding FullName}" Canvas.Top="10" Width="195"/>
+                <Image HorizontalAlignment="Left" Height="70" VerticalAlignment="Top" Width="70" OpacityMask="Black" Source="{Binding icon}"/>
+                <TextBlock Canvas.Left="70" TextWrapping="Wrap" Text="{Binding fullName}" Canvas.Top="10" Width="195"/>
                 <TextBlock Canvas.Left="70" TextWrapping="Wrap" Text="{Binding date}" Canvas.Top="26" Width="195"/>
                 <TextBlock Canvas.Left="70" TextWrapping="Wrap" Canvas.Top="42" Width="195">
                     <TextBlock.Text>
@@ -71,9 +71,9 @@
 
         <DataTemplate x:Key="RosterTemplate">
             <Canvas x:Name="Base" HorizontalAlignment="Left" Height="60" VerticalAlignment="Top" Width="315" Background="White">
-                <Image x:Name="Image_Rank" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" OpacityMask="Black" Source="{Binding rank.Icon}" Canvas.Left="10" Canvas.Top="10"/>
-                <Image x:Name="Image_PrimaryRate" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" OpacityMask="Black" Source="{Binding Path=primaryRate.Icon, FallbackValue={StaticResource NoImageFound}}" Canvas.Left="55" Canvas.Top="10"/>
-                <TextBlock x:Name="Text_Name" TextWrapping="Wrap" Text="{Binding FullName}" VerticalAlignment="Top" Height="16" Canvas.Left="100" Canvas.Top="10" Width="205" FontWeight="Bold"/>
+                <Image x:Name="Image_Rank" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" OpacityMask="Black" Source="{Binding rank.icon}" Canvas.Left="10" Canvas.Top="10"/>
+                <Image x:Name="Image_PrimaryRate" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" OpacityMask="Black" Source="{Binding Path=primaryRate.icon, FallbackValue={StaticResource NoImageFound}}" Canvas.Left="55" Canvas.Top="10"/>
+                <TextBlock x:Name="Text_Name" TextWrapping="Wrap" Text="{Binding fullName}" VerticalAlignment="Top" Height="16" Canvas.Left="100" Canvas.Top="10" Width="205" FontWeight="Bold"/>
                 <TextBlock x:Name="Text_Assignment" TextWrapping="Wrap" Text="Unassigned" VerticalAlignment="Top" Height="16" Canvas.Left="100" Canvas.Top="31" Width="205"/>
             </Canvas>
 
@@ -103,13 +103,13 @@
                 </MultiBinding>
             </TextBlock.Text>
         </TextBlock>
-        <Image x:Name="Image_Rank" HorizontalAlignment="Left" Height="55" Margin="10,30,0,0" VerticalAlignment="Top" Width="55" OpacityMask="Black" Source="{Binding wpfProfile.rank.Icon}"/>
+        <Image x:Name="Image_Rank" HorizontalAlignment="Left" Height="55" Margin="10,30,0,0" VerticalAlignment="Top" Width="55" OpacityMask="Black" Source="{Binding wpfProfile.rank.icon}"/>
         <TextBlock x:Name="Text_Rank" Margin="130,35,10.333,0" TextWrapping="Wrap" Text="{Binding wpfProfile.rank.name}" VerticalAlignment="Top" Height="16"/>
-        <TextBlock x:Name="Text_PrimaryRate" Margin="130,51,10.333,0" TextWrapping="Wrap" Text="{Binding wpfProfile.primaryRate.FullName}" VerticalAlignment="Top" Height="16"/>
+        <TextBlock x:Name="Text_PrimaryRate" Margin="130,51,10.333,0" TextWrapping="Wrap" Text="{Binding wpfProfile.primaryRate.fullName}" VerticalAlignment="Top" Height="16"/>
         <TextBlock x:Name="Text_TimeInServe" Margin="130,69,10.333,0" TextWrapping="Wrap" Text="Time In Service" VerticalAlignment="Top" Height="16"/>
-        <TextBlock x:Name="Text_CurrentAssignment" Margin="10,89,10.333,0" TextWrapping="Wrap" Text="{Binding Path=wpfProfile.assignment.FullText, FallbackValue='No Current Assignment', TargetNullValue='No Current Assignment'}" VerticalAlignment="Top" Height="16"/>
-        <Image x:Name="Image_PrimaryRate" HorizontalAlignment="Left" Height="55" Margin="70,29,0,0" VerticalAlignment="Top" Width="55" OpacityMask="Black" Source="{Binding wpfProfile.primaryRate.Icon}"/>
-        <ListBox x:Name="List_Rates" Height="291" Margin="10,125,10.333,0" VerticalAlignment="Top" ItemTemplate="{DynamicResource RateTemplate}" ItemsSource="{Binding wpfProfile.wpfRates}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+        <TextBlock x:Name="Text_CurrentAssignment" Margin="10,89,10.333,0" TextWrapping="Wrap" Text="{Binding Path=wpfProfile.assignment.fullText, FallbackValue='No Current Assignment', TargetNullValue='No Current Assignment'}" VerticalAlignment="Top" Height="16"/>
+        <Image x:Name="Image_PrimaryRate" HorizontalAlignment="Left" Height="55" Margin="70,29,0,0" VerticalAlignment="Top" Width="55" OpacityMask="Black" Source="{Binding wpfProfile.primaryRate.icon}"/>
+        <ListBox x:Name="List_Rates" Height="291" Margin="10,125,10.333,0" VerticalAlignment="Top" ItemTemplate="{DynamicResource RateTemplate}" ItemsSource="{Binding wpfProfile.rates}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
         <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Rates" VerticalAlignment="Top" Height="20" Width="95" FontSize="14" FontWeight="Bold" Margin="10,105,0,0"/>
         <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="30" FontSize="20" FontWeight="Bold" Margin="9.667,5,289.333,0" Grid.Column="1">
             <TextBlock.Text>Roster</TextBlock.Text>

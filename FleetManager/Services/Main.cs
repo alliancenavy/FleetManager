@@ -71,39 +71,19 @@ namespace FleetManager.Services {
 			switch(req.type) {
 				case ANWI.Messaging.Request.Type.GetCommonData: {
 						ANWI.Messaging.AllCommonData acd = new ANWI.Messaging.AllCommonData();
-
-						List<Datamodel.Rank> allRanks = null;
-						Datamodel.Rank.FetchAll(ref allRanks);
-						acd.ranks = allRanks.ConvertAll<Rank>(Rank.FromDatamodel);
-
-						List<Datamodel.Rate> allRates = null;
-						Datamodel.Rate.FetchAll(ref allRates);
-						acd.rates = allRates.ConvertAll<Rate>(Rate.FromDatamodel);
-
+						acd.ranks = Rank.FetchAll();
+						acd.rates = Rate.FetchAllRates();
 						return acd;
 					}
 
 				case ANWI.Messaging.Request.Type.GetProfile: {
-						Datamodel.User u = null;
-						if(Datamodel.User.FetchById(ref u, req.id)) {
-							List<Datamodel.StruckRate> rates = null;
-							Datamodel.StruckRate.FetchByUserId(ref rates, u.id);
-							Datamodel.Assignment assign = null;
-							Datamodel.Assignment.FetchCurrentAssignment(ref assign, u.id);
-							Profile profile = Profile.FromDatamodel(u, rates, assign);
-
-							return new ANWI.Messaging.FullProfile(profile);
-						}
+						Profile profile = Profile.FetchById(req.id);
+						return new ANWI.Messaging.FullProfile(profile);
 					}
-					break;
 
 				case ANWI.Messaging.Request.Type.GetFleet: {
-						List<Datamodel.UserShip> all = null;
-						Datamodel.UserShip.FetchNotDestroyed(ref all);
-
-						List<Vessel> vessels = all.ConvertAll<Vessel>(Vessel.FromDatamodel);
-				
-						return new ANWI.Messaging.FullVesselReg(vessels);
+						List<LiteVessel> registry = LiteVessel.FetchRegistry();
+						return new ANWI.Messaging.FullVesselReg(registry);
 					}
 
 				case ANWI.Messaging.Request.Type.GetOperations: {
@@ -143,26 +123,13 @@ namespace FleetManager.Services {
 					}
 					
 				case ANWI.Messaging.Request.Type.GetRoster: {
-						List<Datamodel.User> all = null;
-						Datamodel.User.FetchAll(ref all);
-
-						List<LiteProfile> profiles = LiteProfile.FromDatamodel(all);
-
+						List<LiteProfile> profiles = LiteProfile.FetchAll();
 						return new ANWI.Messaging.FullRoster(profiles);
 					}
 
-				case ANWI.Messaging.Request.Type.GetShipDetail: {
-						VesselDetails details = new VesselDetails();
-
-						List<Datamodel.User> output = null;
-						Datamodel.User.FetchAllByAssignment(ref output, req.id, true);
-						details.shipsCompany = LiteProfile.FromDatamodel(output);
-
-						output = null;
-						Datamodel.User.FetchAllByAssignment(ref output, req.id, false);
-						details.embarked = LiteProfile.FromDatamodel(output);
-
-						return new ANWI.Messaging.FullVesselDetails(details);
+				case ANWI.Messaging.Request.Type.GetVesselDetail: {
+						Vessel details = Vessel.FetchById(req.id);
+						return new ANWI.Messaging.FullVessel(details);
 					}
 			}
 

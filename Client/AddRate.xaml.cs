@@ -29,7 +29,7 @@ namespace Client {
 			this.DataContext = this;
 			InitializeComponent();
 
-			rateList = new ObservableCollection<Rate>(CommonData.rates.Where(x => x.id != 0));
+			rateList = new ObservableCollection<Rate>(CommonData.rates.Where(x => x.rateId != 0));
 
 			UpdateListWithRank();
 		}
@@ -37,7 +37,7 @@ namespace Client {
 		private void Button_OK_Click(object sender, RoutedEventArgs e) {
 			if (returnNewRate != null && ComboBox_Rate.SelectedItem != null) {
 				returnNewRate((
-					ComboBox_Rate.SelectedItem as Rate).id, GetSelectedRank());
+					ComboBox_Rate.SelectedItem as Rate).rateId, GetSelectedRank());
 			}
 			this.Close();
 		}

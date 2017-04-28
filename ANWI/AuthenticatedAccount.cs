@@ -14,6 +14,6 @@ namespace ANWI {
 		public string nickname;
 		public string auth0_id;
 		public string authToken;
-		public Profile profile = new Profile();
+		public Profile profile;
 	}
 }

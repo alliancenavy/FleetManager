@@ -16,7 +16,7 @@ namespace ANWI.Messaging {
 			GetFleet,
 			GetOperations,
 			GetRoster,
-			GetShipDetail
+			GetVesselDetail
 		}
 
 		public Type type { get; set; }
