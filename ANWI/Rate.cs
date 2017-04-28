@@ -143,7 +143,17 @@ namespace ANWI {
 		}
 
 		public static bool operator !=(Rate a, Rate b) {
-			return a.rateId != b.rateId;
+			if(ReferenceEquals(a, null)) {
+				if (ReferenceEquals(b, null))
+					return false;
+				else
+					return true;
+			} else {
+				if (ReferenceEquals(b, null))
+					return true;
+				else
+					return a.rateId == b.rateId;
+			}
 		}
 		#endregion
 	}

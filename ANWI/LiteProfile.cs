@@ -86,6 +86,13 @@ namespace ANWI {
 
 			return dbUsers.ConvertAll<LiteProfile>((a) => { return new LiteProfile(a); });
 		}
+
+		public static List<LiteProfile> FetchByAssignment(int shipId, bool company) {
+			List<Datamodel.User> dbUsers = null;
+			Datamodel.User.FetchAllByAssignment(ref dbUsers, shipId, company);
+
+			return dbUsers.ConvertAll<LiteProfile>((a) => { return new LiteProfile(a); });
+		}
 		#endregion
 	}
 }

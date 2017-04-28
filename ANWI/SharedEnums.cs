@@ -14,7 +14,7 @@ namespace ANWI {
 
 	public static class SharedEnumExtensions {
 
-		public static string ToString(this VesselStatus status) {
+		public static string ToFriendlyString(this VesselStatus status) {
 			switch (status) {
 				case VesselStatus.ACTIVE:
 					return "Active";

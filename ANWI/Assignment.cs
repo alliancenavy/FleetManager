@@ -24,6 +24,7 @@ namespace ANWI {
 
 		#region WPF Helpers
 		public string fullText { get { return $"{roleName} on {shipName}"; } }
+		public string shortText { get { return roleName; } }
 		#endregion
 
 		#region Constructors

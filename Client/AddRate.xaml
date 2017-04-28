@@ -12,12 +12,12 @@
         
         <DataTemplate x:Key="RateItemTemplate">
             <Canvas HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="250" Background="White">
-                <Image Height="30" Width="30" Source="{Binding Path=Icon}"/>
+                <Image Height="30" Width="30" Source="{Binding Path=icon}"/>
                 <TextBlock Canvas.Left="30" TextWrapping="Wrap" Canvas.Top="7" Width="220">
                     <TextBlock.Text>
                         <MultiBinding StringFormat="{}{0} ({1})">
-                            <Binding Path="FullName"/>
-                            <Binding Path="FullAbbrev"/>
+                            <Binding Path="fullName"/>
+                            <Binding Path="fullAbbrev"/>
                         </MultiBinding>
                     </TextBlock.Text>
                 </TextBlock>

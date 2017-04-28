@@ -102,7 +102,7 @@ namespace ANWI.Database.Model
 			output = new List<User>();
 
 			int isCompany = Convert.ToInt32(company);
-			SQLiteDataReader reader = DBI.DoQuery($"SELECT u.id, u.name, u.auth0, u.rank, u.rate FROM User u, Assignment a, AssignmentRole ar WHERE a.user = u.id AND a.role = ar.id AND ar.isCompany = {isCompany} AND a.ship = {shipId};");
+			SQLiteDataReader reader = DBI.DoQuery($"SELECT u.id, u.name, u.auth0, u.rank, u.rate FROM User u, Assignment a, AssignmentRole ar WHERE a.user = u.id AND a.role = ar.id AND ar.isCompany = {isCompany} AND a.ship = {shipId} ORDER BY ar.id ASC;");
 			while(reader.Read()) {
 				User u = User.Factory(reader);
 				output.Add(u);

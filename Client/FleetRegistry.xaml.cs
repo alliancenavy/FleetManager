@@ -30,13 +30,13 @@ namespace Client {
 		private ObservableCollection<VesselRecord> vesselList = new ObservableCollection<VesselRecord>();
 		public ObservableCollection<VesselRecord> wpfVesselList { get { return vesselList; } }
 
-		private NamedVessel currentVessel = null;
-		public NamedVessel wpfCurrentVessel {
-			get { return currentVessel; }
+		private Vessel _currentVessel = null;
+		public Vessel currentVessel {
+			get { return _currentVessel; }
 			set {
-				if(currentVessel != value) {
-					currentVessel = value;
-					NotifyPropertyChanged("wpfCurrentVessel");
+				if(_currentVessel != value) {
+					_currentVessel = value;
+					NotifyPropertyChanged("currentVessel");
 				}
 			}
 		}
@@ -104,9 +104,8 @@ namespace Client {
 				Button_ViewShip.IsEnabled = true;
 			});
 
-			//ANWI.Messaging.FullVessel fvd = m as ANWI.Messaging.FullVessel;
-			//currentVessel.details = fvd.details;
-			//NotifyPropertyChanged("wpfCurrentVessel");
+			ANWI.Messaging.FullVessel fvd = m as ANWI.Messaging.FullVessel;
+			currentVessel = fvd.vessel;
 		}
 
 		private void Button_NewShip_Click(object sender, RoutedEventArgs e) {
@@ -115,10 +114,9 @@ namespace Client {
 
 		private void Button_ViewShip_Click(object sender, RoutedEventArgs e) {
 			if(List_Fleet.SelectedItem != null) {
-				VesselRecord vr = List_Fleet.SelectedItem as VesselRecord;
-				if (vr is VesselRegHelpers.NamedVessel) {
-					wpfCurrentVessel = vr as NamedVessel;
-					FetchVesselDetail(currentVessel.id);
+				NamedVessel nv = List_Fleet.SelectedItem as NamedVessel;
+				if (nv != null) {
+					FetchVesselDetail(nv.id);
 				}
 			}
 		}

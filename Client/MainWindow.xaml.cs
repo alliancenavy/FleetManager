@@ -147,14 +147,16 @@ namespace Client {
 
 		private void Button_DeleteRate_Click(object sender, RoutedEventArgs e) {
 			Rate selected = (List_Rates.SelectedItem as Rate);
-			Confirm c = new Confirm($"Are you sure you want to delete {selected.fullName} from {currentProfile.rank.abbrev} {currentProfile.nickname}?");
-			c.yesAction += () => { DeleteRate(currentProfile.id, selected.struckId); };
-			c.ShowDialog();
+			if (selected != null) {
+				Confirm c = new Confirm($"Are you sure you want to delete {selected.fullName} from {currentProfile.rank.abbrev} {currentProfile.nickname}?");
+				c.yesAction += () => { DeleteRate(currentProfile.id, selected.struckId); };
+				c.ShowDialog();
+			}
 		}
 
 		private void Button_SetPrimaryRate_Click(object sender, RoutedEventArgs e) {
-			if (List_Rates.SelectedItem != null) {
-				Rate selected = (List_Rates.SelectedItem as Rate);
+			Rate selected = (List_Rates.SelectedItem as Rate);
+			if (selected != null) {  
 				Confirm c = new Confirm($"Are you sure you want to change your rate from {currentProfile.primaryRate.fullName} to {selected.fullName}?");
 				c.yesAction += () => { SetPrimaryRate(currentProfile.id, selected.struckId); };
 				c.ShowDialog();

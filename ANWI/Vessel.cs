@@ -34,7 +34,7 @@ namespace ANWI {
 		public List<LiteProfile> shipsCompany {
 			get {
 				if(DBI.IsOpen() && _shipsCompany == null) {
-					// TODO
+					_shipsCompany = LiteProfile.FetchByAssignment(id, true);
 				}
 				return _shipsCompany;
 			}
@@ -45,12 +45,17 @@ namespace ANWI {
 		public List<LiteProfile> shipsEmbarked {
 			get {
 				if(DBI.IsOpen() && _shipsEmbarked == null) {
-					// TODO
+					_shipsEmbarked = LiteProfile.FetchByAssignment(id, false);
 				}
 				return _shipsEmbarked;
 			}
 			set { _shipsEmbarked = value; }
 		}
+		#endregion
+
+		#region WPF Helpers
+		public string detailName { get { return $"{hull.symbol}-{hullNumber}: {name}"; } }
+		public string detailType { get { return $"{hull.name} class {hull.role}"; } }
 		#endregion
 
 		#region Constructors
@@ -70,6 +75,7 @@ namespace ANWI {
 			isLTI = Convert.ToBoolean(s.insurance);
 			hullNumber = s.number;
 			status = (VesselStatus)s.status;
+			_hullId = s.hull;
 
 			Datamodel.User u = null;
 			if (!Datamodel.User.FetchById(ref u, s.user))
