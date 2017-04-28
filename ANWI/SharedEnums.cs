@@ -10,10 +10,11 @@ namespace ANWI {
 		DESTROYED = 1,
 		DESTROYED_WAITING_REPLACEMENT = 2,
 		DRYDOCKED = 3
+	}
 
+	public static class SharedEnumExtensions {
 
-			/*public string statusString {
-		get {
+		public static string ToString(this VesselStatus status) {
 			switch (status) {
 				case VesselStatus.ACTIVE:
 					return "Active";
@@ -26,6 +27,8 @@ namespace ANWI {
 				default:
 					return "Unknown";
 			}
-		}*/
+		}
+
 	}
 }
+

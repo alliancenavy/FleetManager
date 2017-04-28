@@ -72,7 +72,7 @@ namespace Client {
 				else return 1;
 			});
 
-			foreach(Vessel v in fvr.vessels) {
+			foreach(LiteVessel v in fvr.vessels) {
 				// For now 100 will be the boundary between named and unnamed vessels
 				if (v.hull.ordering < 100) {
 					NamedVessel vr = new NamedVessel();
@@ -104,9 +104,9 @@ namespace Client {
 				Button_ViewShip.IsEnabled = true;
 			});
 
-			ANWI.Messaging.FullVessel fvd = m as ANWI.Messaging.FullVessel;
-			currentVessel.details = fvd.details;
-			NotifyPropertyChanged("wpfCurrentVessel");
+			//ANWI.Messaging.FullVessel fvd = m as ANWI.Messaging.FullVessel;
+			//currentVessel.details = fvd.details;
+			//NotifyPropertyChanged("wpfCurrentVessel");
 		}
 
 		private void Button_NewShip_Click(object sender, RoutedEventArgs e) {

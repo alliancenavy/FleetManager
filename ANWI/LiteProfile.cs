@@ -70,6 +70,15 @@ namespace ANWI {
 			_primaryRateId = u.rate;
 		}
 
+		public static LiteProfile FetchById(int id) {
+			Datamodel.User u = null;
+			if(Datamodel.User.FetchById(ref u, id)) {
+				return new LiteProfile(u);
+			} else {
+				return null;
+			}
+		}
+
 		public static List<LiteProfile> FetchAll() {
 			List<Datamodel.User> dbUsers = null;
 			Datamodel.User.FetchAll(ref dbUsers);

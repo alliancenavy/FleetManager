@@ -69,7 +69,7 @@ namespace FleetManager.Services {
 					// Create a basic profile
 					if (!Datamodel.User.Create(ref dbUser,
 						"Mazer Ludd",//user.Profile["name"].ToString(),
-						"58713654d89baa12399d5000",//user.Profile["user_id"].ToString(),
+						"auth0|58713654d89baa12399d5000",//user.Profile["user_id"].ToString(),
 						1)) {
 						logger.Error("Failed to create profile for new user");
 
@@ -78,14 +78,7 @@ namespace FleetManager.Services {
 					}
 				}
 
-				// Get their full list of rates
-				List<Datamodel.StruckRate> rates = null;
-				Datamodel.StruckRate.FetchByUserId(ref rates, dbUser.id);
-
-				Datamodel.Assignment assign = null;
-				Datamodel.Assignment.FetchCurrentAssignment(ref assign, dbUser.id);
-
-				account.profile = Profile.FromDatamodel(dbUser, rates, assign);
+				account.profile = Profile.FetchByAuth0(account.auth0_id);
 
 				using (MemoryStream stream = new MemoryStream()) {
 					MessagePackSerializer.Get<AuthenticatedAccount>().Pack(stream, account);

@@ -16,20 +16,19 @@ namespace Client {
 		}
 
 		public class NamedVessel : VesselRecord {
-			public Vessel v;
-			public VesselDetails details { get; set; } = null;
+			public LiteVessel v;
 
 			public int id { get { return v.id; } }
-			public string statusString { get { return v.statusString; } }
+			public string statusString { get { return v.status.ToString(); } }
 			public string owner { get { return v.owner; } }
 			public string name { get { return v.name; } }
-			public Vessel.VesselStatus status { get { return v.status; } }
+			public VesselStatus status { get { return v.status; } }
 			public bool isLTI { get { return v.isLTI; } }
 			public int hullNumber { get { return v.hullNumber; } }
-			public Hull hull { get { return v.wpfHull; } }
+			public Hull hull { get { return v.hull; } }
 
-			public string DetailName { get { return $"{hull.symbol}-{hullNumber}: {name}"; } }
-			public string DetailType { get { return $"{hull.type} class {hull.role}"; } }
+			//public string DetailName { get { return $"{hull.symbol}-{hullNumber}: {name}"; } }
+			//public string DetailType { get { return $"{hull.type} class {hull.role}"; } }
 		}
 
 		public class UnnamedVessel : VesselRecord {
@@ -42,7 +41,7 @@ namespace Client {
 			public List<Owner> owners;
 
 			public string manufacturer { get { return v.hull.manufacturer; } }
-			public string type { get { return v.hull.type; } }
+			public string type { get { return v.hull.name; } }
 			public int count { get { return owners.Count; } }
 		}
 	}

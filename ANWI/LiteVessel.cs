@@ -12,6 +12,7 @@ namespace ANWI {
 		public string owner { get; set; }
 		public string name { get; set; }
 		public bool isLTI { get; set; }
+		public int hullNumber { get; set; }
 		public VesselStatus status { get; set; }
 
 		private int _hullId;
@@ -33,6 +34,7 @@ namespace ANWI {
 			owner = "";
 			name = "";
 			isLTI = false;
+			hullNumber = 0;
 			status = VesselStatus.ACTIVE;
 		}
 
@@ -40,6 +42,7 @@ namespace ANWI {
 			id = s.id;
 			name = s.name;
 			isLTI = Convert.ToBoolean(s.insurance);
+			hullNumber = s.number;
 			status = (VesselStatus)s.status;
 
 			Datamodel.User u = null;
