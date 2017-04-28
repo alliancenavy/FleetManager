@@ -53,7 +53,7 @@ namespace ANWI {
 		#endregion
 
 		#region WPF Helpers
-		public string FullName { get { return rank.abbrev + " " + nickname; } }
+		public string fullName { get { return rank.abbrev + " " + nickname; } }
 		#endregion
 
 		#region Constructors

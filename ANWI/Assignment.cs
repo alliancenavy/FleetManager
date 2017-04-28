@@ -23,7 +23,7 @@ namespace ANWI {
 		#endregion
 
 		#region WPF Helpers
-		public string FullText { get { return $"{roleName} on {shipName}"; } }
+		public string fullText { get { return $"{roleName} on {shipName}"; } }
 		#endregion
 
 		#region Constructors
