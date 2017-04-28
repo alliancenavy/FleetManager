@@ -95,7 +95,7 @@ namespace ANWI {
 			if(Datamodel.StruckRate.FetchByUserRate(ref sr, userId, rateId)) {
 				return new Rate(sr);
 			} else {
-				return null;
+				return Rate.UNDESIGNATED;
 			}
 		}
 
@@ -129,7 +129,17 @@ namespace ANWI {
 		}
 
 		public static bool operator ==(Rate a, Rate b) {
-			return a.rateId == b.rateId;
+			if (ReferenceEquals(a, null)) {
+				if (ReferenceEquals(b, null))
+					return true;
+				else
+					return false;
+			} else {
+				if (ReferenceEquals(b, null))
+					return false;
+				else
+					return a.rateId == b.rateId;
+			}
 		}
 
 		public static bool operator !=(Rate a, Rate b) {

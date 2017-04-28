@@ -20,7 +20,7 @@ namespace ANWI {
 		#endregion
 
 		#region Constructors
-		private Rank() {
+		public Rank() {
 			id = 0;
 			name = "";
 			abbrev = "";

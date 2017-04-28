@@ -22,7 +22,7 @@ namespace ANWI {
 		#endregion
 
 		#region Constructors
-		private Hull() {
+		public Hull() {
 			id = 0;
 			role = "";
 			name = "";

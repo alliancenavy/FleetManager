@@ -27,7 +27,7 @@ namespace ANWI {
 		#endregion
 
 		#region Constructors
-		private Assignment() {
+		public Assignment() {
 			id = 0;
 			_userId = 0;
 			_shipId = 0;

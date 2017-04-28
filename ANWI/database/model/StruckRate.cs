@@ -82,7 +82,7 @@ namespace ANWI.Database.Model
 		}
 
 		public static bool FetchByUserRate(ref StruckRate output, int uid, int rid) {
-			SQLiteDataReader reader = DBI.DoQuery($"select * from StruckRate where user = {uid} and rate = {rid};");
+			SQLiteDataReader reader = DBI.DoQuery($"select * from StruckRate where user = {uid} and id = {rid};");
 			if (reader.Read()) {
 				output = StruckRate.Factory(reader);
 				return true;
@@ -108,7 +108,7 @@ namespace ANWI.Database.Model
 
 		public static bool FetchByRateId(ref List<StruckRate> output, int rate)
 		{
-			SQLiteDataReader reader = DBI.DoQuery($"select * from StruckRate where rate = {rate};");
+			SQLiteDataReader reader = DBI.DoQuery($"select * from StruckRate where id = {rate};");
 			if ( reader.Read() )
 			{
 				output = new List<StruckRate>();

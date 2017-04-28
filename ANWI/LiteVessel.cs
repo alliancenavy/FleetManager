@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Datamodel = ANWI.Database.Model;
+using ANWI.Database;
 
 namespace ANWI {
 	public class LiteVessel {
@@ -19,7 +20,7 @@ namespace ANWI {
 		private Hull _hull = null;
 		public Hull hull {
 			get {
-				if(_hull == null) {
+				if(DBI.IsOpen() && _hull == null) {
 					_hull = Hull.FetchById(_hullId);
 				}
 				return _hull;
@@ -29,7 +30,7 @@ namespace ANWI {
 		#endregion
 
 		#region Constructors
-		private LiteVessel() {
+		public LiteVessel() {
 			id = 0;
 			owner = "";
 			name = "";

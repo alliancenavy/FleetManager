@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MsgPack.Serialization;
 using Datamodel = ANWI.Database.Model;
+using ANWI.Database;
 
 namespace ANWI {
 
@@ -22,7 +23,7 @@ namespace ANWI {
 		private Rank _rank = null;
 		public Rank rank {
 			get {
-				if(_rank == null) {
+				if(DBI.IsOpen() && _rank == null) {
 					_rank = Rank.FetchById(_rankId);
 				}
 				return _rank;
@@ -33,7 +34,7 @@ namespace ANWI {
 		private List<Rate> _rates = null;
 		public List<Rate> rates {
 			get {
-				if(_rates == null) {
+				if(DBI.IsOpen() && _rates == null) {
 					_rates = Rate.FetchUserRates(id);
 				}
 				return _rates;
@@ -45,7 +46,7 @@ namespace ANWI {
 		private Rate _primaryRate = null;
 		public Rate primaryRate {
 			get {
-				if(_primaryRate == null) {
+				if(DBI.IsOpen() && _primaryRate == null) {
 					_primaryRate = Rate.FetchUsersRate(id, _primaryRateId);
 				}
 				return _primaryRate;
@@ -56,17 +57,18 @@ namespace ANWI {
 		private Assignment _assignment = null;
 		public Assignment assignment {
 			get {
-				if(_assignment == null) {
+				if(DBI.IsOpen() && _assignment == null) {
 					_assignment = Assignment.FetchCurrentAssignment(id);
 				}
 				return _assignment;
 			}
+			set { _assignment = value; }
 		}
 
 		private List<Assignment> _assignmentHistory = null;
 		public List<Assignment> assignmentHistory {
 			get {
-				if(_assignmentHistory == null) {
+				if(DBI.IsOpen() && _assignmentHistory == null) {
 					// TODO
 				}
 				return _assignmentHistory;
@@ -77,7 +79,7 @@ namespace ANWI {
 		private Privs _privs = null;
 		public Privs privs {
 			get {
-				if(_privs == null) {
+				if(DBI.IsOpen() && _privs == null) {
 					_privs = Privs.FetchByUser(id);
 				}
 				return _privs;
@@ -87,7 +89,7 @@ namespace ANWI {
 		#endregion
 
 		#region Constructors
-		private Profile() {
+		public Profile() {
 			id = 0;
 			nickname = "";
 		}

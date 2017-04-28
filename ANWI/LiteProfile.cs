@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Datamodel = ANWI.Database.Model;
 using MsgPack.Serialization;
+using ANWI.Database;
 
 namespace ANWI {
 	public class LiteProfile {
@@ -28,7 +29,7 @@ namespace ANWI {
 		private Rate _primaryRate = null;
 		public Rate primaryRate {
 			get {
-				if(_primaryRate == null) {
+				if(DBI.IsOpen() && _primaryRate == null) {
 					_primaryRate = Rate.FetchUsersRate(id, _primaryRateId);
 				}
 				return _primaryRate;
@@ -39,7 +40,7 @@ namespace ANWI {
 		private Assignment _assignment = null;
 		public Assignment assignment {
 			get {
-				if(_assignment == null) {
+				if(DBI.IsOpen() && _assignment == null) {
 					_assignment = Assignment.FetchCurrentAssignment(id);
 				}
 				return _assignment;
@@ -56,7 +57,7 @@ namespace ANWI {
 		#endregion
 
 		#region Constructors
-		private LiteProfile() {
+		public LiteProfile() {
 			id = 0;
 			nickname = "";
 			_rankId = 0;

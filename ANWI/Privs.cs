@@ -13,7 +13,7 @@ namespace ANWI {
 		#endregion
 
 		#region Constructors
-		private Privs() {
+		public Privs() {
 			canPromote = false;
 			canCertify = false;
 		}

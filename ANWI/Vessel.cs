@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MsgPack.Serialization;
 using Datamodel = ANWI.Database.Model;
+using ANWI.Database;
 
 namespace ANWI {
 	public class Vessel {
@@ -21,7 +22,7 @@ namespace ANWI {
 		private Hull _hull = null;
 		public Hull hull {
 			get {
-				if(_hull == null) {
+				if(DBI.IsOpen() && _hull == null) {
 					_hull = Hull.FetchById(_hullId);
 				}
 				return _hull;
@@ -32,7 +33,7 @@ namespace ANWI {
 		private List<LiteProfile> _shipsCompany = null;
 		public List<LiteProfile> shipsCompany {
 			get {
-				if(_shipsCompany == null) {
+				if(DBI.IsOpen() && _shipsCompany == null) {
 					// TODO
 				}
 				return _shipsCompany;
@@ -43,7 +44,7 @@ namespace ANWI {
 		private List<LiteProfile> _shipsEmbarked = null;
 		public List<LiteProfile> shipsEmbarked {
 			get {
-				if(_shipsEmbarked == null) {
+				if(DBI.IsOpen() && _shipsEmbarked == null) {
 					// TODO
 				}
 				return _shipsEmbarked;
@@ -53,7 +54,7 @@ namespace ANWI {
 		#endregion
 
 		#region Constructors
-		private Vessel() {
+		public Vessel() {
 			id = 0;
 			owner = "";
 			name = "";
