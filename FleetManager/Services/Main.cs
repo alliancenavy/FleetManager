@@ -32,7 +32,8 @@ namespace FleetManager.Services {
 				{ typeof(ANWI.Messaging.ChangeRank), ProcessChangeRank },
 				{ typeof(ANWI.Messaging.NewAssignment), ProcessNewAssignment },
 				{ typeof(ANWI.Messaging.EndAssignment), ProcessEndAssignment },
-				{ typeof(ANWI.Messaging.ChangeShipStatus), ProcessChangeShipStatus }
+				{ typeof(ANWI.Messaging.ChangeShipStatus), ProcessChangeShipStatus },
+				{ typeof(ANWI.Messaging.NewShip), ProcessNewShip }
 			};
 		}
 
@@ -77,6 +78,7 @@ namespace FleetManager.Services {
 						acd.ranks = Rank.FetchAll();
 						acd.rates = Rate.FetchAllRates();
 						acd.assignmentRoles = AssignmentRole.FetchAll();
+						acd.hulls = Hull.FetchAll();
 						return acd;
 					}
 
@@ -288,6 +290,23 @@ namespace FleetManager.Services {
 			}
 
 			return new ANWI.Messaging.ConfirmUpdate(success, css.shipId);
+		}
+
+		private ANWI.Messaging.IMessagePayload ProcessNewShip(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.NewShip ns = p as ANWI.Messaging.NewShip;
+
+			bool success = false;
+			Datamodel.UserShip ship = null;
+			int confirmId = 0;
+			if(Datamodel.UserShip.Create(ref ship, ns.ownerId, ns.hullId, Convert.ToInt32(ns.LTI), ns.name, (int)VesselStatus.DRYDOCKED)) {
+				success = true;
+				confirmId = ship.id;
+				logger.Info($"Created new ship {ns.name}");
+			} else {
+				logger.Error($"Failed to create new ship {ns.name}");
+			}
+
+			return new ANWI.Messaging.ConfirmUpdate(success, confirmId);
 		}
 	}
 }

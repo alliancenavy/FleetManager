@@ -5,11 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="Choose Hull" Height="111" Width="300" ResizeMode="NoResize">
+        Title="New Ship" Height="210.333" Width="300" ResizeMode="NoResize">
     <Grid>
-        <Button x:Name="Button_OK" Content="OK" HorizontalAlignment="Left" Margin="164,45,0,0" VerticalAlignment="Top" Width="57" Height="25" Background="#FF316838" Foreground="White" Click="Button_OK_Click"/>
-        <Button x:Name="Button_Cancel" Content="Cancel" HorizontalAlignment="Left" Margin="226,45,0,0" VerticalAlignment="Top" Width="57" Height="25" Background="#FF316838" Foreground="White" Click="Button_Cancel_Click"/>
-        <ComboBox x:Name="comboBox" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="273" ItemsSource="{Binding Path=hullList}"/>
+        <Button x:Name="Button_OK" Content="OK" HorizontalAlignment="Left" Margin="85,0,0,10.333" VerticalAlignment="Bottom" Width="57" Height="25" Background="#FF316838" Foreground="White" Click="Button_OK_Click"/>
+        <Button x:Name="Button_Cancel" Content="Cancel" HorizontalAlignment="Left" Margin="147,0,0,10.333" Width="57" Background="#FF316838" Foreground="White" Click="Button_Cancel_Click" Height="25" VerticalAlignment="Bottom"/>
+        <ComboBox x:Name="Combobox_Hull" Margin="10,53,11.667,0" VerticalAlignment="Top" ItemsSource="{Binding Path=wpfHullList}"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,37,0,0" TextWrapping="Wrap" Text="Hull" VerticalAlignment="Top" FontWeight="Bold"/>
+        <TextBlock  HorizontalAlignment="Left" Margin="12,11,0,0" TextWrapping="Wrap" Text="ANS" VerticalAlignment="Top" FontWeight="Bold"/>
+        <TextBox x:Name="Textbox_Name" Height="23" Margin="39,10,11.667,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+        <CheckBox x:Name="Checkbox_LTI" Content="LTI" HorizontalAlignment="Left" Margin="10,116,0,0" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,80,0,0" TextWrapping="Wrap" Text="Owner" VerticalAlignment="Top" FontWeight="Bold"/>
+        <RadioButton x:Name="Radio_OwnerMe" Content="Me" IsChecked="True" HorizontalAlignment="Left" Margin="10,96,0,0" VerticalAlignment="Top" GroupName="OwnerGroup"/>
+        <RadioButton x:Name="Radio_OwnerFleet" Content="Fleet" HorizontalAlignment="Left" Margin="52,96,0,0" VerticalAlignment="Top" GroupName="OwnerGroup"/>
 
     </Grid>
 </Window>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SQLite;
 
 namespace ANWI.Database.Model
@@ -90,6 +91,17 @@ namespace ANWI.Database.Model
 				return true;
 			}
 			return false;
+		}
+
+		public static bool FetchAll(ref List<Hull> output) {
+			output = new List<Hull>();
+
+			SQLiteDataReader reader = DBI.DoQuery($"SELECT * FROM Hull ORDER BY ordering ASC;");
+			while(reader.Read()) {
+				Hull h = Hull.Factory(reader);
+				output.Add(h);
+			}
+			return true;
 		}
 
 		public static bool Store(Hull input)

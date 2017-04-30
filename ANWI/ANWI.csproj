@@ -118,6 +118,7 @@
     <Compile Include="Messaging\IMessagePayload.cs" />
     <Compile Include="Messaging\Message.cs" />
     <Compile Include="Messaging\NewAssignment.cs" />
+    <Compile Include="Messaging\NewShip.cs" />
     <Compile Include="Messaging\RemoveAssignment.cs" />
     <Compile Include="Messaging\Request.cs" />
     <Compile Include="Messaging\SetPrimaryRate.cs" />

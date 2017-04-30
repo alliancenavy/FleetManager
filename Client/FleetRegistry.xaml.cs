@@ -124,7 +124,7 @@ namespace Client {
 		private void ProcessConfirmUpdate(ANWI.Messaging.IMessagePayload m) {
 			ANWI.Messaging.ConfirmUpdate cu = m as ANWI.Messaging.ConfirmUpdate;
 			if(cu.success) {
-				FetchVesselDetail(currentVessel.id);
+				FetchVesselDetail(cu.updatedId);
 			}
 		}
 
@@ -135,7 +135,9 @@ namespace Client {
 		}
 
 		private void Button_NewShip_Click(object sender, RoutedEventArgs e) {
-
+			NewShip ns = new NewShip();
+			ns.returnNewShip += AddNewShip;
+			ns.ShowDialog();
 		}
 
 		private void Button_ViewShip_Click(object sender, RoutedEventArgs e) {
@@ -221,6 +223,13 @@ namespace Client {
 				socket,
 				ANWI.Messaging.Message.Routing.FleetReg,
 				new ANWI.Messaging.ChangeShipStatus(id, status));
+		}
+
+		private void AddNewShip(NewShip.Parameters p) {
+			ANWI.Messaging.Message.Send(
+				socket,
+				ANWI.Messaging.Message.Routing.FleetReg,
+				new ANWI.Messaging.NewShip(p.hullId, p.name, p.isLTI, p.fleetOwned ? 0 : user.id));
 		}
 	}
 }

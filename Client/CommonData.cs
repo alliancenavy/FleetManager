@@ -11,6 +11,7 @@ namespace Client {
 		public static List<Rank> ranks { get; private set; } = null;
 		public static List<Rate> rates { get; private set; } = null;
 		public static List<AssignmentRole> assignmentRoles { get; private set; } = null;
+		public static List<Hull> hulls { get; private set; } = null;
 
 		public static bool loaded { get; private set; } = false;
 
@@ -18,6 +19,7 @@ namespace Client {
 			ranks = acd.ranks;
 			rates = acd.rates;
 			assignmentRoles = acd.assignmentRoles;
+			hulls = acd.hulls;
 
 			loaded = true;
 		}

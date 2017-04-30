@@ -101,7 +101,7 @@ namespace ANWI.Database.Model
 		}
 
 		public static bool FetchByUserRate(ref StruckRate output, int uid, int rid) {
-			SQLiteDataReader reader = DBI.DoQuery($"select id, user, rate, rank, earned, COALESCE(expires, -1) as expires from StruckRate where user = {uid} and rate = {rid};");
+			SQLiteDataReader reader = DBI.DoQuery($"select id, user, rate, rank, earned, COALESCE(expires, -1) as expires from StruckRate where user = {uid} and id = {rid};");
 			if (reader.Read()) {
 				output = StruckRate.Factory(reader);
 				return true;

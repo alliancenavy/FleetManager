@@ -21,6 +21,12 @@ namespace ANWI {
 		public string vendor { get; set; }
 		#endregion
 
+		#region WPF Helpers
+		public override string ToString() {
+			return $"{name} ({symbol})";
+		}
+		#endregion
+
 		#region Constructors
 		public Hull() {
 			id = 0;
@@ -57,6 +63,12 @@ namespace ANWI {
 			} else {
 				return null;
 			}
+		}
+
+		public static List<Hull> FetchAll() {
+			List<Datamodel.Hull> all = null;
+			Datamodel.Hull.FetchAll(ref all);
+			return all.ConvertAll<Hull>((h) => { return new Hull(h); });
 		}
 		#endregion
 	}

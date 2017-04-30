@@ -82,9 +82,9 @@ namespace ANWI.Database.Model
 			return result;
 		}
 
-		public static bool Create(ref UserShip output, int user, int hull, int insurance, int number, string name, int status, long statusDate)
+		public static bool Create(ref UserShip output, int user, int hull, int insurance, string name, int status)
 		{
-			int result = DBI.DoAction($"insert into UserShip (user, hull, insurance, number, name, status, statusDate) values ({user}, {hull}, {insurance}, {number}, '{name}', {status}, {statusDate});");
+			int result = DBI.DoAction($"insert into UserShip (user, hull, insurance, number, name, status, statusDate) values ({user}, {hull}, {insurance}, (SELECT MAX(number)+1 FROM UserShip WHERE hull = {hull}), \"{name}\", {status}, strftime('%s', 'now'));");
 
 			if (result == 1)
 			{
@@ -106,7 +106,7 @@ namespace ANWI.Database.Model
 
 		public static bool FetchByName(ref UserShip output, string name)
 		{
-			SQLiteDataReader reader = DBI.DoQuery($"select * from UserShip where name = '{name}' limit 1;");
+			SQLiteDataReader reader = DBI.DoQuery($"select * from UserShip where name = \"{name}\" limit 1;");
 			if ( reader.Read() )
 			{
 				output = UserShip.Factory(reader);
@@ -129,7 +129,7 @@ namespace ANWI.Database.Model
 
 		public static bool Store(UserShip input)
 		{
-			int result = DBI.DoAction($"update UserShip set name = '{input.name}', user = {input.user}, hull = {input.hull}, insurance = {input.insurance}, number = {input.number}, name = '{input.name}', status = {input.status}, statusDate = {input.statusDate} where id = {input.id};");
+			int result = DBI.DoAction($"update UserShip set user = {input.user}, hull = {input.hull}, insurance = {input.insurance}, number = {input.number}, name = \"{input.name}\", status = {input.status}, statusDate = {input.statusDate} where id = {input.id};");
 			if (result == 1)
 				return true;
 			return false;

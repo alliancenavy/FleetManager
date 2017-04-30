@@ -60,6 +60,7 @@ namespace ANWI.Messaging {
 		[MessagePackKnownType("enda", typeof(EndAssignment))]
 		[MessagePackKnownType("newa", typeof(NewAssignment))]
 		[MessagePackKnownType("css", typeof(ChangeShipStatus))]
+		[MessagePackKnownType("ns", typeof(NewShip))]
 		public IMessagePayload payload;
 
 		public Message() {

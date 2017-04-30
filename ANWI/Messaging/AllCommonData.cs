@@ -9,11 +9,13 @@ namespace ANWI.Messaging {
 		public List<Rank> ranks = null;
 		public List<Rate> rates = null;
 		public List<AssignmentRole> assignmentRoles = null;
+		public List<Hull> hulls = null;
 
 		public AllCommonData() {
 			ranks = null;
 			rates = null;
 			assignmentRoles = null;
+			hulls = null;
 		}
 
 		public override string ToString() {
