@@ -15,14 +15,16 @@ namespace ANWI.Database.Model
 		public int id;
 		public string name;
 		public string abrv;
-		public string icon;
+		public long rank2duration;
+		public long rank1duration;
 
-		private Rate(int id, string name, string abrv, string icon)
+		private Rate(int id, string name, string abrv, long r2dur, long r1dur)
 		{
 			this.id = id;
 			this.name = name;
 			this.abrv = abrv;
-			this.icon = icon;
+			this.rank2duration = r2dur;
+			this.rank1duration = r1dur;
 		}
 
 		#endregion
@@ -35,18 +37,20 @@ namespace ANWI.Database.Model
 				id: -1,
 				name: "",
 				abrv: "",
-				icon: ""
+				r2dur: -1,
+				r1dur: -1
 			);
 			return result;
 		}
 
-		public static Rate Factory(int id, string name, string abrv, string icon)
+		public static Rate Factory(int id, string name, string abrv, long r2dur, long r1dur)
 		{
 			Rate result = new Rate(
 				id: id,
 				name: name,
 				abrv: abrv,
-				icon: icon
+				r2dur: r2dur,
+				r1dur: r1dur
 			);
 			return result;
 		}
@@ -57,14 +61,15 @@ namespace ANWI.Database.Model
 				id: Convert.ToInt32(reader["id"]),
 				name: (string)reader["name"],
 				abrv: (string)reader["abrv"],
-				icon: (string)reader["icon"]
+				r2dur: Convert.ToInt64(reader["rank2duration"]),
+				r1dur: Convert.ToInt64(reader["rank1duration"])
 			);
 			return result;
 		}
 
-		public static bool Create(ref Rate output, string name, string abrv, string icon = "")
+		public static bool Create(ref Rate output, string name, string abrv, long r2dur, long r1dur)
 		{
-			int result = DBI.DoAction($"insert into Rate (name, abrv, icon) values('{name}', '{abrv}', '{icon}');");
+			int result = DBI.DoAction($"insert into Rate (name, abrv, rank2duration, rank1duration) values('{name}', '{abrv}', {r2dur}, {r1dur});");
 			if (result == 1)
 			{
 				return Rate.FetchById(ref output, DBI.LastInsertRowId);
@@ -107,7 +112,7 @@ namespace ANWI.Database.Model
 
 		public static bool Store(Rate input)
 		{
-			int result = DBI.DoAction($"update Rate set name = '{input.name}', abrv = '{input.abrv}', icon = '{input.icon}' where id = {input.id};");
+			int result = DBI.DoAction($"update Rate set name = '{input.name}', abrv = '{input.abrv}', rank2duration = {input.rank2duration}, rank1duration = {input.rank1duration} where id = {input.id};");
 			if (result == 1)
 				return true;
 			return false;

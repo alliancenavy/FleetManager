@@ -15,14 +15,8 @@
             <Canvas Height="70" Width="265">
                 <Image HorizontalAlignment="Left" Height="70" VerticalAlignment="Top" Width="70" OpacityMask="Black" Source="{Binding icon}"/>
                 <TextBlock Canvas.Left="70" TextWrapping="Wrap" Text="{Binding fullName}" Canvas.Top="10" Width="195"/>
-                <TextBlock Canvas.Left="70" TextWrapping="Wrap" Text="{Binding date}" Canvas.Top="26" Width="195"/>
-                <TextBlock Canvas.Left="70" TextWrapping="Wrap" Canvas.Top="42" Width="195">
-                    <TextBlock.Text>
-                        <MultiBinding StringFormat="Expires: {0}">
-                            <Binding Path="expires"/>
-                        </MultiBinding>
-                    </TextBlock.Text>
-                </TextBlock>
+                <TextBlock Canvas.Left="70" TextWrapping="Wrap" Text="{Binding wpfEarnedDate}" Canvas.Top="26" Width="195"/>
+                <TextBlock Canvas.Left="70" TextWrapping="Wrap" Text="{Binding wpfExpirationDate}" Canvas.Top="42" Width="195"/>
             </Canvas>
         </DataTemplate>
 

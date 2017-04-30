@@ -45,7 +45,8 @@ create table if not exists Rate (
  id integer not null primary key autoincrement,
  name text not null unique,
  abrv text not null unique,
- icon text not null default ''
+ rank2duration integer default 31556926,
+ rank1duration integer default 15778463
 );
 
 drop table if exists AssignmentRole;
@@ -63,6 +64,8 @@ create table if not exists StruckRate (
  user integer not null references User(id),
  rate integer not null references Rate(id),
  rank integer not null default 0,
+ earned integer not null default 0,
+ expires integer default 0
  primary key(user, rate)
 );
 

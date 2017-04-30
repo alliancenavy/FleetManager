@@ -13,7 +13,21 @@ namespace ANWI {
 		public string name { get; set; }
 		public string abbrev { get; set; }
 		public int rank { get; set; }
-		// TODO: dates
+		public DateTime earnedDate;
+		public bool hasExpirationDate;
+		public DateTime expirationDate;
+		#endregion
+
+		#region WPF Helpers
+		public string wpfEarnedDate { get { return "As of: " + earnedDate.ToString("dd MMM yyyy"); } }
+		public string wpfExpirationDate {
+			get {
+				if (hasExpirationDate)
+					return "Expires: " + expirationDate.ToString("dd MMM yyyy");
+				else
+					return "Expires: Never";
+			}
+		}
 		#endregion
 
 		#region Constants
@@ -52,6 +66,7 @@ namespace ANWI {
 			name = "";
 			abbrev = "";
 			rank = 0;
+			hasExpirationDate = false;
 		}
 
 		private Rate(Datamodel.Rate r) {
@@ -60,6 +75,7 @@ namespace ANWI {
 			name = r.name;
 			abbrev = r.abrv;
 			rank = 3;
+			hasExpirationDate = false;
 		}
 
 		private Rate(Datamodel.StruckRate sr) {
@@ -73,6 +89,14 @@ namespace ANWI {
 
 			name = r.name;
 			abbrev = r.abrv;
+
+			earnedDate = DateTimeOffset.FromUnixTimeSeconds(sr.earnedDate).DateTime;
+			if(sr.expirationDate != -1) {
+				hasExpirationDate = true;
+				expirationDate = DateTimeOffset.FromUnixTimeSeconds(sr.expirationDate).DateTime;
+			} else {
+				hasExpirationDate = false;
+			}
 		}
 
 		public static Rate FetchByRateId(int id) {
