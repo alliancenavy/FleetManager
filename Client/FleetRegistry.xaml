@@ -7,7 +7,7 @@
         xmlns:helpers="clr-namespace:Client.VesselRegHelpers"
         xmlns:fa="http://schemas.fontawesome.io/icons/" x:Class="Client.FleetRegistry"
         mc:Ignorable="d"
-        Title="Fleet Registry" Height="735.333" Width="787.5" ResizeMode="CanMinimize">
+        Title="Fleet Registry" Height="735.333" Width="807.667" ResizeMode="CanResizeWithGrip">
 
     <Window.Resources>
 
@@ -108,14 +108,14 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="208*"/>
-            <ColumnDefinition Width="183*"/>
+            <ColumnDefinition Width="416"/>
+            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <ListBox x:Name="List_Fleet" HorizontalAlignment="Left" Height="593" Margin="10,34,0,0" VerticalAlignment="Top" Width="395"  ItemsSource="{Binding Path=wpfVesselList}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+        <ListBox x:Name="List_Fleet" HorizontalAlignment="Left" Margin="10,34,0,80.333" Width="395"  ItemsSource="{Binding Path=wpfVesselList}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
         <TextBlock HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="Registered Vessels" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Height="30" Width="290"/>
         <fa:ImageAwesome x:Name="Spinner_List" Icon="Cog" Spin="True" SpinDuration="10" Margin="36,170,46,236.333" Foreground="#FF316838" Grid.Column="0" Visibility="Hidden"/>
-        <Button x:Name="Button_RefreshRegistry" Content="&gt;&gt;" Margin="0,4,9,0" VerticalAlignment="Top" Height="25" Background="#FF316838" Foreground="White" Click="Button_RefreshRegistry_Click" ToolTip="Refresh Registry" HorizontalAlignment="Right" Width="27"/>
+        <Button x:Name="Button_RefreshRegistry" Style="{StaticResource RefreshButton}" Margin="0,5,14,0" VerticalAlignment="Top" Height="25" Background="#FF316838" Foreground="White" Click="Button_RefreshRegistry_Click" ToolTip="Refresh Registry" HorizontalAlignment="Right" Width="27" RenderTransformOrigin="0.512,0.5"/>
         <Grid HorizontalAlignment="Left" Height="58" Margin="10,0,0,10.333" VerticalAlignment="Bottom" Width="392">
             <Grid.RowDefinitions>
                 <RowDefinition Height="33*"/>
@@ -130,19 +130,19 @@
             <Button x:Name="Button_ViewShip" Grid.Column="1" Grid.Row="0" Content="View Ship" HorizontalAlignment="Center" VerticalAlignment="Top" Width="125" Height="29" Background="#FF316838" Foreground="White" Click="Button_ViewShip_Click" Margin="5,0,4.667,0"/>
             <Button x:Name="Button_Close" Grid.Column="2" Content="Close" HorizontalAlignment="Right" VerticalAlignment="Top" Width="125" Height="29" Background="#FFB9AC60" Foreground="White" Click="Button_Close_Click"/>
         </Grid>
-        <TextBlock HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="{Binding currentVessel.detailName, FallbackValue='[No Ship Selected]'}" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Height="30" Width="290" Grid.Column="1"/>
-        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="10,30,0,0" TextWrapping="Wrap" Text="{Binding currentVessel.detailType}" VerticalAlignment="Top" Width="290" FontWeight="Bold" Height="16"/>
+        <TextBlock Margin="10,0" TextWrapping="Wrap" Text="{Binding currentVessel.detailName, FallbackValue='[No Ship Selected]'}" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Height="30" Grid.Column="1"/>
+        <TextBlock Grid.Column="1" Margin="10,30,10,0" TextWrapping="Wrap" Text="{Binding currentVessel.detailType}" VerticalAlignment="Top" FontWeight="Bold" Height="16"/>
         <!--<fa:ImageAwesome x:Name="LTIIcon" Icon="Medkit" Canvas.Right="10" Canvas.Top="10" ToolTip="LTI" Grid.Column="1" Margin="381,10,10.333,494"/>-->
-        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="10,46,0,0" TextWrapping="Wrap" Text="{Binding currentVessel.statusString}" VerticalAlignment="Top" Width="290" Height="16"/>
-        <ListBox x:Name="List_Company" HorizontalAlignment="Left" Height="250" Margin="10,101,0,0" VerticalAlignment="Top" Width="341" ItemTemplate="{DynamicResource CrewTemplate}" ItemsSource="{Binding currentVessel.shipsCompany}" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Column="1" SelectionChanged="List_Company_SelectionChanged"/>
-        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="10,80,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="290" FontWeight="Bold" Height="16">
+        <TextBlock Grid.Column="1" Margin="34,62,9.333,0" TextWrapping="Wrap" Text="{Binding currentVessel.statusStringWithDate}" VerticalAlignment="Top" Height="16"/>
+        <ListBox x:Name="List_Company" Height="247" Margin="10,104,15.333,0" VerticalAlignment="Top" ItemTemplate="{DynamicResource CrewTemplate}" ItemsSource="{Binding currentVessel.shipsCompany}" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Column="1" SelectionChanged="List_Company_SelectionChanged"/>
+        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="10,83,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="290" FontWeight="Bold" Height="16">
             <TextBlock.Text>
                 <MultiBinding StringFormat="Ship's Company: {0}" FallbackValue="Ship's Company">
                     <Binding Path="currentVessel.shipsCompany.Count"/>
                 </MultiBinding>
             </TextBlock.Text>
         </TextBlock>
-        <ListBox x:Name="List_Embarked" HorizontalAlignment="Left" Height="250" Margin="10,377,0,0" VerticalAlignment="Top" Width="341" ItemTemplate="{DynamicResource CrewTemplate}" ItemsSource="{Binding currentVessel.shipsEmbarked}" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Column="1" SelectionChanged="List_Embarked_SelectionChanged"/>
+        <ListBox x:Name="List_Embarked" Margin="10,377,14.667,80.333" ItemTemplate="{DynamicResource CrewTemplate}" ItemsSource="{Binding currentVessel.shipsEmbarked}" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Column="1" SelectionChanged="List_Embarked_SelectionChanged"/>
         <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="10,356,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="290" FontWeight="Bold" Height="16">
             <TextBlock.Text>
                 <MultiBinding StringFormat="Embarked Personnel: {0}" FallbackValue="Embarked Personnel">
@@ -160,8 +160,16 @@
                 <ColumnDefinition Width="19*"/>
                 <ColumnDefinition Width="18*"/>
             </Grid.ColumnDefinitions>
-            <Button x:Name="Button_AssignNew" Grid.Column="0" Grid.Row="0" Content="Assign New" IsEnabled="{Binding vesselSelected}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="125" Height="29" Background="#FF316838" Foreground="White" Click="Button_AssignNew_Click"/>
-            <Button x:Name="Button_RemoveAssigned" Grid.Column="1" Grid.Row="0" Content="Remove Assigned" IsEnabled="{Binding vesselSelected}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="125" Height="29" Background="#FF316838" Foreground="White" Click="Button_RemoveAssigned_Click" Margin="0.333,0,0,0"/>
+            <Button x:Name="Button_AssignNew" Grid.Column="0" Grid.Row="0" Content="Assign New" IsEnabled="{Binding vesselSelectedAssign}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="125" Height="29" Background="#FF316838" Foreground="White" Click="Button_AssignNew_Click"/>
+            <Button x:Name="Button_RemoveAssigned" Grid.Column="1" Grid.Row="0" Content="Remove Assigned" IsEnabled="{Binding vesselSelectedAssign}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="125" Height="29" Background="#FF316838" Foreground="White" Click="Button_RemoveAssigned_Click" Margin="0.333,0,0,0"/>
         </Grid>
+        <Button x:Name="Button_EditStatus" Style="{StaticResource EditButton}" Content="Button" Grid.Column="1" IsEnabled="{Binding vesselSelectedStatus}" HorizontalAlignment="Left" Margin="10,62,0,0" VerticalAlignment="Top" Width="19" Height="16" Click="Button_EditStatus_Click"/>
+        <TextBlock Grid.Column="1" Margin="10,46,8.333,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="16">
+            <TextBlock.Text>
+                <MultiBinding StringFormat="Owned by {0}">
+                    <Binding Path="currentVessel.ownerName"/>
+                </MultiBinding>
+            </TextBlock.Text>
+        </TextBlock>
     </Grid>
 </local:MailboxWindow>

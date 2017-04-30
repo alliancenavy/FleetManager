@@ -19,9 +19,9 @@ namespace ANWI.Database.Model
 		public int number;
 		public string name;
 		public int status;
-		public string statusDate;
+		public long statusDate;
 		
-		private UserShip(int id, int user, int hull, int insurance, int number, string name, int status, string statusDate)
+		private UserShip(int id, int user, int hull, int insurance, int number, string name, int status, long statusDate)
 		{
 			this.id = id;
 			this.user = user;
@@ -47,12 +47,12 @@ namespace ANWI.Database.Model
 				number: 0,
 				name: "",
 				status: 0,
-				statusDate: ""
+				statusDate: 0
 			);
 			return result;
 		}
 
-		public static UserShip Factory(int id, int user, int hull, int insurance, int number, string name, int status, string statusDate)
+		public static UserShip Factory(int id, int user, int hull, int insurance, int number, string name, int status, long statusDate)
 		{
 
 			UserShip result = new UserShip(
@@ -77,14 +77,14 @@ namespace ANWI.Database.Model
 				number: Convert.ToInt32(reader["number"]),
 				name: (string)reader["name"],
 				status: Convert.ToInt32(reader["status"]),
-				statusDate: (string)reader["statusDate"]
+				statusDate: Convert.ToInt64(reader["statusDate"])
 			);
 			return result;
 		}
 
-		public static bool Create(ref UserShip output, int user, int hull, int insurance, int number, string name, int status, string statusDate)
+		public static bool Create(ref UserShip output, int user, int hull, int insurance, int number, string name, int status, long statusDate)
 		{
-			int result = DBI.DoAction($"insert into UserShip (user, hull, insurance, number, name, status, statusDate) values ({user}, {hull}, {insurance}, {number}, '{name}', {status}, '{statusDate}');");
+			int result = DBI.DoAction($"insert into UserShip (user, hull, insurance, number, name, status, statusDate) values ({user}, {hull}, {insurance}, {number}, '{name}', {status}, {statusDate});");
 
 			if (result == 1)
 			{
@@ -129,10 +129,18 @@ namespace ANWI.Database.Model
 
 		public static bool Store(UserShip input)
 		{
-			int result = DBI.DoAction($"update UserShip set name = '{input.name}', user = {input.user}, hull = {input.hull}, insurance = {input.insurance}, number = {input.number}, name = '{input.name}', status = {input.status}, statusDate = '{input.statusDate}' where id = {input.id};");
+			int result = DBI.DoAction($"update UserShip set name = '{input.name}', user = {input.user}, hull = {input.hull}, insurance = {input.insurance}, number = {input.number}, name = '{input.name}', status = {input.status}, statusDate = {input.statusDate} where id = {input.id};");
 			if (result == 1)
 				return true;
 			return false;
+		}
+
+		public static bool StoreUpdateStatus(UserShip input) {
+			int result = DBI.DoAction($"UPDATE UserShip SET status = {input.status}, statusDate = strftime('%s', 'now') WHERE id = {input.id};");
+			if (result == 1)
+				return true;
+			else
+				return false;
 		}
 
 		#endregion

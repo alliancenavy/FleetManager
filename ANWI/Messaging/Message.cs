@@ -59,6 +59,7 @@ namespace ANWI.Messaging {
 		[MessagePackKnownType("fvd", typeof(FullVessel))]
 		[MessagePackKnownType("enda", typeof(EndAssignment))]
 		[MessagePackKnownType("newa", typeof(NewAssignment))]
+		[MessagePackKnownType("css", typeof(ChangeShipStatus))]
 		public IMessagePayload payload;
 
 		public Message() {

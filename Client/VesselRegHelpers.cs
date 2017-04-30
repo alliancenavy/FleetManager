@@ -19,16 +19,15 @@ namespace Client {
 			public LiteVessel v;
 
 			public int id { get { return v.id; } }
-			public string statusString { get { return v.status.ToString(); } }
+			public string statusString { get { return v.status.ToFriendlyString(); } }
 			public string owner { get { return v.owner; } }
 			public string name { get { return v.name; } }
 			public VesselStatus status { get { return v.status; } }
 			public bool isLTI { get { return v.isLTI; } }
 			public int hullNumber { get { return v.hullNumber; } }
 			public Hull hull { get { return v.hull; } }
-
-			//public string DetailName { get { return $"{hull.symbol}-{hullNumber}: {name}"; } }
-			//public string DetailType { get { return $"{hull.type} class {hull.role}"; } }
+			
+			public string fullHullNumber { get { return v.fullHullNumber; } }
 		}
 
 		public class UnnamedVessel : VesselRecord {

@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="NewAssignment" Height="381" Width="318.333">
+        Title="New Assignment" Height="381" Width="318.333">
     <Window.Resources>
 
         <DataTemplate x:Key="RosterTemplate">

@@ -162,7 +162,7 @@ namespace Client {
 
 		private void Button_OpenFleetReg_Click(object sender, RoutedEventArgs e) {
 			if (fleetReg == null) {
-				fleetReg = new FleetRegistry(socket, account.profile.privs);
+				fleetReg = new FleetRegistry(socket, account.profile);
 				fleetReg.OnClose += (t) => { fleetReg = null; };
 				fleetReg.Show();
 			}

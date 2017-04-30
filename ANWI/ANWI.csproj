@@ -107,6 +107,7 @@
     <Compile Include="Messaging\AllCommonData.cs" />
     <Compile Include="Messaging\ChangeNickname.cs" />
     <Compile Include="Messaging\ChangeRank.cs" />
+    <Compile Include="Messaging\ChangeShipStatus.cs" />
     <Compile Include="Messaging\ConfirmUpdate.cs" />
     <Compile Include="Messaging\DeleteRate.cs" />
     <Compile Include="Messaging\FullOperationsList.cs" />

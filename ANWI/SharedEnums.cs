@@ -9,7 +9,8 @@ namespace ANWI {
 		ACTIVE = 0,
 		DESTROYED = 1,
 		DESTROYED_WAITING_REPLACEMENT = 2,
-		DRYDOCKED = 3
+		DRYDOCKED = 3,
+		DECOMMISSIONED = 4
 	}
 
 	public static class SharedEnumExtensions {
@@ -24,6 +25,8 @@ namespace ANWI {
 					return "Destroyed (Awaiting Replacement)";
 				case VesselStatus.DRYDOCKED:
 					return "Drydocked";
+				case VesselStatus.DECOMMISSIONED:
+					return "Decommissioned/Sold";
 				default:
 					return "Unknown";
 			}

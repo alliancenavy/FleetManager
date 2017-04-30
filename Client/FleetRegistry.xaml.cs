@@ -26,7 +26,7 @@ namespace Client {
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		private WebSocket socket = null;
-		private Privs privs = null;
+		private Profile user = null;
 
 		private ObservableCollection<VesselRecord> vesselList = new ObservableCollection<VesselRecord>();
 		public ObservableCollection<VesselRecord> wpfVesselList { get { return vesselList; } }
@@ -40,17 +40,19 @@ namespace Client {
 				if(_currentVessel != value) {
 					_currentVessel = value;
 					NotifyPropertyChanged("currentVessel");
-					NotifyPropertyChanged("vesselSelected");
+					NotifyPropertyChanged("vesselSelectedAssign");
+					NotifyPropertyChanged("vesselSelectedStatus");
 				}
 			}
 		}
-		public bool vesselSelected { get { return _currentVessel != null && privs.canAssign; } }
+		public bool vesselSelectedAssign { get { return _currentVessel != null && user.privs.canAssign; } }
+		public bool vesselSelectedStatus { get { return _currentVessel != null && (_currentVessel.ownerId == user.id || user.privs.isFleetAdmin); } }
 
-		public FleetRegistry(WebSocket ws, Privs privs) {
+		public FleetRegistry(WebSocket ws, Profile user) {
 			this.DataContext = this;
 			InitializeComponent();
 			socket = ws;
-			this.privs = privs;
+			this.user = user;
 
 			base.AddProcessor(typeof(ANWI.Messaging.FullVesselReg), LoadVesselList);
 			base.AddProcessor(typeof(ANWI.Messaging.FullVessel), LoadVesselDetail);
@@ -61,7 +63,10 @@ namespace Client {
 		}
 
 		private void FetchVesselList() {
-			this.Dispatcher.Invoke(() => { Spinner_List.Visibility = Visibility.Visible; });
+			this.Dispatcher.Invoke(() => {
+				vesselList.Clear();
+				Spinner_List.Visibility = Visibility.Visible;
+			});
 
 			ANWI.Messaging.Message.Send(
 				socket,
@@ -147,8 +152,22 @@ namespace Client {
 			this.Close();
 		}
 
-		private void Button_RefreshRegistry_Click(object sender, RoutedEventArgs e) {
+		private void Button_EditStatus_Click(object sender, RoutedEventArgs e) {
+			List<string> statuses = new List<string>() {
+				VesselStatus.ACTIVE.ToFriendlyString(),
+				VesselStatus.DESTROYED.ToFriendlyString(),
+				VesselStatus.DESTROYED_WAITING_REPLACEMENT.ToFriendlyString(),
+				VesselStatus.DRYDOCKED.ToFriendlyString(),
+				VesselStatus.DECOMMISSIONED.ToFriendlyString()
+			};
 
+			SimpleDropdownSelect select = new SimpleDropdownSelect(statuses);
+			select.returnSelected += (s) => { UpdateShipStatus(currentVessel.id, (VesselStatus)s); };
+			select.ShowDialog();
+		}
+
+		private void Button_RefreshRegistry_Click(object sender, RoutedEventArgs e) {
+			FetchVesselList();
 		}
 
 		public void NotifyPropertyChanged(string name) {
@@ -195,6 +214,13 @@ namespace Client {
 				socket,
 				ANWI.Messaging.Message.Routing.FleetReg,
 				new ANWI.Messaging.NewAssignment(userId, currentVessel.id, roleId));
+		}
+
+		private void UpdateShipStatus(int id, VesselStatus status) {
+			ANWI.Messaging.Message.Send(
+				socket,
+				ANWI.Messaging.Message.Routing.FleetReg,
+				new ANWI.Messaging.ChangeShipStatus(id, status));
 		}
 	}
 }

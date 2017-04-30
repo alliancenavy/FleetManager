@@ -31,7 +31,8 @@ namespace FleetManager.Services {
 				{ typeof(ANWI.Messaging.SetPrimaryRate), ProcessSetPrimaryRate },
 				{ typeof(ANWI.Messaging.ChangeRank), ProcessChangeRank },
 				{ typeof(ANWI.Messaging.NewAssignment), ProcessNewAssignment },
-				{ typeof(ANWI.Messaging.EndAssignment), ProcessEndAssignment }
+				{ typeof(ANWI.Messaging.EndAssignment), ProcessEndAssignment },
+				{ typeof(ANWI.Messaging.ChangeShipStatus), ProcessChangeShipStatus }
 			};
 		}
 
@@ -267,6 +268,26 @@ namespace FleetManager.Services {
 			}
 
 			return new ANWI.Messaging.ConfirmUpdate(success, es.assignmentId);
+		}
+
+		private ANWI.Messaging.IMessagePayload ProcessChangeShipStatus(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.ChangeShipStatus css = p as ANWI.Messaging.ChangeShipStatus;
+
+			bool success = false;
+			Datamodel.UserShip ship = null;
+			if(Datamodel.UserShip.FetchById(ref ship, css.shipId)) {
+				ship.status = (int)css.status;
+				if(Datamodel.UserShip.StoreUpdateStatus(ship)) {
+					success = true;
+					logger.Info($"Updated ship {css.shipId} status to {css.status}");
+				} else {
+					logger.Error($"Failed to update status for ship {css.shipId}");
+				}
+			} else {
+				logger.Error($"Failed to fetch ship {css.shipId} to update status");
+			}
+
+			return new ANWI.Messaging.ConfirmUpdate(success, css.shipId);
 		}
 	}
 }

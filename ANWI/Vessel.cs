@@ -12,11 +12,13 @@ namespace ANWI {
 
 		#region Instance Variables
 		public int id;
-		public string owner { get; set; }
+		public int ownerId { get; set; }
+		public string ownerName { get; set; }
 		public string name { get; set; }
 		public bool isLTI { get; set; }
 		public int hullNumber { get; set; }
 		public VesselStatus status { get; set; }
+		public DateTime statusDate;
 
 		private int _hullId;
 		private Hull _hull = null;
@@ -58,12 +60,15 @@ namespace ANWI {
 		public string detailName { get { return $"{fullHullNumber}: {name}"; } }
 		public string detailType { get { return $"{hull.name} class {hull.role}"; } }
 		public string statusString { get { return status.ToFriendlyString(); } }
+		public string statusStringWithDate { get { return $"{status.ToFriendlyString()} as of {statusDateString}"; } }
+		public string statusDateString { get { return statusDate.ToString("dd MMM yyyy"); } }
 		#endregion
 
 		#region Constructors
 		public Vessel() {
 			id = 0;
-			owner = "";
+			ownerId = 0;
+			ownerName = "";
 			name = "";
 			isLTI = false;
 			hullNumber = 0;
@@ -77,12 +82,14 @@ namespace ANWI {
 			isLTI = Convert.ToBoolean(s.insurance);
 			hullNumber = s.number;
 			status = (VesselStatus)s.status;
+			statusDate = DateTimeOffset.FromUnixTimeSeconds(s.statusDate).DateTime;
 			_hullId = s.hull;
 
 			Datamodel.User u = null;
 			if (!Datamodel.User.FetchById(ref u, s.user))
 				throw new ArgumentException("Ship does not have valid owner ID");
-			owner = u.name;
+			ownerId = u.id;
+			ownerName = u.name;
 		}
 
 		public static Vessel FetchById(int id) {
