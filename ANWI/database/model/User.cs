@@ -102,7 +102,19 @@ namespace ANWI.Database.Model
 			output = new List<User>();
 
 			int isCompany = Convert.ToInt32(company);
-			SQLiteDataReader reader = DBI.DoQuery($"SELECT u.id, u.name, u.auth0, u.rank, u.rate FROM User u, Assignment a, AssignmentRole ar WHERE a.user = u.id AND a.role = ar.id AND ar.isCompany = {isCompany} AND a.ship = {shipId} ORDER BY ar.id ASC;");
+			SQLiteDataReader reader = DBI.DoQuery($"SELECT u.id, u.name, u.auth0, u.rank, u.rate FROM User u, Assignment a, AssignmentRole ar WHERE a.user = u.id AND a.role = ar.id AND ar.isCompany = {isCompany} AND a.ship = {shipId} AND a.until is null ORDER BY ar.id ASC;");
+			while(reader.Read()) {
+				User u = User.Factory(reader);
+				output.Add(u);
+			}
+
+			return true;
+		}
+
+		public static bool FetchAllUnassigned(ref List<User> output) {
+			output = new List<User>();
+
+			SQLiteDataReader reader = DBI.DoQuery("SELECT u.id, u.name, u.auth0, u.rank, u.rate FROM User u WHERE u.id NOT IN (SELECT user FROM Assignment WHERE until IS NULL) AND u.id != 0;");
 			while(reader.Read()) {
 				User u = User.Factory(reader);
 				output.Add(u);

@@ -10,17 +10,20 @@ namespace ANWI {
 		#region Instance Variables
 		public bool canPromote { get; set; }
 		public bool canCertify { get; set; }
+		public bool canAssign { get; set; }
 		#endregion
 
 		#region Constructors
 		public Privs() {
 			canPromote = false;
 			canCertify = false;
+			canAssign = false;
 		}
 
 		private Privs(Datamodel.UserPrivs p) {
 			canPromote = p.canPromote;
 			canCertify = p.canCertify;
+			canAssign = p.canAssign;
 		}
 
 		public static Privs FetchByUser(int userId) {

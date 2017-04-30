@@ -57,6 +57,7 @@ namespace ANWI {
 		public string fullHullNumber { get { return $"{hull.symbol}-{hullNumber}"; } }
 		public string detailName { get { return $"{fullHullNumber}: {name}"; } }
 		public string detailType { get { return $"{hull.name} class {hull.role}"; } }
+		public string statusString { get { return status.ToFriendlyString(); } }
 		#endregion
 
 		#region Constructors

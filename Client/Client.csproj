@@ -122,6 +122,9 @@
     <Compile Include="ModalText.xaml.cs">
       <DependentUpon>ModalText.xaml</DependentUpon>
     </Compile>
+    <Compile Include="NewAssignment.xaml.cs">
+      <DependentUpon>NewAssignment.xaml</DependentUpon>
+    </Compile>
     <Compile Include="NewShip.xaml.cs">
       <DependentUpon>NewShip.xaml</DependentUpon>
     </Compile>
@@ -170,6 +173,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="ModalText.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="NewAssignment.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

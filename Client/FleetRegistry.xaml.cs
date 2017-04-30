@@ -26,9 +26,12 @@ namespace Client {
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		private WebSocket socket = null;
+		private Privs privs = null;
 
 		private ObservableCollection<VesselRecord> vesselList = new ObservableCollection<VesselRecord>();
 		public ObservableCollection<VesselRecord> wpfVesselList { get { return vesselList; } }
+
+		private NewAssignment newAssignmentWindow = null;
 
 		private Vessel _currentVessel = null;
 		public Vessel currentVessel {
@@ -37,17 +40,22 @@ namespace Client {
 				if(_currentVessel != value) {
 					_currentVessel = value;
 					NotifyPropertyChanged("currentVessel");
+					NotifyPropertyChanged("vesselSelected");
 				}
 			}
 		}
+		public bool vesselSelected { get { return _currentVessel != null && privs.canAssign; } }
 
-		public FleetRegistry(WebSocket ws) {
+		public FleetRegistry(WebSocket ws, Privs privs) {
 			this.DataContext = this;
 			InitializeComponent();
 			socket = ws;
+			this.privs = privs;
 
 			base.AddProcessor(typeof(ANWI.Messaging.FullVesselReg), LoadVesselList);
 			base.AddProcessor(typeof(ANWI.Messaging.FullVessel), LoadVesselDetail);
+			base.AddProcessor(typeof(ANWI.Messaging.ConfirmUpdate), ProcessConfirmUpdate);
+			base.AddProcessor(typeof(ANWI.Messaging.FullRoster), ProcessUnassignedRoster);
 
 			FetchVesselList();
 		}
@@ -108,6 +116,19 @@ namespace Client {
 			currentVessel = fvd.vessel;
 		}
 
+		private void ProcessConfirmUpdate(ANWI.Messaging.IMessagePayload m) {
+			ANWI.Messaging.ConfirmUpdate cu = m as ANWI.Messaging.ConfirmUpdate;
+			if(cu.success) {
+				FetchVesselDetail(currentVessel.id);
+			}
+		}
+
+		private void ProcessUnassignedRoster(ANWI.Messaging.IMessagePayload m) {
+			ANWI.Messaging.FullRoster fr = m as ANWI.Messaging.FullRoster;
+			if (newAssignmentWindow != null)
+				newAssignmentWindow.SetUnassignedPersonnel(fr.members);
+		}
+
 		private void Button_NewShip_Click(object sender, RoutedEventArgs e) {
 
 		}
@@ -122,6 +143,7 @@ namespace Client {
 		}
 
 		private void Button_Close_Click(object sender, RoutedEventArgs e) {
+			InvokeOnClose();
 			this.Close();
 		}
 
@@ -133,6 +155,46 @@ namespace Client {
 			if (PropertyChanged != null) {
 				PropertyChanged(this, new PropertyChangedEventArgs(name));
 			}
+		}
+
+		private void List_Company_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+			// Protect against firing this event twice when the other listbox deselects us
+			if (e.AddedItems.Count > 0) {
+				// Set the other list's select to null
+				List_Embarked.SelectedIndex = -1;
+			}
+		}
+
+		private void List_Embarked_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+			if (e.AddedItems.Count > 0) {
+				List_Company.SelectedIndex = -1;
+			}
+		}
+
+		private void Button_AssignNew_Click(object sender, RoutedEventArgs e) {
+			newAssignmentWindow = new NewAssignment(socket);
+			newAssignmentWindow.returnNewAssignment += AddNewAssignment;
+			newAssignmentWindow.ShowDialog();
+			newAssignmentWindow = null;
+		}
+
+		private void Button_RemoveAssigned_Click(object sender, RoutedEventArgs e) {
+			LiteProfile company = List_Company.SelectedItem as LiteProfile;
+			LiteProfile embarked = List_Embarked.SelectedItem as LiteProfile;
+			LiteProfile selected = company != null ? company : embarked != null ? embarked : null;
+			if(selected != null) {
+				ANWI.Messaging.Message.Send(
+					socket,
+					ANWI.Messaging.Message.Routing.FleetReg,
+					new ANWI.Messaging.EndAssignment(selected.id, selected.assignment.id));
+			}
+		}
+
+		private void AddNewAssignment(int userId, int roleId) {
+			ANWI.Messaging.Message.Send(
+				socket,
+				ANWI.Messaging.Message.Routing.FleetReg,
+				new ANWI.Messaging.NewAssignment(userId, currentVessel.id, roleId));
 		}
 	}
 }

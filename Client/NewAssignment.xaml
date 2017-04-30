@@ -1,0 +1,28 @@
+﻿<Window x:Class="Client.NewAssignment"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:fa="http://schemas.fontawesome.io/icons/"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Client"
+        mc:Ignorable="d"
+        Title="NewAssignment" Height="381" Width="318.333">
+    <Window.Resources>
+
+        <DataTemplate x:Key="RosterTemplate">
+            <Canvas HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="245" Background="White">
+                <Image Height="30" Width="30" Source="{Binding Path=rank.icon}"/>
+                <TextBlock Canvas.Left="30" TextWrapping="Wrap" Text="{Binding fullName}" Canvas.Top="7" Width="220"/>
+            </Canvas>
+        </DataTemplate>
+    </Window.Resources>
+    <Grid>
+        <Button x:Name="Button_OK" Grid.Row="0" Content="OK" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_OK_Click" HorizontalAlignment="Left" Width="100" Margin="50,305,0,0"/>
+        <Button x:Name="Button_Cancel" Grid.Row="0" Content="Cancel" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_Cancel_Click" HorizontalAlignment="Left" Width="100" Margin="155,305,0,0"/>
+        <ListBox x:Name="List_Roster" Height="231" Margin="10,69,14.333,0" VerticalAlignment="Top" ItemTemplate="{DynamicResource RosterTemplate}" ItemsSource="{Binding wpfUnassignedPersonnel}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+        <ComboBox x:Name="Combo_Role" Margin="10,26,14.333,0" VerticalAlignment="Top" ItemsSource="{Binding wpfRoleList}"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Role" VerticalAlignment="Top" FontWeight="Bold"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,53,0,0" TextWrapping="Wrap" Text="Unassigned Personnel" VerticalAlignment="Top" FontWeight="Bold" Width="200"/>
+        <fa:ImageAwesome x:Name="Spinner_Roster" Icon="Cog" Spin="True" SpinDuration="10" Margin="37,139,44.667,120" Foreground="#FF316838" Grid.Column="0" Visibility="Hidden"/>
+    </Grid>
+</Window>

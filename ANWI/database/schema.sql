@@ -105,7 +105,8 @@ drop table if exists UserPrivs;
 create table if not exists UserPrivs (
  user integer not null references User(id),
  canPromote integer not null default 0,
- canCertify integer not null default 0
+ canCertify integer not null default 0,
+ canAssign integer not null default 0
 );
 
 CREATE TRIGGER on_primary_rate_delete AFTER DELETE ON StruckRate BEGIN
@@ -113,5 +114,5 @@ CREATE TRIGGER on_primary_rate_delete AFTER DELETE ON StruckRate BEGIN
 END;
 
 CREATE TRIGGER new_user_privs AFTER INSERT ON User BEGIN
-	INSERT INTO UserPrivs (user, canPromote, canCertify) VALUES (new.id,0,0);
+	INSERT INTO UserPrivs (user, canPromote, canCertify) VALUES (new.id,0,0,0);
 END;

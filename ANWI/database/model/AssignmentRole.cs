@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SQLite;
 
 namespace ANWI.Database.Model
@@ -86,6 +87,18 @@ namespace ANWI.Database.Model
 				return true;
 			}
 			return false;
+		}
+
+		public static bool FetchAll(ref List<AssignmentRole> output) {
+			output = new List<AssignmentRole>();
+
+			SQLiteDataReader reader = DBI.DoQuery("select * from AssignmentRole;");
+			while(reader.Read()) {
+				AssignmentRole ar = AssignmentRole.Factory(reader);
+				output.Add(ar);
+			}
+
+			return true;
 		}
 
 		public static bool Store(AssignmentRole input)

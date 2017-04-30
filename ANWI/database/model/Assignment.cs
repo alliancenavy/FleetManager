@@ -76,9 +76,17 @@ namespace ANWI.Database.Model
 
 		public static bool Create(ref Assignment output, int user, int ship, int role, long from, long until)
 		{
-			int result = DBI.DoAction($"insert into Assignment (user, ship, role, from, until) values({user}, {ship}, {role}, {from}, {until});");
+			int result = DBI.DoAction($"insert into Assignment (user, ship, role, start, until) values({user}, {ship}, {role}, {from}, {until});");
 			if (result == 1)
 			{
+				return Assignment.FetchById(ref output, DBI.LastInsertRowId);
+			}
+			return false;
+		}
+
+		public static bool Create(ref Assignment output, int user, int ship, int role) {
+			int result = DBI.DoAction($"insert into Assignment (user, ship, role, start) values({user}, {ship}, {role}, strftime('%s', 'now'));");
+			if (result == 1) {
 				return Assignment.FetchById(ref output, DBI.LastInsertRowId);
 			}
 			return false;
@@ -118,10 +126,19 @@ namespace ANWI.Database.Model
 
 		public static bool Store(Assignment input)
 		{
-			int result = DBI.DoAction($"update Assignment set user = {input.user}, ship = {input.ship}, role = {input.role}, from = {input.from}, until = {input.until} where id = {input.id};");
+			int result = DBI.DoAction($"update Assignment set user = {input.user}, ship = {input.ship}, role = {input.role}, start = {input.from}, until = {input.until} where id = {input.id};");
 			if (result == 1)
 				return true;
-			return false;
+			else
+				return false;
+		}
+
+		public static bool EndAssignment(int userId, int assignmentId) {
+			int result = DBI.DoAction($"update Assignment set until = strftime('%s', 'now') where user = {userId} and id = {assignmentId};");
+			if (result == 1)
+				return true;
+			else
+				return false;
 		}
 
 		#endregion

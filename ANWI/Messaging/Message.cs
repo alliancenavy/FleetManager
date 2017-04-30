@@ -53,10 +53,12 @@ namespace ANWI.Messaging {
 		[MessagePackKnownType("ar", typeof(AddRate))]
 		[MessagePackKnownType("dr", typeof(DeleteRate))]
 		[MessagePackKnownType("fpro", typeof(FullProfile))]
-		[MessagePackKnownType("cpu", typeof(ConfirmProfileUpdated))]
+		[MessagePackKnownType("ack", typeof(ConfirmUpdate))]
 		[MessagePackKnownType("spr", typeof(SetPrimaryRate))]
 		[MessagePackKnownType("cr", typeof(ChangeRank))]
 		[MessagePackKnownType("fvd", typeof(FullVessel))]
+		[MessagePackKnownType("enda", typeof(EndAssignment))]
+		[MessagePackKnownType("newa", typeof(NewAssignment))]
 		public IMessagePayload payload;
 
 		public Message() {

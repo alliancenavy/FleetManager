@@ -12,11 +12,13 @@ namespace ANWI.Database.Model {
 		public int user;
 		public bool canPromote;
 		public bool canCertify;
+		public bool canAssign;
 
-		private UserPrivs(int user, bool canPromote, bool canCertify) {
+		private UserPrivs(int user, bool canPromote, bool canCertify, bool canAssign) {
 			this.user = user;
 			this.canPromote = canPromote;
 			this.canCertify = canCertify;
+			this.canAssign = canAssign;
 		}
 
 		#endregion
@@ -27,16 +29,18 @@ namespace ANWI.Database.Model {
 			UserPrivs result = new UserPrivs(
 				user: -1,
 				canPromote: false,
-				canCertify: false
+				canCertify: false,
+				canAssign: false
 				);
 			return result;
 		}
 
-		public static UserPrivs Factory(int user, bool canPromote, bool canCertify) {
+		public static UserPrivs Factory(int user, bool canPromote, bool canCertify, bool canAssign) {
 			UserPrivs result = new UserPrivs(
 				user: user,
 				canPromote: canPromote,
-				canCertify: canCertify
+				canCertify: canCertify,
+				canAssign: canAssign
 				);
 			return result;
 		}
@@ -45,13 +49,14 @@ namespace ANWI.Database.Model {
 			UserPrivs result = new UserPrivs(
 				user: Convert.ToInt32(reader["user"]),
 				canPromote: Convert.ToBoolean(reader["canPromote"]),
-				canCertify: Convert.ToBoolean(reader["canCertify"])
+				canCertify: Convert.ToBoolean(reader["canCertify"]),
+				canAssign: Convert.ToBoolean(reader["canAssign"])
 				);
 			return result;
 		}
 
-		public static bool Create(ref UserPrivs output, int user, bool canPromote, bool canCertify) {
-			int result = DBI.DoAction($"insert into UserPrivs (user, canPromote, canCertify) values ({user}, {canPromote}, {canCertify});");
+		public static bool Create(ref UserPrivs output, int user, bool canPromote, bool canCertify, bool canAssign) {
+			int result = DBI.DoAction($"insert into UserPrivs (user, canPromote, canCertify, canAssign) values ({user}, {canPromote}, {canCertify}, {canAssign});");
 			if(result == 1) {
 				return UserPrivs.FetchByUser(ref output, user);
 			}

@@ -8,15 +8,12 @@ namespace ANWI.Messaging {
 	public class AllCommonData : IMessagePayload {
 		public List<Rank> ranks = null;
 		public List<Rate> rates = null;
+		public List<AssignmentRole> assignmentRoles = null;
 
 		public AllCommonData() {
 			ranks = null;
 			rates = null;
-		}
-
-		public AllCommonData(List<Rank> rnk, List<Rate> rts) {
-			ranks = rnk;
-			rates = rts;
+			assignmentRoles = null;
 		}
 
 		public override string ToString() {

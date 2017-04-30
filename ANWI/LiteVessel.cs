@@ -31,6 +31,7 @@ namespace ANWI {
 
 		#region WPF Helpers
 		public string fullHullNumber { get { return $"{hull.symbol}-{hullNumber}"; } }
+		public string statusString { get { return status.ToFriendlyString(); } }
 		#endregion
 
 		#region Constructors

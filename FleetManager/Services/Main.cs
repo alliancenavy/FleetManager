@@ -29,7 +29,9 @@ namespace FleetManager.Services {
 				{ typeof(ANWI.Messaging.AddRate), ProcessAddRate },
 				{ typeof(ANWI.Messaging.DeleteRate), ProcessDeleteRate },
 				{ typeof(ANWI.Messaging.SetPrimaryRate), ProcessSetPrimaryRate },
-				{ typeof(ANWI.Messaging.ChangeRank), ProcessChangeRank }
+				{ typeof(ANWI.Messaging.ChangeRank), ProcessChangeRank },
+				{ typeof(ANWI.Messaging.NewAssignment), ProcessNewAssignment },
+				{ typeof(ANWI.Messaging.EndAssignment), ProcessEndAssignment }
 			};
 		}
 
@@ -73,6 +75,7 @@ namespace FleetManager.Services {
 						ANWI.Messaging.AllCommonData acd = new ANWI.Messaging.AllCommonData();
 						acd.ranks = Rank.FetchAll();
 						acd.rates = Rate.FetchAllRates();
+						acd.assignmentRoles = AssignmentRole.FetchAll();
 						return acd;
 					}
 
@@ -131,6 +134,11 @@ namespace FleetManager.Services {
 						Vessel details = Vessel.FetchById(req.id);
 						return new ANWI.Messaging.FullVessel(details);
 					}
+
+				case ANWI.Messaging.Request.Type.GetUnassignedRoster: {
+						List<LiteProfile> unassigned = LiteProfile.FetchAllUnassigned();
+						return new ANWI.Messaging.FullRoster(unassigned);
+					}
 			}
 
 			return null;
@@ -158,45 +166,52 @@ namespace FleetManager.Services {
 		private ANWI.Messaging.IMessagePayload ProcessAddRate(ANWI.Messaging.IMessagePayload p) {
 			ANWI.Messaging.AddRate ar = p as ANWI.Messaging.AddRate;
 
+			bool success = false;
 			Datamodel.StruckRate sr = null;
 			if (Datamodel.StruckRate.FetchByUserRate(ref sr, ar.userId, ar.rateId)) {
 				sr.rank = ar.rank;
 				if (Datamodel.StruckRate.Store(sr)) {
 					logger.Info($"Updated ate {ar.rateId} to rank {ar.rank} to user {ar.userId}");
+					success = true;
 				} else {
 					logger.Error($"Failed to update rate {ar.rateId} for user {ar.userId}");
 				}
 			} else {
 				if (Datamodel.StruckRate.Create(ref sr, ar.userId, ar.rateId, ar.rank)) {
 					logger.Info($"Added rate {ar.rateId} at rank {ar.rank} to user {ar.userId}");
+					success = true;
 				} else {
 					logger.Error($"Failed to add rate {ar.rateId} to user {ar.userId}");
 				}
 			}
 
-			return new ANWI.Messaging.ConfirmProfileUpdated(ar.userId);
+			return new ANWI.Messaging.ConfirmUpdate(success, ar.userId);
 		}
 
 		private ANWI.Messaging.IMessagePayload ProcessDeleteRate(ANWI.Messaging.IMessagePayload p) {
 			ANWI.Messaging.DeleteRate dr = p as ANWI.Messaging.DeleteRate;
 
+			bool success = false;
 			if(Datamodel.StruckRate.DeleteById(dr.rateId)) {
 				logger.Info($"Deleted rate {dr.rateId} from user {dr.userId}");
+				success = true;
 			} else {
 				logger.Error($"Failed to delete rate {dr.rateId} from user {dr.userId}");
 			}
 
-			return new ANWI.Messaging.ConfirmProfileUpdated(dr.userId);
+			return new ANWI.Messaging.ConfirmUpdate(success, dr.userId);
 		}
 
 		private ANWI.Messaging.IMessagePayload ProcessSetPrimaryRate(ANWI.Messaging.IMessagePayload p) {
 			ANWI.Messaging.SetPrimaryRate spr = p as ANWI.Messaging.SetPrimaryRate;
 
+			bool success = false;
 			Datamodel.User u = null;
 			if(Datamodel.User.FetchById(ref u, spr.userId)) {
 				u.rate = spr.rateId;
 				if(Datamodel.User.Store(u)) {
 					logger.Info($"Updated primary rate on user {spr.userId} to {spr.rateId}");
+					success = true;
 				} else {
 					logger.Error($"Failed to update primary rate on user {spr.userId} to {spr.rateId}");
 				}
@@ -204,17 +219,19 @@ namespace FleetManager.Services {
 				logger.Error($"Could not set primary rate: no user with id {spr.userId} found");
 			}
 
-			return new ANWI.Messaging.ConfirmProfileUpdated(spr.userId);
+			return new ANWI.Messaging.ConfirmUpdate(success, spr.userId);
 		}
 
 		private ANWI.Messaging.IMessagePayload ProcessChangeRank(ANWI.Messaging.IMessagePayload p) {
 			ANWI.Messaging.ChangeRank cr = p as ANWI.Messaging.ChangeRank;
 
+			bool success = false;
 			Datamodel.User u = null;
 			if(Datamodel.User.FetchById(ref u, cr.userId)) {
 				u.rank = cr.rankId;
 				if(Datamodel.User.Store(u)) {
 					logger.Info($"Updated rank of user {cr.userId} to {cr.rankId}");
+					success = true;
 				} else {
 					logger.Error($"Failed to update rank of user {cr.userId}");
 				}
@@ -222,7 +239,34 @@ namespace FleetManager.Services {
 				logger.Error($"Could not set rank: no user with id {cr.userId} found");
 			}
 
-			return new ANWI.Messaging.ConfirmProfileUpdated(cr.userId);
+			return new ANWI.Messaging.ConfirmUpdate(success, cr.userId);
+		}
+
+		private ANWI.Messaging.IMessagePayload ProcessNewAssignment(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.NewAssignment ns = p as ANWI.Messaging.NewAssignment;
+
+			Datamodel.Assignment a = null;
+			bool success = Datamodel.Assignment.Create(ref a, ns.userId, ns.shipId, ns.roleId);
+			if(success) {
+				logger.Info($"Started assignment for user {ns.userId} role {ns.roleId} on ship {ns.shipId}");
+			} else {
+				logger.Error($"Failed to start assignment for user {ns.userId} on ship {ns.shipId}");
+			}
+
+			return new ANWI.Messaging.ConfirmUpdate(success, ns.shipId);
+		}
+
+		private ANWI.Messaging.IMessagePayload ProcessEndAssignment(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.EndAssignment es = p as ANWI.Messaging.EndAssignment;
+
+			bool success = Datamodel.Assignment.EndAssignment(es.userId, es.assignmentId);
+			if (success) {
+				logger.Info($"Ended assignment {es.assignmentId} for user {es.userId}");
+			} else {
+				logger.Error($"Failed to end assignment {es.assignmentId} for user {es.userId}");
+			}
+
+			return new ANWI.Messaging.ConfirmUpdate(success, es.assignmentId);
 		}
 	}
 }

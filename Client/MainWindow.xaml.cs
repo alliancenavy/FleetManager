@@ -162,7 +162,8 @@ namespace Client {
 
 		private void Button_OpenFleetReg_Click(object sender, RoutedEventArgs e) {
 			if (fleetReg == null) {
-				fleetReg = new FleetRegistry(socket);
+				fleetReg = new FleetRegistry(socket, account.profile.privs);
+				fleetReg.OnClose += (t) => { fleetReg = null; };
 				fleetReg.Show();
 			}
 		}
@@ -251,9 +252,9 @@ namespace Client {
 				LoadOps(m.payload as ANWI.Messaging.FullOperationsList);
 			} else if (m.payload is ANWI.Messaging.AllCommonData) {
 				CommonData.LoadAll(m.payload as ANWI.Messaging.AllCommonData);
-			} else if (m.payload is ANWI.Messaging.ConfirmProfileUpdated) {
-				ANWI.Messaging.ConfirmProfileUpdated cpu = m.payload as ANWI.Messaging.ConfirmProfileUpdated;
-				FetchProfile(cpu.userId);
+			} else if (m.payload is ANWI.Messaging.ConfirmUpdate) {
+				ANWI.Messaging.ConfirmUpdate cpu = m.payload as ANWI.Messaging.ConfirmUpdate;
+				FetchProfile(cpu.updatedId);
 			} else if (m.payload is ANWI.Messaging.FullProfile) {
 				ANWI.Messaging.FullProfile fp = m.payload as ANWI.Messaging.FullProfile;
 				wpfProfile = fp.profile;
