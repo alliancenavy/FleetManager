@@ -30,6 +30,7 @@ namespace Client {
 		private readonly WebSocket socket;
 		private AuthenticatedAccount account = null;
 		private Profile currentProfile = null;
+		private List<LiteProfile> originalRoster = null;
 		private ObservableCollection<LiteProfile> rosterList = new ObservableCollection<LiteProfile>();
 		private ObservableCollection<Operation> operationList = new ObservableCollection<Operation>();
 
@@ -169,6 +170,28 @@ namespace Client {
 			}
 		}
 
+		private void Radio_RosterSort_Click(object sender, RoutedEventArgs e) {
+			rosterList.Clear();
+
+			if(Radio_Roster_Name.IsChecked.Value) {
+				originalRoster.Sort((a, b) => {
+					return a.nickname.CompareTo(b.nickname);
+				});
+			} else if(Radio_Roster_Rank.IsChecked.Value) {
+				originalRoster.Sort((a, b) => {
+					if (a.rank.ordering > b.rank.ordering)
+						return -1;
+					else if (a.rank.ordering == b.rank.ordering)
+						return 0;
+					else return 0;
+				});
+			}
+
+			foreach(LiteProfile p in originalRoster) {
+				rosterList.Add(p);
+			}
+		}
+
 		#endregion
 
 		#region Sockets and Messaging
@@ -299,6 +322,8 @@ namespace Client {
 				else return 0;
 			});
 
+			originalRoster = fr.members;
+
 			// Load all the records in
 			foreach (LiteProfile p in fr.members) {
 				this.Dispatcher.Invoke(() => {
@@ -357,6 +382,5 @@ namespace Client {
 				PropertyChanged(this, new PropertyChangedEventArgs(name));
 			}
 		}
-
 	}
 }

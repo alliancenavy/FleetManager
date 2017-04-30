@@ -58,19 +58,21 @@ namespace Client {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void Button_Login_Click(object sender, RoutedEventArgs e) {
-			// Clear previous errors
-			Text_Failed.Visibility = Visibility.Hidden;
+			if (Textbox_Username.Text != "" && Textbox_Password.Password != "") {
+				// Clear previous errors
+				Text_Failed.Visibility = Visibility.Hidden;
 
-			StartWorking();
+				StartWorking();
 
-			ANWI.Credentials cred = new ANWI.Credentials();
-			cred.username = Textbox_Username.Text;
-			cred.password = Textbox_Password.Password;
+				ANWI.Credentials cred = new ANWI.Credentials();
+				cred.username = Textbox_Username.Text;
+				cred.password = Textbox_Password.Password;
 
-			cred.clientVersion = version;
+				cred.clientVersion = version;
 
-			// Attempt to log into the server
-			LogIn(cred);
+				// Attempt to log into the server
+				LogIn(cred);
+			}
 		}
 
 		/// <summary>
