@@ -19,6 +19,7 @@ namespace FleetManager.Services {
 		private static NLog.Logger logger = LogManager.GetLogger("Auth Service");
 
 		private Auth0Client auth0;
+		private Version minimumVersion = new Version(0, 1, 0, 0);
 
 		public Auth() {
 			auth0 = new Auth0Client("stackcollision.auth0.com", "b34x4hALcBeA24rPCcrLW3DZee5b28A0");
@@ -47,6 +48,13 @@ namespace FleetManager.Services {
 		private async void LoginUser(ANWI.Credentials cred) {
 			// Authenticate the user with Auth0
 			try {
+				// Check version
+				if (minimumVersion.CompareTo(cred.clientVersion) > 0) {
+					logger.Info($"User {cred.username} has invalid version. Client: {cred.clientVersion} Minimum: {minimumVersion}");
+					DenyLogin(ANWI.Messaging.LoginResponse.Code.FAILED_VERSION);
+					return;
+				}
+
 				// TODO: temporarily removed actual check
 				//Auth0User user = await auth0.LoginAsync("Username-Password-Authentication",
 				//	cred.username, cred.password);
@@ -73,31 +81,38 @@ namespace FleetManager.Services {
 						1)) {
 						logger.Error("Failed to create profile for new user");
 
-						DenyLogin();
+						DenyLogin(ANWI.Messaging.LoginResponse.Code.FAILED_SERVER_ERROR);
 						return;
 					}
 				}
 
 				account.profile = Profile.FetchByAuth0(account.auth0_id);
 
+				ANWI.Messaging.Message resp = new ANWI.Messaging.Message(
+					ANWI.Messaging.Message.Routing.NoReturn,
+					new ANWI.Messaging.LoginResponse(
+						ANWI.Messaging.LoginResponse.Code.SUCCEEDED,
+						account)
+					);
+
 				using (MemoryStream stream = new MemoryStream()) {
-					MessagePackSerializer.Get<AuthenticatedAccount>().Pack(stream, account);
+					MessagePackSerializer.Get<ANWI.Messaging.Message>().Pack(stream, resp);
 					Send(stream.ToArray());
 				}
 			} catch (System.Net.Http.HttpRequestException e) {
 				logger.Info("Failed to authenticate account with auth0.");
-				DenyLogin();
+				DenyLogin(ANWI.Messaging.LoginResponse.Code.FAILED_SERVER_ERROR);
 				return;
 			}
 		}
 
-		private void DenyLogin() {
-			ANWI.AuthenticatedAccount failed = new AuthenticatedAccount();
-			failed.nickname = "";
-			failed.auth0_id = "";
+		private void DenyLogin(ANWI.Messaging.LoginResponse.Code code) {
+			ANWI.Messaging.Message resp = new ANWI.Messaging.Message(
+				ANWI.Messaging.Message.Routing.NoReturn,
+				new ANWI.Messaging.LoginResponse(code, null));
 
 			using (MemoryStream stream = new MemoryStream()) {
-				MessagePackSerializer.Get<AuthenticatedAccount>().Pack(stream, failed);
+				MessagePackSerializer.Get<ANWI.Messaging.Message>().Pack(stream, resp);
 				Send(stream.ToArray());
 			}
 		}

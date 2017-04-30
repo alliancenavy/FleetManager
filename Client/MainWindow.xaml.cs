@@ -71,9 +71,10 @@ namespace Client {
 			logwin.ShowDialog();
 
 			// Once the control returns check if we have a valid account
-			if(account == null) {
+			if(account == null || account.profile == null) {
 				// Just quit the app
 				Application.Current.Shutdown();
+				return;
 			}
 
 			// Once we have the basic data initialize the window

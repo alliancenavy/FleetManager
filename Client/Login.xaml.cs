@@ -19,6 +19,7 @@ using ANWI;
 using MsgPack;
 using MsgPack.Serialization;
 using System.IO;
+using System.Diagnostics;
 
 namespace Client {
 
@@ -26,16 +27,13 @@ namespace Client {
 	/// Interaction logic for Login.xaml
 	/// </summary>
 	public partial class Login : Window {
-		
-		private readonly TextBox username;
-		private readonly PasswordBox password;
-		private readonly Button button;
-		private readonly FontAwesome.WPF.ImageAwesome spinner;
-		private readonly TextBlock failed;
 
 		private WebSocket ws;
 
 		public event Action<AuthenticatedAccount> returnuser;
+
+		private Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+		public string versionString { get { return $"version {version}"; } }
 
 		/// <summary>
 		/// Form constructor.
@@ -43,14 +41,10 @@ namespace Client {
 		/// the auth websocket
 		/// </summary>
 		public Login() {
+			this.DataContext = this;
 			InitializeComponent();
-
-			// Fetch all of the components
-			username = (TextBox)this.FindName("UnameBox");
-			password = (PasswordBox)this.FindName("PswdBox");
-			button = (Button)this.FindName("LoginButton");
-			spinner = (FontAwesome.WPF.ImageAwesome)this.FindName("Spinner");
-			failed = (TextBlock)this.FindName("failedtext");
+			Text_Failed.Visibility = Visibility.Hidden;
+			Spinner.Visibility = Visibility.Hidden;
 
 			// Set websocket callbacks
 			ws = new WebSocket("ws://localhost:9000/auth");
@@ -63,15 +57,17 @@ namespace Client {
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void LoginButton_Click(object sender, RoutedEventArgs e) {
+		private void Button_Login_Click(object sender, RoutedEventArgs e) {
 			// Clear previous errors
-			failed.Visibility = Visibility.Hidden;
+			Text_Failed.Visibility = Visibility.Hidden;
 
 			StartWorking();
 
 			ANWI.Credentials cred = new ANWI.Credentials();
-			cred.username = username.Text;
-			cred.password = password.Password;
+			cred.username = Textbox_Username.Text;
+			cred.password = Textbox_Password.Password;
+
+			cred.clientVersion = version;
 
 			// Attempt to log into the server
 			LogIn(cred);
@@ -100,22 +96,24 @@ namespace Client {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void OnMessage(object sender, MessageEventArgs e) {
-			AuthenticatedAccount account = null;
-			using (MemoryStream stream = new MemoryStream(e.RawData)) {
-				account = MessagePackSerializer.Get<AuthenticatedAccount>().Unpack(stream);
-			}
+			ANWI.Messaging.Message msg = ANWI.Messaging.Message.Receive(e.RawData);
+			if (msg.payload is ANWI.Messaging.LoginResponse) {
+				ANWI.Messaging.LoginResponse resp = msg.payload as ANWI.Messaging.LoginResponse;
 
-			// If the login failed the authToken will be an empty string
-			if(account.authToken == "") {
-				this.Dispatcher.Invoke(EndWorkingFailed);
+				if(resp.code == ANWI.Messaging.LoginResponse.Code.SUCCEEDED) {
+					this.Dispatcher.Invoke(() => {
+						EndWorkingSucceeded();
+						ws.Close();
+						returnuser(resp.account);
+						this.Close();
+					});
+				} else {
+					this.Dispatcher.Invoke(() => {
+						EndWorkingFailed(GetFailedText(resp.code));
+					});
+				}
 			} else {
-				this.Dispatcher.Invoke(() => {
-					// Hand the account off to the main window and close this one
-					EndWorkingSucceeded();
-					ws.Close();
-					returnuser(account);
-					this.Close();
-				});
+				this.Dispatcher.Invoke(() => { EndWorkingFailed("Login Failed: Invalid Message Format"); });
 			}
 		}
 
@@ -125,25 +123,41 @@ namespace Client {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void SocketError(object sender, WebSocketSharp.ErrorEventArgs e) {
-			this.Dispatcher.Invoke(EndWorkingFailed);
+			this.Dispatcher.Invoke(() => { EndWorkingFailed("Login Failed: Network Error"); });
 		}
 
 		private void StartWorking() {
-			button.Visibility = Visibility.Hidden;
-			spinner.Visibility = Visibility.Visible;
-			failed.Visibility = Visibility.Hidden;
+			Button_Login.Visibility = Visibility.Hidden;
+			Spinner.Visibility = Visibility.Visible;
+			Text_Failed.Visibility = Visibility.Hidden;
 		}
 
 		private void EndWorkingSucceeded() {
-			button.Visibility = Visibility.Visible;
-			spinner.Visibility = Visibility.Hidden;
-			failed.Visibility = Visibility.Hidden;
+			Button_Login.Visibility = Visibility.Visible;
+			Spinner.Visibility = Visibility.Hidden;
+			Text_Failed.Visibility = Visibility.Hidden;
 		}
 
-		private void EndWorkingFailed() {
-			button.Visibility = Visibility.Visible;
-			spinner.Visibility = Visibility.Hidden;
-			failed.Visibility = Visibility.Visible;
+		private void EndWorkingFailed(string reason) {
+			Button_Login.Visibility = Visibility.Visible;
+			Spinner.Visibility = Visibility.Hidden;
+			Text_Failed.Text = reason;
+			Text_Failed.Visibility = Visibility.Visible;
+		}
+
+		private string GetFailedText(ANWI.Messaging.LoginResponse.Code c) {
+			switch(c) {
+				case ANWI.Messaging.LoginResponse.Code.FAILED_CREDENTIALS:
+					return "Login Failed: Invalid Credentials";
+				case ANWI.Messaging.LoginResponse.Code.FAILED_VERSION:
+					return "Login Failed: Incompatible Version";
+				case ANWI.Messaging.LoginResponse.Code.FAILED_SERVER_ERROR:
+					return "Login Failed: Server Error";
+				case ANWI.Messaging.LoginResponse.Code.FAILED_OTHER:
+					return "Login Failed: Unknown Error";
+				default:
+					return "Login Failed";
+			}
 		}
 	}
 }

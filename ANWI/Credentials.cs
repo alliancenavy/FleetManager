@@ -9,6 +9,7 @@ namespace ANWI {
 	/// Login credentials for an account
 	/// </summary>
     public struct Credentials {
+		public Version clientVersion;
 		public string username;
 		public string password;
 	}

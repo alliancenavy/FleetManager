@@ -116,6 +116,7 @@
     <Compile Include="Messaging\FullVessel.cs" />
     <Compile Include="Messaging\FullVesselReg.cs" />
     <Compile Include="Messaging\IMessagePayload.cs" />
+    <Compile Include="Messaging\LoginResponse.cs" />
     <Compile Include="Messaging\Message.cs" />
     <Compile Include="Messaging\NewAssignment.cs" />
     <Compile Include="Messaging\NewShip.cs" />
