@@ -119,5 +119,5 @@ CREATE TRIGGER on_primary_rate_delete AFTER DELETE ON StruckRate BEGIN
 END;
 
 CREATE TRIGGER new_user_privs AFTER INSERT ON User BEGIN
-	INSERT INTO UserPrivs (user, canPromote, canCertify, canStartOps, isFleetAdmin) VALUES (new.id,0,0,0,0,0);
+	INSERT INTO UserPrivs (user, canPromote, canCertify, canAssign, canStartOps, isFleetAdmin) VALUES (new.id,0,0,0,0,0);
 END;

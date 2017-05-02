@@ -35,6 +35,7 @@ namespace Client {
 		private Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 		public string versionString { get { return $"version {version}"; } }
 
+		#region General
 		/// <summary>
 		/// Form constructor.
 		/// Grabs handles to all the important controls and builds
@@ -44,49 +45,14 @@ namespace Client {
 			this.DataContext = this;
 			InitializeComponent();
 			Text_Failed.Visibility = Visibility.Hidden;
-			Spinner.Visibility = Visibility.Hidden;
+			Spinner_Login.Visibility = Visibility.Hidden;
+			Text_RegisterResult.Visibility = Visibility.Hidden;
+			Spinner_Register.Visibility = Visibility.Hidden;
 
 			// Set websocket callbacks
 			ws = new WebSocket("ws://localhost:9000/auth");
 			ws.OnMessage += OnMessage;
 			ws.OnError += SocketError;
-		}
-
-		/// <summary>
-		/// Starts the login process after the user clicks the button
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void Button_Login_Click(object sender, RoutedEventArgs e) {
-			if (Textbox_Username.Text != "" && Textbox_Password.Password != "") {
-				// Clear previous errors
-				Text_Failed.Visibility = Visibility.Hidden;
-
-				StartWorking();
-
-				ANWI.Credentials cred = new ANWI.Credentials();
-				cred.username = Textbox_Username.Text;
-				cred.password = Textbox_Password.Password;
-
-				cred.clientVersion = version;
-
-				// Attempt to log into the server
-				LogIn(cred);
-			}
-		}
-
-		/// <summary>
-		/// Used to move the login process off the UI thread.
-		/// Connects to the auth websocket and sends the login credentials
-		/// </summary>
-		/// <param name="cred"></param>
-		private async void LogIn(ANWI.Credentials cred) {
-			ws.Connect();
-
-			using (MemoryStream stream = new MemoryStream()) {
-				MessagePackSerializer.Get<Credentials>().Pack(stream, cred);
-				ws.Send(stream.ToArray());
-			}
 		}
 
 		/// <summary>
@@ -100,22 +66,11 @@ namespace Client {
 		private void OnMessage(object sender, MessageEventArgs e) {
 			ANWI.Messaging.Message msg = ANWI.Messaging.Message.Receive(e.RawData);
 			if (msg.payload is ANWI.Messaging.LoginResponse) {
-				ANWI.Messaging.LoginResponse resp = msg.payload as ANWI.Messaging.LoginResponse;
-
-				if(resp.code == ANWI.Messaging.LoginResponse.Code.SUCCEEDED) {
-					this.Dispatcher.Invoke(() => {
-						EndWorkingSucceeded();
-						ws.Close();
-						returnuser(resp.account);
-						this.Close();
-					});
-				} else {
-					this.Dispatcher.Invoke(() => {
-						EndWorkingFailed(GetFailedText(resp.code));
-					});
-				}
+				Login_Response(msg.payload as ANWI.Messaging.LoginResponse);
+			} else if (msg.payload is ANWI.Messaging.RegisterResponse) {
+				Register_Response(msg.payload as ANWI.Messaging.RegisterResponse);
 			} else {
-				this.Dispatcher.Invoke(() => { EndWorkingFailed("Login Failed: Invalid Message Format"); });
+				Login_EndWorkingFailed("Login Failed: Invalid Message Format");
 			}
 		}
 
@@ -125,29 +80,74 @@ namespace Client {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void SocketError(object sender, WebSocketSharp.ErrorEventArgs e) {
-			this.Dispatcher.Invoke(() => { EndWorkingFailed("Login Failed: Network Error"); });
+			Login_EndWorkingFailed("Login Failed: Network Error");
+		}
+		#endregion
+
+		#region Login
+		/// <summary>
+		/// Starts the login process after the user clicks the button
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void Button_Login_Click(object sender, RoutedEventArgs e) {
+			SendLogin();
 		}
 
-		private void StartWorking() {
-			Button_Login.Visibility = Visibility.Hidden;
-			Spinner.Visibility = Visibility.Visible;
-			Text_Failed.Visibility = Visibility.Hidden;
+		private void SendLogin() {
+			if (Textbox_Username.Text != "" && Textbox_Password.Password != "") {
+				ws.Connect();
+
+				// Clear previous errors
+				Text_Failed.Visibility = Visibility.Hidden;
+
+				Login_StartWorking();
+
+				ANWI.Messaging.Message.Send(
+					ws,
+					ANWI.Messaging.Message.Routing.NoReturn,
+					new ANWI.Messaging.LoginRequest(
+						version, Textbox_Username.Text, Textbox_Password.Password));
+			}
 		}
 
-		private void EndWorkingSucceeded() {
-			Button_Login.Visibility = Visibility.Visible;
-			Spinner.Visibility = Visibility.Hidden;
-			Text_Failed.Visibility = Visibility.Hidden;
+		private void Login_Response(ANWI.Messaging.LoginResponse resp) {
+			if (resp.code == ANWI.Messaging.LoginResponse.Code.OK) {
+				Login_EndWorkingSucceeded();
+				ws.Close();
+				returnuser(resp.account);
+				this.Dispatcher.Invoke(Close);
+			} else {
+				Login_EndWorkingFailed(Login_GetFailedText(resp.code));
+			}
 		}
 
-		private void EndWorkingFailed(string reason) {
-			Button_Login.Visibility = Visibility.Visible;
-			Spinner.Visibility = Visibility.Hidden;
-			Text_Failed.Text = reason;
-			Text_Failed.Visibility = Visibility.Visible;
+		private void Login_StartWorking() {
+			this.Dispatcher.Invoke(() => {
+				Button_Login.Visibility = Visibility.Hidden;
+				Spinner_Login.Visibility = Visibility.Visible;
+				Text_Failed.Visibility = Visibility.Hidden;
+			});
 		}
 
-		private string GetFailedText(ANWI.Messaging.LoginResponse.Code c) {
+		private void Login_EndWorkingSucceeded() {
+			this.Dispatcher.Invoke(() => {
+				Button_Login.Visibility = Visibility.Visible;
+				Spinner_Login.Visibility = Visibility.Hidden;
+				Text_Failed.Visibility = Visibility.Hidden;
+			});
+		}
+
+		private void Login_EndWorkingFailed(string reason) {
+			this.Dispatcher.Invoke(() => {
+				Button_Login.Visibility = Visibility.Visible;
+				Spinner_Login.Visibility = Visibility.Hidden;
+				Text_Failed.Text = reason;
+				Text_Failed.Visibility = Visibility.Visible;
+			});
+		}
+
+		private string Login_GetFailedText(ANWI.Messaging.LoginResponse.Code c) {
 			switch(c) {
 				case ANWI.Messaging.LoginResponse.Code.FAILED_CREDENTIALS:
 					return "Login Failed: Invalid Credentials";
@@ -160,6 +160,97 @@ namespace Client {
 				default:
 					return "Login Failed";
 			}
+		}
+
+		private void Textbox_Login_KeyDown(object sender, KeyEventArgs e) {
+			if (e.Key == Key.Return) {
+				SendLogin();
+			}
+		}
+		#endregion
+
+		private void Button_Register_Click(object sender, RoutedEventArgs e) {
+			SendRegister();
+		}
+
+		private void SendRegister() {
+			Register_StartWorking();
+
+			if(Textbox_RegisterEmail.Text == "" || Textbox_RegisterNickname.Text == "" ||
+				Textbox_RegisterPassword.Password == "" || Textbox_RegisterPassword2.Password == "") {
+				return;
+			}
+
+			// Check that passwords match
+			if (Textbox_RegisterPassword.Password != Textbox_RegisterPassword2.Password) {
+				Register_EndWorkingFailed("Passwords do not match");
+				return;
+			}
+
+			ws.Connect();
+
+			ANWI.Messaging.Message.Send(
+				ws,
+				ANWI.Messaging.Message.Routing.NoReturn,
+				new ANWI.Messaging.RegisterRequest(
+					version,
+					Textbox_RegisterEmail.Text,
+					Textbox_RegisterNickname.Text,
+					Textbox_RegisterPassword.Password));
+		}
+
+		private void Register_Response(ANWI.Messaging.RegisterResponse resp) {
+			if (resp.code == ANWI.Messaging.RegisterResponse.Code.OK) {
+				Register_EndWorkingSucceeded();
+			} else {
+				Register_EndWorkingFailed(Register_GetFailedText(resp.code));
+			}
+		}
+
+		private string Register_GetFailedText(ANWI.Messaging.RegisterResponse.Code code) {
+			switch(code) {
+				case ANWI.Messaging.RegisterResponse.Code.FAILED_ALREADY_EXISTS:
+					return "Registration Failed: Email Already In Use";
+
+				case ANWI.Messaging.RegisterResponse.Code.FAILED_SERVER_ERROR:
+					return "Registration Failed: Server Error";
+
+				default:
+					return "Registration Failed: Unknown Error";
+			}
+		}
+
+		private void Register_StartWorking() {
+			this.Dispatcher.Invoke(() => {
+				Button_Register.Visibility = Visibility.Hidden;
+				Spinner_Register.Visibility = Visibility.Visible;
+				Text_RegisterResult.Visibility = Visibility.Hidden;
+			});
+		}
+
+		private void Register_EndWorkingSucceeded() {
+			this.Dispatcher.Invoke(() => {
+				Button_Register.Visibility = Visibility.Visible;
+				Spinner_Register.Visibility = Visibility.Hidden;
+				Text_RegisterResult.Visibility = Visibility.Visible;
+				Text_RegisterResult.Foreground = Brushes.Green;
+				Text_RegisterResult.Text = "Account Registered: Please confirm your email before logging in.";
+			});
+		}
+
+		private void Register_EndWorkingFailed(string reason) {
+			this.Dispatcher.Invoke(() => {
+				Button_Register.Visibility = Visibility.Visible;
+				Spinner_Register.Visibility = Visibility.Hidden;
+				Text_RegisterResult.Text = reason;
+				Text_RegisterResult.Visibility = Visibility.Visible;
+				Text_RegisterResult.Foreground = Brushes.Red;
+			});
+		}
+
+		private void Textbox_Register_KeyDown(object sender, KeyEventArgs e) {
+			if (e.Key == Key.Return)
+				SendRegister();
 		}
 	}
 }

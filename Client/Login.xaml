@@ -6,19 +6,43 @@
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="Login" Height="345.333" Width="258.333" ShowInTaskbar="False" ResizeMode="NoResize">
+        Title="Login" Height="420.333" Width="258.333" ShowInTaskbar="False" ResizeMode="NoResize">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <TextBlock HorizontalAlignment="Center" Margin="16,10,20.667,0" TextWrapping="Wrap" Text="Alliance Navy Infrastructure Login" VerticalAlignment="Top" Width="216" FontSize="22" TextAlignment="Center" FontFamily="Gadugi" FontWeight="Bold"/>
-        <TextBox x:Name="Textbox_Username" HorizontalAlignment="Left" Height="25" Margin="35,110,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="175" FontSize="14" AcceptsReturn="False"/>
-        <TextBlock HorizontalAlignment="Left" Margin="35,95,0,0" TextWrapping="Wrap" Text="Username" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="35,149,0,0" TextWrapping="Wrap" Text="Password" VerticalAlignment="Top"/>
-        <PasswordBox x:Name="Textbox_Password" HorizontalAlignment="Left" Margin="35,165,0,0" VerticalAlignment="Top" Width="175" Height="24"/>
-        <Button x:Name="Button_Login" Content="Login" HorizontalAlignment="Left" Margin="60,0,0,60.333" VerticalAlignment="Bottom" Width="125" Height="40" Background="#FF316838" Foreground="White" Click="Button_Login_Click"/>
-        <fa:ImageAwesome x:Name="Spinner" Icon="Cog" Spin="True" SpinDuration="10" Margin="95,210,101.667,25.667" Foreground="#FF316838" Visibility="Hidden" />
-        <TextBlock x:Name="Text_Failed" Margin="16,0,9.667,24.333" TextWrapping="Wrap" Text="Login Failed" Foreground="#FFDE0000" TextAlignment="Center" Height="31" VerticalAlignment="Bottom" RenderTransformOrigin="0.481,-0.043"/>
-        <TextBlock x:Name="Text_Version" Margin="10,0,9.667,3.333" TextWrapping="Wrap" Text="{Binding versionString}" Height="16" VerticalAlignment="Bottom" TextAlignment="Center"/>
+        <TextBlock x:Name="Text_Version" Margin="10,0,9.667,3" TextWrapping="Wrap" Text="{Binding versionString}" Height="16" VerticalAlignment="Bottom" TextAlignment="Center"/>
+        <TabControl x:Name="tabControl" Margin="10,74,9.667,24">
+            <TabItem Header="Log In">
+                <Grid Background="#FFE5E5E5" Margin="0,0,-0.333,-0.667">
+                    <TextBox x:Name="Textbox_Username" HorizontalAlignment="Left" Height="25" Margin="27,25,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="175" FontSize="14" AcceptsReturn="False" KeyDown="Textbox_Login_KeyDown"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="26,10,0,0" TextWrapping="Wrap" Text="Username" VerticalAlignment="Top"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="26,64,0,0" TextWrapping="Wrap" Text="Password" VerticalAlignment="Top"/>
+                    <PasswordBox x:Name="Textbox_Password" HorizontalAlignment="Left" Margin="27,80,0,0" VerticalAlignment="Top" Width="175" Height="24" KeyDown="Textbox_Login_KeyDown"/>
+                    <Button x:Name="Button_Login" Content="Login" HorizontalAlignment="Left" Margin="52,0,0,50.667" VerticalAlignment="Bottom" Width="125" Height="40" Background="#FF316838" Foreground="White" Click="Button_Login_Click"/>
+                    <fa:ImageAwesome x:Name="Spinner_Login" Icon="Cog" Height="52" Spin="True" SpinDuration="10" Margin="87,0,90,45.667" Foreground="#FF316838" Visibility="Visible" VerticalAlignment="Bottom" />
+                    <TextBlock x:Name="Text_Failed" Margin="10,0,10,8.667" TextWrapping="Wrap" Text="Login Failed" Foreground="#FFDE0000" TextAlignment="Center" Height="31" VerticalAlignment="Bottom" RenderTransformOrigin="0.481,-0.043"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Register">
+                <Grid Background="#FFE5E5E5">
+                    <TextBox x:Name="Textbox_RegisterEmail" HorizontalAlignment="Left" Height="25" Margin="27,25,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="175" FontSize="14" AcceptsReturn="False" KeyDown="Textbox_Register_KeyDown"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="28,10,0,0" TextWrapping="Wrap" Text="Email" VerticalAlignment="Top"/>
+                    <TextBox x:Name="Textbox_RegisterNickname" HorizontalAlignment="Left" Height="25" Margin="27,65,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="175" FontSize="14" AcceptsReturn="False" KeyDown="Textbox_Register_KeyDown"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="27,50,0,0" TextWrapping="Wrap" Text="Nickname" VerticalAlignment="Top"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="28,90,0,0" TextWrapping="Wrap" Text="Password" VerticalAlignment="Top"/>
+                    <PasswordBox x:Name="Textbox_RegisterPassword" HorizontalAlignment="Left" Margin="27,106,0,0" VerticalAlignment="Top" Width="175" Height="24" KeyDown="Textbox_Register_KeyDown"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="28,131,0,0" TextWrapping="Wrap" Text="Re-Enter Password" VerticalAlignment="Top"/>
+                    <PasswordBox x:Name="Textbox_RegisterPassword2" HorizontalAlignment="Left" Margin="27,147,0,0" VerticalAlignment="Top" Width="175" Height="24" KeyDown="Textbox_Register_KeyDown"/>
+                    <Button x:Name="Button_Register" Content="Register" HorizontalAlignment="Left" Margin="52,0,0,41" VerticalAlignment="Bottom" Width="125" Height="40" Background="#FF316838" Foreground="White" Click="Button_Register_Click"/>
+                    <TextBlock x:Name="Text_RegisterResult" Margin="10,0,9.667,8" TextWrapping="Wrap" Text="Registration Failed" Foreground="Red" TextAlignment="Center" Height="31" VerticalAlignment="Bottom" RenderTransformOrigin="0.481,-0.043"/>
+                    <fa:ImageAwesome x:Name="Spinner_Register" Icon="Cog" Height="52" Spin="True" SpinDuration="10" Margin="87,0,89.667,35" Foreground="#FF316838" Visibility="Visible" VerticalAlignment="Bottom" />
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

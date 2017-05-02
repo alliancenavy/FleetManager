@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace ANWI.Messaging {
 	public class LoginResponse : IMessagePayload {
 		public enum Code {
-			SUCCEEDED,
+			OK,
 			FAILED_CREDENTIALS,
 			FAILED_VERSION,
 			FAILED_SERVER_ERROR,

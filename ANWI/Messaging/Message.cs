@@ -44,7 +44,10 @@ namespace ANWI.Messaging {
 
 		public Routing address;
 	
+		[MessagePackKnownType("logr", typeof(LoginRequest))]
+		[MessagePackKnownType("regr", typeof(RegisterRequest))]
 		[MessagePackKnownType("lr", typeof(LoginResponse))]
+		[MessagePackKnownType("rr", typeof(RegisterResponse))]
 		[MessagePackKnownType("rv", typeof(Request))]
 		[MessagePackKnownType("fvr", typeof(FullVesselReg))]
 		[MessagePackKnownType("cn", typeof(ChangeNickname))]
