@@ -26,9 +26,6 @@ namespace FleetManager.Services {
 
 		private Version minimumVersion = new Version(0, 1, 0, 0);
 
-		private static string auth0Connection = "Username-Password-Authentication";
-		private static string auth0ClientId = "b34x4hALcBeA24rPCcrLW3DZee5b28A0";
-
 		public Auth() {
 			auth0Client = new AuthenticationApiClient("stackcollision.auth0.com");
 		}
@@ -63,9 +60,9 @@ namespace FleetManager.Services {
 				}
 
 				ResourceOwnerTokenRequest req = new ResourceOwnerTokenRequest() {
-					ClientId = auth0ClientId,
-					ClientSecret = "mxD7u6wf5Cmrfqt8p244g42vhkl0q9R8qxem80BrHsjqs1XwTjCA7ndy5kL3B9Dd",
-					Realm = auth0Connection,
+					ClientId = Configuration.auth0Settings.client,
+					ClientSecret = Configuration.auth0Settings.secret,
+					Realm = Configuration.auth0Settings.connection,
 					Username = cred.username,
 					Password = cred.password
 				};
@@ -131,8 +128,8 @@ namespace FleetManager.Services {
 			logger.Info($"Registering new user {reg.username}");
 
 			SignupUserRequest req = new SignupUserRequest() {
-				ClientId = auth0ClientId,
-				Connection = auth0Connection,
+				ClientId = Configuration.auth0Settings.client,
+				Connection = Configuration.auth0Settings.connection,
 				Email = reg.email,
 				Password = reg.password
 			};

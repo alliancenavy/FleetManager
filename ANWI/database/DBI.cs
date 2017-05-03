@@ -15,6 +15,8 @@ namespace ANWI.Database
         {
             if (dbConn != null)
                 return false;
+			if (dbFileName == null)
+				dbFileName = "fleetManager.sqlite3db";
             dbConn = new SQLiteConnection("Data Source=" + dbFileName + ";Version=3;");
             dbConn.Open();
             return true;

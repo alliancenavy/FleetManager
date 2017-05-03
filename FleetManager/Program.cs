@@ -17,8 +17,10 @@ namespace FleetManager {
 		Dictionary<string, string> CurrentUsers;
 
 		static void Main(string[] args) {
+			Configuration.Load();
+
 			// Open database connection
-			if(!ANWI.Database.DBI.Open()) {
+			if(!ANWI.Database.DBI.Open(Configuration.dbFile)) {
 				Console.WriteLine("Failed to open database connection");
 				return;
 			}
