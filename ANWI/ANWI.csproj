@@ -133,6 +133,7 @@
     <Compile Include="Rate.cs" />
     <Compile Include="RosterEntry.cs" />
     <Compile Include="SharedEnums.cs" />
+    <Compile Include="Utility\DumpWriter.cs" />
     <Compile Include="Vessel.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -16,7 +16,7 @@ namespace ANWI {
 
 		public enum Status {
 			STAGING = 0,
-			ACTIVE = 1,
+			SORTIED = 1,
 			DISMISSING = 2
 		}
 
@@ -51,8 +51,8 @@ namespace ANWI {
 		public string statusString {
 			get {
 				switch(status) {
-					case Status.ACTIVE:
-						return "Active";
+					case Status.SORTIED:
+						return "Sortied";
 					case Status.STAGING:
 						return "Staging";
 					case Status.DISMISSING:

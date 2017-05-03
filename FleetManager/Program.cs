@@ -9,14 +9,21 @@ using Auth0.Windows;
 using FleetManager.Services;
 using MsgPack.Serialization;
 using System.IO;
+using NLog;
 
 namespace FleetManager {
 
 	class Program {
 
+		private static NLog.Logger logger = LogManager.GetLogger("Program");
+
 		Dictionary<string, string> CurrentUsers;
 
 		static void Main(string[] args) {
+			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(UEHandler);
+
+			logger.Info("Starting up...");
+
 			Configuration.Load();
 
 			// Open database connection
@@ -25,7 +32,7 @@ namespace FleetManager {
 				return;
 			}
 
-			var wssv = new WebSocketServer("ws://localhost:9000");
+			var wssv = new WebSocketServer(Configuration.fullSocketUrl);
 			
 			// Set up services
 			wssv.AddWebSocketService<Auth>("/auth");
@@ -35,6 +42,13 @@ namespace FleetManager {
 			wssv.Start();
 			Console.ReadKey(true);
 			wssv.Stop();
+		}
+
+		private static void UEHandler(object sender, UnhandledExceptionEventArgs e) {
+			logger.Fatal("Unhandled exception! " + (e.ExceptionObject as Exception));
+			logger.Info("Writing crash dump...");
+			ANWI.Utility.DumpWriter.MiniDumpToFile("crashdump.dmp");
+			Environment.Exit(1);
 		}
 	}
 }

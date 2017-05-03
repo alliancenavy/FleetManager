@@ -63,6 +63,8 @@ namespace Client {
 		/// a valid user and populates their profile info.
 		/// </summary>
 		public MainWindow() {
+			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(UEHandler);
+
 			// Open a modal login window
 			// When the window closes the authclient member will be either null
 			// or have a structure.
@@ -85,7 +87,7 @@ namespace Client {
 			wpfProfile = account.profile;
 
 			// Open connection to the main service
-			socket = new WebSocket("ws://localhost:9000/main");
+			socket = new WebSocket("ws://107.173.28.114:9000/main");
 			socket.OnMessage += OnMessage;
 			socket.OnError += SocketError;
 			socket.Connect();
@@ -381,6 +383,11 @@ namespace Client {
 			if(PropertyChanged != null) {
 				PropertyChanged(this, new PropertyChangedEventArgs(name));
 			}
+		}
+
+		private static void UEHandler(object sender, UnhandledExceptionEventArgs e) {
+			ANWI.Utility.DumpWriter.MiniDumpToFile("crashdump.dmp");
+			Application.Current.Shutdown();
 		}
 	}
 }

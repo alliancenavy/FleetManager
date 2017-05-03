@@ -22,7 +22,13 @@ namespace FleetManager {
 		public static Auth0Settings auth0Settings { get; private set; }
 		public static string dbFile { get; private set; }
 
+		public static string socketUrl { get; private set; }
+		public static short socketPort { get; private set; }
+		public static string fullSocketUrl { get { return $"{socketUrl}:{socketPort}"; } }
+
 		public static bool Load() {
+			logger.Info("Loading configuration");
+
 			try {
 				StreamReader stream = File.OpenText("config.json");
 				JsonTextReader reader = new JsonTextReader(stream);
@@ -37,10 +43,15 @@ namespace FleetManager {
 				};
 
 				dbFile = (string)jsonRoot["dbFile"];
+
+				socketUrl = (string)jsonRoot["socket"]["url"];
+				socketPort = (short)jsonRoot["socket"]["port"];
 			} catch (Exception e) {
 				logger.Error("Fatal error loading configuration: " + e);
 				return false;
 			}
+
+			logger.Info("Done");
 
 			return true;
 		}

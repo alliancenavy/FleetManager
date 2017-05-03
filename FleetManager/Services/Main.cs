@@ -98,7 +98,7 @@ namespace FleetManager.Services {
 						ops.Add(new Operation() {
 							name = "Daily Homeguard",
 							type = Operation.Type.PATROL,
-							status = Operation.Status.ACTIVE,
+							status = Operation.Status.SORTIED,
 							currentMembers = 6,
 							neededMembers = 5,
 							totalSlots = 8,

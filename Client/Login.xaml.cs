@@ -53,7 +53,7 @@ namespace Client {
 			Spinner_Register.Visibility = Visibility.Hidden;
 
 			// Set websocket callbacks
-			ws = new WebSocket("ws://localhost:9000/auth");
+			ws = new WebSocket("ws://107.173.28.114:9000/auth");
 			ws.OnMessage += OnMessage;
 			ws.OnError += SocketError;
 
