@@ -20,6 +20,7 @@ using MsgPack;
 using MsgPack.Serialization;
 using System.IO;
 using System.Diagnostics;
+using Newtonsoft.Json.Linq;
 
 namespace Client {
 
@@ -34,6 +35,8 @@ namespace Client {
 
 		private Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 		public string versionString { get { return $"version {version}"; } }
+
+		private static readonly string credentialsFile = ".login.json";
 
 		#region General
 		/// <summary>
@@ -53,6 +56,25 @@ namespace Client {
 			ws = new WebSocket("ws://localhost:9000/auth");
 			ws.OnMessage += OnMessage;
 			ws.OnError += SocketError;
+
+			// Load credentials
+			if (File.Exists(credentialsFile)) {
+				try {
+					File.Decrypt(credentialsFile);
+					StreamReader stream = File.OpenText(credentialsFile);
+					JsonTextReader reader = new JsonTextReader(stream);
+					JObject root = (JObject)JToken.ReadFrom(reader);
+
+					Textbox_Username.Text = (string)root["username"];
+					Textbox_Password.Password = (string)root["password"];
+					Checkbox_RememberMe.IsChecked = true;
+					stream.Close();
+					File.Encrypt(credentialsFile);
+				} catch (Exception e) {
+					// Delete the credentials file so we don't fail again
+					File.Delete(credentialsFile);
+				}
+			}
 		}
 
 		/// <summary>
@@ -108,6 +130,20 @@ namespace Client {
 					ANWI.Messaging.Message.Routing.NoReturn,
 					new ANWI.Messaging.LoginRequest(
 						version, Textbox_Username.Text, Textbox_Password.Password));
+
+				// Save credentials
+				if(Checkbox_RememberMe.IsChecked.Value) {
+					try {
+						JObject root = new JObject(
+							new JProperty("username", Textbox_Username.Text),
+							new JProperty("password", Textbox_Password.Password));
+
+						File.WriteAllText(credentialsFile, root.ToString());
+						File.Encrypt(credentialsFile);
+					} catch(Exception e) {
+						// Fail silently, just prevent crashes
+					}
+				}
 			}
 		}
 
@@ -251,6 +287,13 @@ namespace Client {
 		private void Textbox_Register_KeyDown(object sender, KeyEventArgs e) {
 			if (e.Key == Key.Return)
 				SendRegister();
+		}
+
+		private void Checkbox_RememberMe_Click(object sender, RoutedEventArgs e) {
+			if(Checkbox_RememberMe.IsChecked.Value == false) {
+				// Delete file
+				File.Delete(credentialsFile);
+			}
 		}
 	}
 }
