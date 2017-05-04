@@ -56,7 +56,7 @@
                     <Setter TargetName="Base" Property="Background" Value="#FF7DEBFF"/>
                 </DataTrigger>
 
-                <DataTrigger Binding="{Binding Path=status}" Value="ACTIVE">
+                <DataTrigger Binding="{Binding Path=status}" Value="SORTIED">
                     <Setter TargetName="Base" Property="Background" Value="#FF8CF699"/>
                 </DataTrigger>
 

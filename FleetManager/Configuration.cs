@@ -26,6 +26,10 @@ namespace FleetManager {
 		public static short socketPort { get; private set; }
 		public static string fullSocketUrl { get { return $"{socketUrl}:{socketPort}"; } }
 
+		public static bool hasSSLConfig { get; private set; }
+		public static string sslCertName { get; private set; }
+		public static string sslCertPassword { get; private set; }
+
 		public static bool Load() {
 			logger.Info("Loading configuration");
 
@@ -46,6 +50,15 @@ namespace FleetManager {
 
 				socketUrl = (string)jsonRoot["socket"]["url"];
 				socketPort = (short)jsonRoot["socket"]["port"];
+
+				JObject sslRoot = (JObject)jsonRoot["socket"]["ssl"];
+				if (sslRoot != null) {
+					hasSSLConfig = true;
+					sslCertName = (string)sslRoot["cert"];
+					sslCertPassword = (string)sslRoot["password"];
+				} else {
+					hasSSLConfig = false;
+				}
 			} catch (Exception e) {
 				logger.Error("Fatal error loading configuration: " + e);
 				return false;

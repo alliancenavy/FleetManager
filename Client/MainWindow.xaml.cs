@@ -87,7 +87,7 @@ namespace Client {
 			wpfProfile = account.profile;
 
 			// Open connection to the main service
-			socket = new WebSocket("ws://107.173.28.114:9000/main");
+			socket = new WebSocket($"{CommonData.serverAddress}/main");
 			socket.OnMessage += OnMessage;
 			socket.OnError += SocketError;
 			socket.Connect();
@@ -386,8 +386,10 @@ namespace Client {
 		}
 
 		private static void UEHandler(object sender, UnhandledExceptionEventArgs e) {
-			ANWI.Utility.DumpWriter.MiniDumpToFile("crashdump.dmp");
-			Application.Current.Shutdown();
+			if (e.IsTerminating) {
+				ANWI.Utility.DumpWriter.MiniDumpToFile("crashdump.dmp");
+				Application.Current.Shutdown();
+			}
 		}
 	}
 }

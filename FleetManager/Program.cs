@@ -10,6 +10,7 @@ using FleetManager.Services;
 using MsgPack.Serialization;
 using System.IO;
 using NLog;
+using System.Security.Cryptography.X509Certificates;
 
 namespace FleetManager {
 
@@ -32,7 +33,15 @@ namespace FleetManager {
 				return;
 			}
 
-			var wssv = new WebSocketServer(Configuration.fullSocketUrl);
+			WebSocketServer wssv = null;
+			if (Configuration.hasSSLConfig) {
+				wssv = new WebSocketServer(Configuration.socketPort, true);
+				wssv.SslConfiguration.ServerCertificate =
+					new X509Certificate2(Configuration.sslCertName, Configuration.sslCertPassword);
+			} else {
+				wssv = new WebSocketServer(Configuration.fullSocketUrl);
+			}
+
 			
 			// Set up services
 			wssv.AddWebSocketService<Auth>("/auth");
@@ -45,10 +54,14 @@ namespace FleetManager {
 		}
 
 		private static void UEHandler(object sender, UnhandledExceptionEventArgs e) {
-			logger.Fatal("Unhandled exception! " + (e.ExceptionObject as Exception));
-			logger.Info("Writing crash dump...");
-			ANWI.Utility.DumpWriter.MiniDumpToFile("crashdump.dmp");
-			Environment.Exit(1);
+			if (e.IsTerminating) {
+				logger.Fatal("Unhandled Exception! " + (e.ExceptionObject as Exception));
+				logger.Info("Writing crash dump...");
+				ANWI.Utility.DumpWriter.MiniDumpToFile("crashdump.dmp");
+				Environment.Exit(1);
+			} else {
+				logger.Error("Unhandled Exception! " + (e.ExceptionObject as Exception));
+			}
 		}
 	}
 }

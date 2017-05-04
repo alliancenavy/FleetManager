@@ -8,6 +8,8 @@ using ANWI;
 namespace Client {
 	public static class CommonData {
 
+		public static readonly string serverAddress = "wss://apps.alliancenavy.org:9000";
+
 		public static List<Rank> ranks { get; private set; } = null;
 		public static List<Rate> rates { get; private set; } = null;
 		public static List<AssignmentRole> assignmentRoles { get; private set; } = null;
