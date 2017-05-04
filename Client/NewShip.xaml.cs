@@ -38,7 +38,7 @@ namespace Client {
 
 		public NewShip() {
 			this.DataContext = this;
-			hullList = new ObservableCollection<Hull>(CommonData.hulls.Where(x => x.ordering < 100));
+			hullList = new ObservableCollection<Hull>(CommonData.largeHulls);
 
 			InitializeComponent();
 		}

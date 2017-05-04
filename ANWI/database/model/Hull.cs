@@ -104,6 +104,28 @@ namespace ANWI.Database.Model
 			return true;
 		}
 
+		public static bool FetchLarge(ref List<Hull> output) {
+			output = new List<Hull>();
+
+			SQLiteDataReader reader = DBI.DoQuery($"SELECT * FROM Hull WHERE ordering <= 100 ORDER BY series ASC;");
+			while (reader.Read()) {
+				Hull h = Hull.Factory(reader);
+				output.Add(h);
+			}
+			return true;
+		}
+
+		public static bool FetchSmall(ref List<Hull> output) {
+			output = new List<Hull>();
+
+			SQLiteDataReader reader = DBI.DoQuery($"SELECT * FROM Hull WHERE ordering > 100 ORDER BY series ASC;");
+			while (reader.Read()) {
+				Hull h = Hull.Factory(reader);
+				output.Add(h);
+			}
+			return true;
+		}
+
 		public static bool Store(Hull input)
 		{
 			int result = DBI.DoAction($"update Hull set vendor = {input.vendor}, role = {input.role}, series = '{input.series}', symbol = '{input.symbol}', ordering = {input.ordering} where id = {input.id};");

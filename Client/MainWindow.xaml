@@ -139,7 +139,7 @@
                 <Button x:Name="Button_AddRate" Grid.Column="0" Grid.Row="0" Content="Add Rate" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_AddRate_Click" IsEnabled="{Binding userPrivileges.canCertify}"/>
                 <Button x:Name="Button_DeleteRate" Grid.Column="1" Grid.Row="0" Content="Delete Rate" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_DeleteRate_Click" IsEnabled="{Binding userPrivileges.canCertify}" Margin="8,0,7.333,0"/>
                 <Button x:Name="Button_ChangeRank" Content="Change Rank" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_ChangeRank_Click" IsEnabled="{Binding userPrivileges.canPromote}" Margin="0,33,0,0" Grid.RowSpan="2"/>
-                <Button x:Name="Button_SetPrimaryRate" Grid.Column="2" Grid.Row="0" Content="Set Primary Rate" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_SetPrimaryRate_Click" Margin="0.667,0,-0.667,0"/>
+                <Button x:Name="Button_SetPrimaryRate" Grid.Column="2" Grid.Row="0" Content="Set Primary Rate" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_SetPrimaryRate_Click" IsEnabled="{Binding canSetPrimaryRate}" Margin="0.667,0,-0.667,0"/>
             </Grid>
         </Grid>
         <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="30" FontSize="20" FontWeight="Bold" Margin="9.667,5,289.333,0" Grid.Column="1">

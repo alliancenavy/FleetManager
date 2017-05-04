@@ -70,6 +70,18 @@ namespace ANWI {
 			Datamodel.Hull.FetchAll(ref all);
 			return all.ConvertAll<Hull>((h) => { return new Hull(h); });
 		}
+
+		public static List<Hull> FetchLarge() {
+			List<Datamodel.Hull> all = null;
+			Datamodel.Hull.FetchLarge(ref all);
+			return all.ConvertAll<Hull>((h) => { return new Hull(h); });
+		}
+
+		public static List<Hull> FetchSmall() {
+			List<Datamodel.Hull> all = null;
+			Datamodel.Hull.FetchSmall(ref all);
+			return all.ConvertAll<Hull>((h) => { return new Hull(h); });
+		}
 		#endregion
 	}
 }

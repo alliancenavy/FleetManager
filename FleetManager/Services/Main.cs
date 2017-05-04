@@ -51,9 +51,8 @@ namespace FleetManager.Services {
 
 		protected override void OnMessage(MessageEventArgs e) {
 			ANWI.Messaging.Message msg = ANWI.Messaging.Message.Receive(e.RawData);
-
+			
 			logger.Info($"Message received from {GetLogIdentifier()}.  {msg.payload.ToString()}");
-			logger.Info(BitConverter.ToString(e.RawData));
 
 			ANWI.Messaging.IMessagePayload p = 
 				msgProcessors[msg.payload.GetType()](msg.payload);
@@ -90,7 +89,8 @@ namespace FleetManager.Services {
 						acd.ranks = Rank.FetchAll();
 						acd.rates = Rate.FetchAllRates();
 						acd.assignmentRoles = AssignmentRole.FetchAll();
-						acd.hulls = Hull.FetchAll();
+						acd.largeHulls = Hull.FetchLarge();
+						acd.smallHulls = Hull.FetchSmall();
 						return acd;
 					}
 

@@ -14,7 +14,6 @@ drop table if exists HullRole;
 create table if not exists HullRole (
  id integer not null primary key autoincrement,
  name text not null unique,
- abrv text not null unique,
  icon text not null
 );
 

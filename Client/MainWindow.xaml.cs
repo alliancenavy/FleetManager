@@ -47,6 +47,7 @@ namespace Client {
 				if (currentProfile != value) {
 					currentProfile = value;
 					NotifyPropertyChanged("wpfProfile");
+					NotifyPropertyChanged("canSetPrimaryRate");
 				}
 			}
 		}
@@ -54,6 +55,9 @@ namespace Client {
 		public ObservableCollection<Operation> wpfOpList { get { return operationList; } }
 
 		public Privs userPrivileges { get { return account.profile.privs; } }
+		public bool canSetPrimaryRate { get {
+				return currentProfile != null && account.profile.id == currentProfile.id;
+			} }
 		#endregion
 
 		#region Initialization

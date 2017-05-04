@@ -13,14 +13,12 @@ namespace ANWI.Database.Model
 
 		public int id;
 		public string name;
-		public string abrv;
 		public string icon;
 
-		private HullRole(int id, string name, string abrv, string icon)
+		private HullRole(int id, string name, string icon)
 		{
 			this.id = id;
 			this.name = name;
-			this.abrv = abrv;
 			this.icon = icon;
 		}
 
@@ -33,18 +31,16 @@ namespace ANWI.Database.Model
 			HullRole result = new HullRole(
 				id: -1,
 				name: "",
-				abrv: "",
 				icon: ""
 			);
 			return result;
 		}
 
-		public static HullRole Factory(int id, string name, string abrv, string icon)
+		public static HullRole Factory(int id, string name, string icon)
 		{
 			HullRole result = new HullRole(
 				id: id,
 				name: name,
-				abrv: abrv,
 				icon: icon
 			);
 			return result;
@@ -55,15 +51,14 @@ namespace ANWI.Database.Model
 			HullRole result = new HullRole(
 				id: Convert.ToInt32(reader["id"]),
 				name: (string)reader["name"],
-				abrv: (string)reader["abrv"],
 				icon: (string)reader["icon"]
 			);
 			return result;
 		}
 
-		public static bool Create(ref HullRole output, string name, string abrv, string icon = "")
+		public static bool Create(ref HullRole output, string name, string icon = "")
 		{
-			int result = DBI.DoAction($"insert into HullRole (name, abrv, icon) values('{name}', '{abrv}', '{icon}');");
+			int result = DBI.DoAction($"insert into HullRole (name, icon) values('{name}', '{icon}');");
 			if (result == 1)
 			{
 				return HullRole.FetchById(ref output, DBI.LastInsertRowId);
@@ -95,7 +90,7 @@ namespace ANWI.Database.Model
 
 		public static bool Store(HullRole input)
 		{
-			int result = DBI.DoAction($"update HullRole set name = '{input.name}', abrv = '{input.abrv}', icon = '{input.icon}' where id = {input.id};");
+			int result = DBI.DoAction($"update HullRole set name = '{input.name}', icon = '{input.icon}' where id = {input.id};");
 			if (result == 1)
 				return true;
 			return false;

@@ -84,7 +84,7 @@ namespace ANWI.Database.Model
 
 		public static bool Create(ref UserShip output, int user, int hull, int insurance, string name, int status)
 		{
-			int result = DBI.DoAction($"insert into UserShip (user, hull, insurance, number, name, status, statusDate) values ({user}, {hull}, {insurance}, (SELECT MAX(number)+1 FROM UserShip WHERE hull = {hull}), \"{name}\", {status}, strftime('%s', 'now'));");
+			int result = DBI.DoAction($"insert into UserShip (user, hull, insurance, number, name, status, statusDate) values ({user}, {hull}, {insurance}, COALESCE((SELECT MAX(number)+1 FROM UserShip WHERE hull = {hull}),1), \"{name}\", {status}, strftime('%s', 'now'));");
 
 			if (result == 1)
 			{
