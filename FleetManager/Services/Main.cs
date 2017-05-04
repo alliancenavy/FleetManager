@@ -37,10 +37,22 @@ namespace FleetManager.Services {
 			};
 		}
 
+		private string GetTokenCookie() {
+			return this.Context.CookieCollection["authtoken"].Value;
+		}
+
+		private string GetNameCookie() {
+			return this.Context.CookieCollection["name"].Value;
+		}
+
+		private string GetLogIdentifier() {
+			return $"[{GetNameCookie()} ({GetTokenCookie()})]";
+		}
+
 		protected override void OnMessage(MessageEventArgs e) {
 			ANWI.Messaging.Message msg = ANWI.Messaging.Message.Receive(e.RawData);
 
-			logger.Info("Message received. " + msg.payload.ToString());
+			logger.Info($"Message received from {GetLogIdentifier()}.  {msg.payload.ToString()}");
 			logger.Info(BitConverter.ToString(e.RawData));
 
 			ANWI.Messaging.IMessagePayload p = 

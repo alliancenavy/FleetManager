@@ -90,6 +90,8 @@ namespace Client {
 			socket = new WebSocket($"{CommonData.serverAddress}/main");
 			socket.OnMessage += OnMessage;
 			socket.OnError += SocketError;
+			socket.SetCookie(new WebSocketSharp.Net.Cookie("name", account.profile.nickname));
+			socket.SetCookie(new WebSocketSharp.Net.Cookie("authtoken", account.authToken));
 			socket.Connect();
 
 			// Note: blocking

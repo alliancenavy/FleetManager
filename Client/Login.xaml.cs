@@ -113,30 +113,33 @@ namespace Client {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void Button_Login_Click(object sender, RoutedEventArgs e) {
-			SendLogin();
+			Login_StartWorking();
+
+			string uname = Textbox_Username.Text;
+			string pass = Textbox_Password.Password;
+			bool remember = Checkbox_RememberMe.IsChecked.Value;
+			Task t = new Task(() => {
+				SendLogin(uname, pass, remember);
+			});
+			t.Start();
 		}
 
-		private void SendLogin() {
-			if (Textbox_Username.Text != "" && Textbox_Password.Password != "") {
+		private void SendLogin(string uname, string pass, bool remember) {
+			if (uname != "" && pass != "") {
 				ws.Connect();
-
-				// Clear previous errors
-				Text_Failed.Visibility = Visibility.Hidden;
-
-				Login_StartWorking();
 
 				ANWI.Messaging.Message.Send(
 					ws,
 					ANWI.Messaging.Message.Routing.NoReturn,
 					new ANWI.Messaging.LoginRequest(
-						version, Textbox_Username.Text, Textbox_Password.Password));
+						version, uname, pass));
 
 				// Save credentials
-				if(Checkbox_RememberMe.IsChecked.Value) {
+				if(remember) {
 					try {
 						JObject root = new JObject(
-							new JProperty("username", Textbox_Username.Text),
-							new JProperty("password", Textbox_Password.Password));
+							new JProperty("username", uname),
+							new JProperty("password", pass));
 
 						File.WriteAllText(credentialsFile, root.ToString());
 						File.Encrypt(credentialsFile);
@@ -160,6 +163,7 @@ namespace Client {
 
 		private void Login_StartWorking() {
 			this.Dispatcher.Invoke(() => {
+				Text_Failed.Visibility = Visibility.Hidden;
 				Button_Login.Visibility = Visibility.Hidden;
 				Spinner_Login.Visibility = Visibility.Visible;
 				Text_Failed.Visibility = Visibility.Hidden;
@@ -200,7 +204,15 @@ namespace Client {
 
 		private void Textbox_Login_KeyDown(object sender, KeyEventArgs e) {
 			if (e.Key == Key.Return) {
-				SendLogin();
+				Login_StartWorking();
+
+				string uname = Textbox_Username.Text;
+				string pass = Textbox_Password.Password;
+				bool remember = Checkbox_RememberMe.IsChecked.Value;
+				Task t = new Task(() => {
+					SendLogin(uname, pass, remember);
+				});
+				t.Start();
 			}
 		}
 		#endregion
