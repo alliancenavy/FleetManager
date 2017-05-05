@@ -141,7 +141,9 @@ namespace ANWI.Database.Model {
 		}
 
 		/// <summary>
-		/// Gets the list of all ships
+		/// Gets the list of all ships.
+		/// Does not include ships which were destroyed or decommed 
+		/// more than a month ago
 		/// </summary>
 		/// <param name="output"></param>
 		/// <returns></returns>
@@ -149,7 +151,12 @@ namespace ANWI.Database.Model {
 			output = new List<UserShip>();
 
 			SQLiteDataReader reader = DBI.DoQuery(
-				$"SELECT * FROM UserShip;");
+				$@"SELECT * FROM UserShip
+				WHERE (status != 1 AND status != 4)
+				OR (
+					(status == 1 OR status == 4)
+					AND statusDate > strftime('%s', 'now', '-1 month')
+				);");
 			while (reader.Read()) {
 				UserShip us = UserShip.Factory(reader);
 				output.Add(us);
