@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace ANWI {
 
-namespace ANWI {
+	/// <summary>
+	/// Describes the status of a vessel
+	/// </summary>
 	public enum VesselStatus {
 		ACTIVE = 0,
 		DESTROYED = 1,
@@ -15,6 +13,11 @@ namespace ANWI {
 
 	public static class SharedEnumExtensions {
 
+		/// <summary>
+		/// For converting the vessel status into a string for the UI
+		/// </summary>
+		/// <param name="status"></param>
+		/// <returns></returns>
 		public static string ToFriendlyString(this VesselStatus status) {
 			switch (status) {
 				case VesselStatus.ACTIVE:

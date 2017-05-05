@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Datamodel = ANWI.Database.Model;
 
 namespace ANWI {
+
+	/// <summary>
+	/// A rating.  Used for describing both the rates themselves and a 
+	/// struck rate for a user.
+	/// </summary>
 	public class Rate {
 		#region Instance Variables
+		// The ID of the rate itself
 		public int rateId;
+		// The ID of this user's struck instance
 		public int struckId;
 		public string name { get; set; }
 		public string abbrev { get; set; }
@@ -19,7 +23,8 @@ namespace ANWI {
 		#endregion
 
 		#region WPF Helpers
-		public string wpfEarnedDate { get { return "As of: " + earnedDate.ToString("dd MMM yyyy"); } }
+		public string wpfEarnedDate { get {
+				return "As of: " + earnedDate.ToString("dd MMM yyyy"); } }
 		public string wpfExpirationDate {
 			get {
 				if (hasExpirationDate)
@@ -31,6 +36,10 @@ namespace ANWI {
 		#endregion
 
 		#region Constants
+		/// <summary>
+		/// A pre-made undesignated rate for users who have not selected
+		/// a primary rate.
+		/// </summary>
 		public static Rate UNDESIGNATED = new Rate() {
 			rateId = 0,
 			struckId = -1,
@@ -52,11 +61,14 @@ namespace ANWI {
 			}
 		}
 
-		public string fullName { get { return $"{name} {classString} Class"; } }
+		public string fullName { get {
+				return $"{name} {classString} Class"; } }
 
-		public string fullAbbrev { get { return $"{abbrev}{rank.ToString()}"; } }
+		public string fullAbbrev { get {
+				return $"{abbrev}{rank.ToString()}"; } }
 
-		public string icon { get { return $"images/rates/{fullAbbrev}.png"; } }
+		public string icon { get {
+				return $"images/rates/{fullAbbrev}.png"; } }
 		#endregion
 
 		#region Constructors
@@ -85,20 +97,28 @@ namespace ANWI {
 
 			Datamodel.Rate r = null;
 			if (!Datamodel.Rate.FetchById(ref r, rateId))
-				throw new ArgumentException("Struck rate does not have a valid rate id");
+				throw new ArgumentException(
+					"Struck rate does not have a valid rate id");
 
 			name = r.name;
 			abbrev = r.abrv;
 
-			earnedDate = DateTimeOffset.FromUnixTimeSeconds(sr.earnedDate).DateTime;
+			earnedDate = 
+				DateTimeOffset.FromUnixTimeSeconds(sr.earnedDate).DateTime;
 			if(sr.expirationDate != -1) {
 				hasExpirationDate = true;
-				expirationDate = DateTimeOffset.FromUnixTimeSeconds(sr.expirationDate).DateTime;
+				expirationDate = DateTimeOffset.FromUnixTimeSeconds(
+					sr.expirationDate).DateTime;
 			} else {
 				hasExpirationDate = false;
 			}
 		}
 
+		/// <summary>
+		/// Gets a rate by the ID of that rate
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		public static Rate FetchByRateId(int id) {
 			Datamodel.Rate r = null;
 			if(Datamodel.Rate.FetchById(ref r, id)) {
@@ -108,12 +128,23 @@ namespace ANWI {
 			}
 		}
 
+		/// <summary>
+		/// Gets a list of all rates
+		/// </summary>
+		/// <returns></returns>
 		public static List<Rate> FetchAllRates() {
 			List<Datamodel.Rate> dbRates = null;
 			Datamodel.Rate.FetchAll(ref dbRates);
-			return dbRates.ConvertAll<Rate>((a) => { return new ANWI.Rate(a); });
+			return dbRates.ConvertAll<Rate>(
+				(a) => { return new ANWI.Rate(a); });
 		}
 
+		/// <summary>
+		/// Gets a rate struck by a user
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <param name="rateId">The rate ID, NOT the struck ID</param>
+		/// <returns></returns>
 		public static Rate FetchUsersRate(int userId, int rateId) {
 			Datamodel.StruckRate sr = null;
 			if(Datamodel.StruckRate.FetchByUserRate(ref sr, userId, rateId)) {
@@ -123,10 +154,16 @@ namespace ANWI {
 			}
 		}
 
+		/// <summary>
+		/// Gets all of the rates a user has struck
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <returns></returns>
 		public static List<Rate> FetchUserRates(int userId) {
 			List<Datamodel.StruckRate> dbRates = null;
 			if (Datamodel.StruckRate.FetchByUserId(ref dbRates, userId)) {
-				return dbRates.ConvertAll<Rate>((a) => { return new ANWI.Rate(a); });
+				return dbRates.ConvertAll<Rate>(
+					(a) => { return new ANWI.Rate(a); });
 			} else {
 				return null;
 			}
@@ -135,6 +172,10 @@ namespace ANWI {
 		#endregion
 
 		#region Equality
+		/// <summary>
+		/// Equality functions necessary for combobox
+		/// </summary>
+		/// <returns></returns>
 		public override int GetHashCode() {
 			return rateId.GetHashCode();
 		}

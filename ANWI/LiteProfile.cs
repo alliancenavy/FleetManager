@@ -1,23 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Datamodel = ANWI.Database.Model;
 using MsgPack.Serialization;
 using ANWI.Database;
 
 namespace ANWI {
+
+	/// <summary>
+	/// A lighter-weight version of a user's profile.
+	/// Does not contain the big lists of rates, assignments, etc
+	/// </summary>
 	public class LiteProfile {
 		#region Instance Variables
 		public int id { get; set; }
 		public string nickname { get; set; }
 
+		// The user's rank
 		private int _rankId;
 		private Rank _rank = null;
 		public Rank rank {
 			get {
-				if(_rank == null) {
+				if(DBI.IsOpen() && _rank == null) {
 					_rank = Rank.FetchById(_rankId);
 				}
 				return _rank;
@@ -25,6 +27,7 @@ namespace ANWI {
 			set { _rank = value; }
 		}
 
+		// The user's primary rate
 		private int _primaryRateId;
 		private Rate _primaryRate = null;
 		public Rate primaryRate {
@@ -37,6 +40,7 @@ namespace ANWI {
 			set { _primaryRate = value; }
 		}
 
+		// The user's current assignment
 		private Assignment _assignment = null;
 		public Assignment assignment {
 			get {
@@ -48,6 +52,8 @@ namespace ANWI {
 			set { _assignment = value; }
 		}
 
+		// Helper variable for the client to record if this profile is the
+		// user running the program.
 		[MessagePackIgnore]
 		public bool isMe { get; set; } = false;
 		#endregion
@@ -71,6 +77,11 @@ namespace ANWI {
 			_primaryRateId = u.rate;
 		}
 
+		/// <summary>
+		/// Gets the profile by ID
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		public static LiteProfile FetchById(int id) {
 			Datamodel.User u = null;
 			if(Datamodel.User.FetchById(ref u, id)) {
@@ -80,6 +91,10 @@ namespace ANWI {
 			}
 		}
 
+		/// <summary>
+		/// Gets all the profiles on the roster
+		/// </summary>
+		/// <returns></returns>
 		public static List<LiteProfile> FetchAll() {
 			List<Datamodel.User> dbUsers = null;
 			Datamodel.User.FetchAll(ref dbUsers);
@@ -87,6 +102,12 @@ namespace ANWI {
 			return dbUsers.ConvertAll<LiteProfile>((a) => { return new LiteProfile(a); });
 		}
 
+		/// <summary>
+		/// Gets all the profiles assigned to a ship
+		/// </summary>
+		/// <param name="shipId"></param>
+		/// <param name="company"></param>
+		/// <returns></returns>
 		public static List<LiteProfile> FetchByAssignment(int shipId, bool company) {
 			List<Datamodel.User> dbUsers = null;
 			Datamodel.User.FetchAllByAssignment(ref dbUsers, shipId, company);
@@ -94,6 +115,10 @@ namespace ANWI {
 			return dbUsers.ConvertAll<LiteProfile>((a) => { return new LiteProfile(a); });
 		}
 
+		/// <summary>
+		/// Gets all the profiles without an assignment
+		/// </summary>
+		/// <returns></returns>
 		public static List<LiteProfile> FetchAllUnassigned() {
 			List<Datamodel.User> dbUsers = null;
 			Datamodel.User.FetchAllUnassigned(ref dbUsers);

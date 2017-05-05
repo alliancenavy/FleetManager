@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace ANWI.Messaging {
 
-namespace ANWI.Messaging {
+	/// <summary>
+	/// Client -> Server
+	/// Removes a rate from a user
+	/// </summary>
 	public class DeleteRate : IMessagePayload {
 		public int userId;
 		public int rateId;

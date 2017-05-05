@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace ANWI.Messaging {
+
+	/// <summary>
+	/// Server -> Client
+	/// Returns all of the static data such as ranks, rates, etc
+	/// </summary>
 	public class AllCommonData : IMessagePayload {
 		public List<Rank> ranks = null;
 		public List<Rate> rates = null;

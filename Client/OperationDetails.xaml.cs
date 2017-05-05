@@ -20,9 +20,9 @@ namespace Client {
 	/// </summary>
 	public partial class OperationDetails : Window {
 
-		private ObservableCollection<RosterEntry> roster = new ObservableCollection<RosterEntry>();
+		//private ObservableCollection<RosterEntry> roster = new ObservableCollection<RosterEntry>();
 
-		public ObservableCollection<RosterEntry> wpfRoster { get { return roster; } }
+		//public ObservableCollection<RosterEntry> wpfRoster { get { return roster; } }
 
 		public OperationDetails() {
 			this.DataContext = this;

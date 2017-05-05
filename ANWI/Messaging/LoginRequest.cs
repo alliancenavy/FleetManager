@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ANWI.Messaging {
+
+	/// <summary>
+	/// Client -> Server
+	/// Login credentials for a user
+	/// </summary>
 	public class LoginRequest : IMessagePayload {
 		public Version clientVer;
 		public string username;

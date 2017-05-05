@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace ANWI.Messaging {
 
-namespace ANWI.Messaging {
+	/// <summary>
+	/// Client -> Server
+	/// Payload for changing a user's name
+	/// </summary>
 	public class ChangeNickname : IMessagePayload {
 		public string auth0_id;
 		public string newName;

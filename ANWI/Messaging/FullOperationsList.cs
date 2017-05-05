@@ -5,6 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ANWI.Messaging {
+
+	/// <summary>
+	/// Server -> Client
+	/// Returns the list of all active operations
+	/// </summary>
 	public class FullOperationsList : IMessagePayload {
 		public List<Operation> ops = null;
 

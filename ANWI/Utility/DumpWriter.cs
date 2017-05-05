@@ -8,8 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ANWI.Utility {
-	//
-	// from: http://voneinem-windbg.blogspot.com/2007/03/creating-and-analyzing-minidumps-in-net.html
+
+	/// <summary>
+	/// Writes minidumps to disk in the event of a crash.
+	/// Taken from:
+	/// http://voneinem-windbg.blogspot.com/2007/03/creating-and-analyzing-minidumps-in-net.html
+	/// </summary>
 	public class DumpWriter {
 		internal enum MINIDUMP_TYPE {
 			MiniDumpNormal = 0x00000000,
@@ -39,6 +43,10 @@ namespace ANWI.Utility {
 			   IntPtr UserStreamParam,
 			   IntPtr CallackParam);
 
+		/// <summary>
+		/// Writes the dump file to disk
+		/// </summary>
+		/// <param name="fileToDump">Destination file name</param>
 		public static void MiniDumpToFile(String fileToDump) {
 			FileStream fsToDump = null;
 			if (File.Exists(fileToDump))

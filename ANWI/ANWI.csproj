@@ -131,7 +131,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rank.cs" />
     <Compile Include="Rate.cs" />
-    <Compile Include="RosterEntry.cs" />
     <Compile Include="SharedEnums.cs" />
     <Compile Include="Utility\DumpWriter.cs" />
     <Compile Include="Vessel.cs" />

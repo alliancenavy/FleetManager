@@ -5,6 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ANWI.Messaging {
+
+	/// <summary>
+	/// Client -> Server
+	/// Changes a user's rank
+	/// </summary>
 	public class ChangeRank : IMessagePayload {
 		public int userId;
 		public int rankId;

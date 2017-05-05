@@ -8,6 +8,10 @@ using Datamodel = ANWI.Database.Model;
 using ANWI.Database;
 
 namespace ANWI {
+	
+	/// <summary>
+	/// A full description of a large, named ship
+	/// </summary>
 	public class Vessel {
 
 		#region Instance Variables
@@ -20,6 +24,7 @@ namespace ANWI {
 		public VesselStatus status { get; set; }
 		public DateTime statusDate;
 
+		// The hull this ship uses
 		private int _hullId;
 		private Hull _hull = null;
 		public Hull hull {
@@ -32,6 +37,7 @@ namespace ANWI {
 			set { _hull = value; }
 		}
 
+		// List of all users assigned to this ship as company
 		private List<LiteProfile> _shipsCompany = null;
 		public List<LiteProfile> shipsCompany {
 			get {
@@ -43,6 +49,7 @@ namespace ANWI {
 			set { _shipsCompany = value; }
 		}
 
+		// List of all users embarked on this ship
 		private List<LiteProfile> _shipsEmbarked = null;
 		public List<LiteProfile> shipsEmbarked {
 			get {
@@ -56,12 +63,20 @@ namespace ANWI {
 		#endregion
 
 		#region WPF Helpers
-		public string fullHullNumber { get { return $"{hull.symbol}-{hullNumber}"; } }
-		public string detailName { get { return $"{fullHullNumber}: {name}"; } }
-		public string detailType { get { return $"{hull.name} class {hull.role}"; } }
-		public string statusString { get { return status.ToFriendlyString(); } }
-		public string statusStringWithDate { get { return $"{status.ToFriendlyString()} as of {statusDateString}"; } }
-		public string statusDateString { get { return statusDate.ToString("dd MMM yyyy"); } }
+		public string fullHullNumber { get {
+				return $"{hull.symbol}-{hullNumber}"; } }
+		public string detailName { get {
+				return $"{fullHullNumber}: {name}"; } }
+		public string detailType { get {
+				return $"{hull.name} class {hull.role}"; } }
+		public string statusString { get {
+				return status.ToFriendlyString(); } }
+		public string statusStringWithDate {
+			get {
+				return $"{status.ToFriendlyString()} as of {statusDateString}";
+			} }
+		public string statusDateString { get {
+				return statusDate.ToString("dd MMM yyyy"); } }
 		#endregion
 
 		#region Constructors
@@ -82,16 +97,23 @@ namespace ANWI {
 			isLTI = Convert.ToBoolean(s.insurance);
 			hullNumber = s.number;
 			status = (VesselStatus)s.status;
-			statusDate = DateTimeOffset.FromUnixTimeSeconds(s.statusDate).DateTime;
+			statusDate = 
+				DateTimeOffset.FromUnixTimeSeconds(s.statusDate).DateTime;
 			_hullId = s.hull;
 
 			Datamodel.User u = null;
 			if (!Datamodel.User.FetchById(ref u, s.user))
-				throw new ArgumentException("Ship does not have valid owner ID");
+				throw new ArgumentException(
+					"Ship does not have valid owner ID");
 			ownerId = u.id;
 			ownerName = u.name;
 		}
 
+		/// <summary>
+		/// Gets a vessel by ID
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		public static Vessel FetchById(int id) {
 			Datamodel.UserShip s = null;
 			if(Datamodel.UserShip.FetchById(ref s, id)) {
@@ -101,6 +123,11 @@ namespace ANWI {
 			}
 		}
 
+		/// <summary>
+		/// Gets a vessel by name
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
 		public static Vessel FetchByName(string name) {
 			Datamodel.UserShip s = null;
 			if(Datamodel.UserShip.FetchByName(ref s, name)) {

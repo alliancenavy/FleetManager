@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace ANWI.Messaging {
 
-namespace ANWI.Messaging {
+	/// <summary>
+	/// Server -> Client
+	/// Returns by the server to the client when an update is made to something
+	/// to confirm that the update was successful.
+	/// </summary>
 	public class ConfirmUpdate : IMessagePayload {
 		public bool success;
 		public int updatedId;

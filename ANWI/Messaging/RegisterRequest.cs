@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ANWI.Messaging {
+
+	/// <summary>
+	/// Client -> Server
+	/// Registers a new user account
+	/// </summary>
 	public class RegisterRequest : IMessagePayload {
 		public Version clientVer;
 		public string email;

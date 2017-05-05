@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Data.SQLite;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace ANWI.Database.Model {
-	
+
 	/// <summary>
 	/// Represents a row of the Assignment table.
 	/// </summary>

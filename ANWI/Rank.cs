@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Datamodel = ANWI.Database.Model;
 
 namespace ANWI {
+
+	/// <summary>
+	/// A rank
+	/// </summary>
 	public class Rank {
 
 		#region Instance Variables
@@ -16,7 +16,9 @@ namespace ANWI {
 		#endregion
 
 		#region WPF helpers
-		public string icon { get { return "images/ranks/" + ordering + ".png"; } }
+		// Icon file is the ordering # .png
+		public string icon { get {
+				return "images/ranks/" + ordering + ".png"; } }
 		#endregion
 
 		#region Constructors
@@ -34,6 +36,11 @@ namespace ANWI {
 			ordering = r.ordering;
 		}
 
+		/// <summary>
+		/// Gets a rank by ID
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		public static Rank FetchById(int id) {
 			Datamodel.Rank r = null;
 			if(Datamodel.Rank.FetchById(ref r, id)) {
@@ -43,6 +50,10 @@ namespace ANWI {
 			}
 		}
 
+		/// <summary>
+		/// Gets all of the ranks
+		/// </summary>
+		/// <returns></returns>
 		public static List<Rank> FetchAll() {
 			List<Datamodel.Rank> dbRanks = null;
 			Datamodel.Rank.FetchAll(ref dbRanks);

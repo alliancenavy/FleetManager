@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace ANWI.Messaging {
 
-namespace ANWI.Messaging {
+	/// <summary>
+	/// Server -> Client
+	/// Information on a user requested by the client
+	/// </summary>
 	public class FullProfile : IMessagePayload {
 		public Profile profile;
 

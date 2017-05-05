@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace ANWI.Messaging {
 
-namespace ANWI.Messaging {
+	/// <summary>
+	/// Client -> Server
+	/// Adds an assignment to a user
+	/// </summary>
 	public class NewAssignment : IMessagePayload {
 		public int userId;
 		public int shipId;
@@ -23,7 +22,8 @@ namespace ANWI.Messaging {
 		}
 
 		public override string ToString() {
-			return $"Type: NewAssignment. User: {userId} Ship: {shipId} Role: {roleId}";
+			return $"Type: NewAssignment. User: {userId} Ship: {shipId} " + 
+				"Role: {roleId}";
 		}
 	}
 }

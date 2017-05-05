@@ -5,6 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ANWI.Messaging {
+
+	/// <summary>
+	/// Client -> Server
+	/// Changes the status of a ship
+	/// </summary>
 	public class ChangeShipStatus : IMessagePayload {
 		public int shipId;
 		public VesselStatus status;

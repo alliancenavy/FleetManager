@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MsgPack.Serialization;
+﻿using System.Collections.Generic;
 using Datamodel = ANWI.Database.Model;
 using ANWI.Database;
 
@@ -19,6 +14,7 @@ namespace ANWI {
 		public int id;
 		public string nickname { get; set; }
 
+		// The user's rank
 		private int _rankId;
 		private Rank _rank = null;
 		public Rank rank {
@@ -31,6 +27,7 @@ namespace ANWI {
 			set { _rank = value; }
 		}
 
+		// List of all of the user's rates
 		private List<Rate> _rates = null;
 		public List<Rate> rates {
 			get {
@@ -42,6 +39,7 @@ namespace ANWI {
 			set { _rates = value; }
 		}
 
+		// The user's primary rate
 		private int _primaryRateId;
 		private Rate _primaryRate = null;
 		public Rate primaryRate {
@@ -54,6 +52,7 @@ namespace ANWI {
 			set { _primaryRate = value; }
 		}
 
+		// The user's current assignment
 		private Assignment _assignment = null;
 		public Assignment assignment {
 			get {
@@ -65,6 +64,7 @@ namespace ANWI {
 			set { _assignment = value; }
 		}
 
+		// The full assignment history for this user
 		private List<Assignment> _assignmentHistory = null;
 		public List<Assignment> assignmentHistory {
 			get {
@@ -76,6 +76,7 @@ namespace ANWI {
 			set { _assignmentHistory = value; }
 		}
 
+		// This user's privileges
 		private Privs _privs = null;
 		public Privs privs {
 			get {
@@ -101,6 +102,11 @@ namespace ANWI {
 			_primaryRateId = user.rate;
 		}
 
+		/// <summary>
+		/// Gets a user by ID
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		public static Profile FetchById(int id) {
 			Datamodel.User u = null;
 			if(Datamodel.User.FetchById(ref u, id)) {
@@ -110,6 +116,11 @@ namespace ANWI {
 			}
 		}
 
+		/// <summary>
+		/// Gets a user by their Auth0 identifier
+		/// </summary>
+		/// <param name="auth0"></param>
+		/// <returns></returns>
 		public static Profile FetchByAuth0(string auth0) {
 			Datamodel.User u = null;
 			if(Datamodel.User.FetchByAuth0(ref u, auth0)) {

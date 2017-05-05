@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace ANWI.Messaging {
 
-namespace ANWI.Messaging {
+	/// <summary>
+	/// Client -> Server
+	/// Creates a new ship
+	/// </summary>
 	public class NewShip : IMessagePayload {
 		public int hullId;
 		public string name;
@@ -26,7 +25,8 @@ namespace ANWI.Messaging {
 		}
 
 		public override string ToString() {
-			return $"Type: NewShip. Hull: {hullId} Name: {name} LTI: {LTI} Owner: {ownerId}";
+			return $"Type: NewShip. Hull: {hullId} Name: {name} LTI: {LTI}" +
+				" Owner: {ownerId}";
 		}
 	}
 }

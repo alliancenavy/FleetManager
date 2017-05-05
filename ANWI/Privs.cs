@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Datamodel = ANWI.Database.Model;
+﻿using Datamodel = ANWI.Database.Model;
 
 namespace ANWI {
+
+	/// <summary>
+	/// Describes the privileges a user has
+	/// </summary>
 	public class Privs {
 		#region Instance Variables
 		public bool canPromote { get; set; }
@@ -32,6 +31,11 @@ namespace ANWI {
 			isFleetAdmin = p.isFleetAdmin;
 		}
 
+		/// <summary>
+		/// Gets the privilege set for a user
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <returns></returns>
 		public static Privs FetchByUser(int userId) {
 			Datamodel.UserPrivs p = null;
 			if(Datamodel.UserPrivs.FetchByUser(ref p, userId)) {

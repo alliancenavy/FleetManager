@@ -1,11 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace ANWI.Messaging {
 
-namespace ANWI.Messaging {
+	/// <summary>
+	/// Server -> Client
+	/// Response to a login request.
+	/// </summary>
 	public class LoginResponse : IMessagePayload {
+		/// <summary>
+		/// Describes why the login attempt failed
+		/// </summary>
 		public enum Code {
 			OK,
 			FAILED_CREDENTIALS,

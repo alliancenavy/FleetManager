@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace ANWI.Messaging {
 
-namespace ANWI.Messaging {
+	/// <summary>
+	/// Client -> Server
+	/// Payload for adding a rate to a user
+	/// </summary>
 	public class AddRate : IMessagePayload {
 		public int userId;
 		public int rateId;

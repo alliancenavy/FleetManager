@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MsgPack.Serialization;
+﻿namespace ANWI.Messaging {
 
-namespace ANWI.Messaging {
-
+	/// <summary>
+	/// Client -> Server
+	/// A simple request message with a type and integer argument
+	/// </summary>
 	public class Request : IMessagePayload {
 		
+		/// <summary>
+		/// Type of request
+		/// </summary>
 		public enum Type {
 			None,
 			GetCommonData,

@@ -1,11 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace ANWI.Messaging {
 
-namespace ANWI.Messaging {
+	/// <summary>
+	/// Server -> Client
+	/// Response to a registration request
+	/// </summary>
 	public class RegisterResponse : IMessagePayload {
+		/// <summary>
+		/// Describes the reason for a registration failure
+		/// </summary>
 		public enum Code {
 			OK,
 			FAILED_ALREADY_EXISTS,

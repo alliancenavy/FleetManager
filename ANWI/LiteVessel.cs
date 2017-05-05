@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Datamodel = ANWI.Database.Model;
 using ANWI.Database;
 
 namespace ANWI {
+
+	/// <summary>
+	/// A lighter-weight version of a Vessel
+	/// Does not include things like currently assigned personnel
+	/// </summary>
 	public class LiteVessel {
 		#region Instance Members
 		public int id;
@@ -16,6 +18,7 @@ namespace ANWI {
 		public int hullNumber { get; set; }
 		public VesselStatus status { get; set; }
 
+		// The hull this ship is using
 		private int _hullId;
 		private Hull _hull = null;
 		public Hull hull {
@@ -59,6 +62,11 @@ namespace ANWI {
 			_hullId = s.hull;
 		}
 
+		/// <summary>
+		/// Gets a vessel by ID
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		public static LiteVessel FetchById(int id) {
 			Datamodel.UserShip s = null;
 			if(Datamodel.UserShip.FetchById(ref s, id)) {
@@ -68,6 +76,11 @@ namespace ANWI {
 			}
 		}
 
+		/// <summary>
+		/// Gets a vessel by name
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
 		public static LiteVessel FetchByName(string name) {
 			Datamodel.UserShip s = null;
 			if(Datamodel.UserShip.FetchByName(ref s, name)) {
@@ -77,6 +90,10 @@ namespace ANWI {
 			}
 		}
 
+		/// <summary>
+		/// Gets the full list of registered vessels
+		/// </summary>
+		/// <returns></returns>
 		public static List<LiteVessel> FetchRegistry() {
 			List<Datamodel.UserShip> s = null;
 			if(Datamodel.UserShip.FetchRegistry(ref s)) {

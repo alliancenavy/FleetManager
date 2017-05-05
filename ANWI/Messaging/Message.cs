@@ -1,16 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MsgPack.Serialization;
+﻿using MsgPack.Serialization;
 using WebSocketSharp;
 using System.IO;
 
 namespace ANWI.Messaging {
+
+	/// <summary>
+	/// A message transmitted between the client and server and vice versa
+	/// </summary>
 	public class Message {
 
+		/// <summary>
+		/// Defines where the message is supposed to go when returning
+		/// to the client
+		/// NOT used on the server
+		/// </summary>
 		public struct Routing {
+
+			/// <summary>
+			/// Destination on the client side
+			/// </summary>
 			public enum Target {
 				Unknown,
 				Main,
@@ -21,16 +29,28 @@ namespace ANWI.Messaging {
 			public Target dest;
 			public int id;
 
+			/// <summary>
+			/// Pre-made envelope
+			/// This message does not need to be returned.
+			/// </summary>
 			public static readonly Routing NoReturn = new Routing() {
 				dest = Target.Unknown,
 				id = 0
 			};
 
+			/// <summary>
+			/// Pre-made envelope
+			/// Return to the main window
+			/// </summary>
 			public static readonly Routing Main = new Routing() {
 				dest = Target.Main,
 				id = 0
 			};
 
+			/// <summary>
+			/// Pre-made envelope
+			/// Return to the Fleet window
+			/// </summary>
 			public static readonly Routing FleetReg = new Routing() {
 				dest = Target.FleetReg,
 				id = 0
@@ -44,6 +64,9 @@ namespace ANWI.Messaging {
 
 		public Routing address;
 	
+		/// <summary>
+		/// Polymorphic payload
+		/// </summary>
 		[MessagePackKnownType("logr", typeof(LoginRequest))]
 		[MessagePackKnownType("regr", typeof(RegisterRequest))]
 		[MessagePackKnownType("lr", typeof(LoginResponse))]
@@ -82,13 +105,25 @@ namespace ANWI.Messaging {
 			payload = data;
 		}
 
-		public static void Send(WebSocket sock, Routing returnTo, IMessagePayload data) {
+		/// <summary>
+		/// Serializes the message and sends it to the server
+		/// </summary>
+		/// <param name="sock"></param>
+		/// <param name="returnTo"></param>
+		/// <param name="data"></param>
+		public static void Send(WebSocket sock, Routing returnTo, 
+			IMessagePayload data) {
 			Message m = new Message(returnTo, data);
 			MemoryStream stream = new MemoryStream();
 			MessagePackSerializer.Get<Message>().Pack(stream, m);
 			sock.Send(stream.ToArray());
 		}
 
+		/// <summary>
+		/// Deserializes a message from a byte array
+		/// </summary>
+		/// <param name="data"></param>
+		/// <returns></returns>
 		public static Message Receive(byte[] data) {
 			MemoryStream stream = new MemoryStream(data);
 			return MessagePackSerializer.Get<Message>().Unpack(stream);
