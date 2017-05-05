@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Data.SQLite;
 
-namespace ANWI.Database.Model
-{
+namespace ANWI.Database.Model {
 	/// <summary>
 	/// Represents a row of the Rank table.
 	/// </summary>
 
-	public class Rank
-	{
+	public class Rank {
 		#region Model
 
 		public int id;
@@ -18,8 +16,7 @@ namespace ANWI.Database.Model
 		public string icon;
 		public int ordering;
 
-		private Rank(int id, string name, string abrv, string icon, int ordering)
-		{
+		private Rank(int id, string name, string abrv, string icon, int ordering) {
 			this.id = id;
 			this.name = name;
 			this.abrv = abrv;
@@ -28,11 +25,10 @@ namespace ANWI.Database.Model
 		}
 
 		#endregion
-		
+
 		#region Class-Members
 
-		public static Rank Factory()
-		{
+		public static Rank Factory() {
 			Rank result = new Rank(
 				id: -1,
 				name: "",
@@ -43,8 +39,7 @@ namespace ANWI.Database.Model
 			return result;
 		}
 
-		public static Rank Factory(int id, string name, string abrv, string icon, int ordering)
-		{
+		public static Rank Factory(int id, string name, string abrv, string icon, int ordering) {
 			Rank result = new Rank(
 				id: id,
 				name: name,
@@ -55,8 +50,7 @@ namespace ANWI.Database.Model
 			return result;
 		}
 
-		public static Rank Factory(SQLiteDataReader reader)
-		{
+		public static Rank Factory(SQLiteDataReader reader) {
 			Rank result = new Rank(
 				id: Convert.ToInt32(reader["id"]),
 				name: (string)reader["name"],
@@ -67,52 +61,85 @@ namespace ANWI.Database.Model
 			return result;
 		}
 
-		public static bool Create(ref Rank output, string name, string abrv, string icon, int ordering)
-		{
-			int result = DBI.DoAction($"insert into Rank (name, abrv, icon, ordering) values('{name}', '{abrv}', '{icon}', {ordering});");
-			if (result == 1)
-			{
+		/// <summary>
+		/// Creates a new rank
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="name"></param>
+		/// <param name="abrv"></param>
+		/// <param name="icon"></param>
+		/// <param name="ordering"></param>
+		/// <returns></returns>
+		public static bool Create(ref Rank output, string name, string abrv, 
+			string icon, int ordering) {
+			int result = DBI.DoAction(
+				$@"INSERT INTO Rank (name, abrv, icon, ordering) 
+				VALUES ('{name}', '{abrv}', '{icon}', {ordering});");
+			if (result == 1) {
 				return Rank.FetchById(ref output, DBI.LastInsertRowId);
 			}
 			return false;
 		}
 
+		/// <summary>
+		/// Returns all possible ranks
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
 		public static bool FetchAll(ref List<Rank> output) {
 			output = new List<Rank>();
 
-			SQLiteDataReader reader = DBI.DoQuery($"select * from Rank order by ordering asc");
-			while(reader.Read()) {
+			SQLiteDataReader reader = DBI.DoQuery(
+				$"SELECT * FROM Rank ORDER BY ordering ASC");
+			while (reader.Read()) {
 				output.Add(Rank.Factory(reader));
 			}
 
 			return true;
 		}
 
-		public static bool FetchById(ref Rank output, int id)
-		{
-			SQLiteDataReader reader = DBI.DoQuery($"select * from Rank where id = {id} limit 1;");
-			if (reader.Read())
-			{
+		/// <summary>
+		/// Gets a rank by ID
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public static bool FetchById(ref Rank output, int id) {
+			SQLiteDataReader reader = DBI.DoQuery(
+				$"SELECT * FROM Rank WHERE id = {id} LIMIT 1;");
+			if (reader.Read()) {
 				output = Rank.Factory(reader);
 				return true;
 			}
 			return false;
 		}
 
-		public static bool FetchByName(ref Rank output, string name)
-		{
-			SQLiteDataReader reader = DBI.DoQuery($"select * from Rank where name = {name} limit 1;");
-			if (reader.Read())
-			{
+		/// <summary>
+		/// Gets a rank by name
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public static bool FetchByName(ref Rank output, string name) {
+			SQLiteDataReader reader = DBI.DoQuery(
+				$"SELECT * FROM Rank WHERE name = {name} LIMIT 1;");
+			if (reader.Read()) {
 				output = Rank.Factory(reader);
 				return true;
 			}
 			return false;
 		}
 
-		public static bool Store(Rank input)
-		{
-			int result = DBI.DoAction($"update Rank set name = '{input.name}', abrv = '{input.abrv}', icon = '{input.icon}' where id = {input.id};");
+		/// <summary>
+		/// Updates a rank
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public static bool Store(Rank input) {
+			int result = DBI.DoAction(
+				$@"UPDATE Rank SET name = '{input.name}', abrv = '{input.abrv}',
+				icon = '{input.icon}' 
+				WHERE id = {input.id};");
 			if (result == 1)
 				return true;
 			return false;

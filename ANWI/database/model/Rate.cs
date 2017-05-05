@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Data.SQLite;
 
-namespace ANWI.Database.Model
-{
+namespace ANWI.Database.Model {
 	/// <summary>
 	/// Represents a row of the Rate table.
 	/// </summary>
 
-	public class Rate
-	{
+	public class Rate {
 		#region Model
 
 		public int id;
@@ -18,8 +16,7 @@ namespace ANWI.Database.Model
 		public long rank2duration;
 		public long rank1duration;
 
-		private Rate(int id, string name, string abrv, long r2dur, long r1dur)
-		{
+		private Rate(int id, string name, string abrv, long r2dur, long r1dur) {
 			this.id = id;
 			this.name = name;
 			this.abrv = abrv;
@@ -31,8 +28,7 @@ namespace ANWI.Database.Model
 
 		#region Class-Members
 
-		public static Rate Factory()
-		{
+		public static Rate Factory() {
 			Rate result = new Rate(
 				id: -1,
 				name: "",
@@ -43,8 +39,8 @@ namespace ANWI.Database.Model
 			return result;
 		}
 
-		public static Rate Factory(int id, string name, string abrv, long r2dur, long r1dur)
-		{
+		public static Rate Factory(int id, string name, string abrv, long r2dur,
+			long r1dur) {
 			Rate result = new Rate(
 				id: id,
 				name: name,
@@ -55,8 +51,7 @@ namespace ANWI.Database.Model
 			return result;
 		}
 
-		public static Rate Factory(SQLiteDataReader reader)
-		{
+		public static Rate Factory(SQLiteDataReader reader) {
 			Rate result = new Rate(
 				id: Convert.ToInt32(reader["id"]),
 				name: (string)reader["name"],
@@ -67,52 +62,86 @@ namespace ANWI.Database.Model
 			return result;
 		}
 
-		public static bool Create(ref Rate output, string name, string abrv, long r2dur, long r1dur)
-		{
-			int result = DBI.DoAction($"insert into Rate (name, abrv, rank2duration, rank1duration) values('{name}', '{abrv}', {r2dur}, {r1dur});");
-			if (result == 1)
-			{
+		/// <summary>
+		/// Creates a new rate
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="name"></param>
+		/// <param name="abrv"></param>
+		/// <param name="r2dur">Time before rank 2 expiration in seconds</param>
+		/// <param name="r1dur">Time before rank 1 expiration in seconds</param>
+		/// <returns></returns>
+		public static bool Create(ref Rate output, string name, string abrv, 
+			long r2dur, long r1dur) {
+			int result = DBI.DoAction(
+				$@"INSERT INTO Rate (name, abrv, rank2duration, rank1duration) 
+				VALUES ('{name}', '{abrv}', {r2dur}, {r1dur});");
+			if (result == 1) {
 				return Rate.FetchById(ref output, DBI.LastInsertRowId);
 			}
 			return false;
 		}
 
+		/// <summary>
+		/// Gets all possible rates
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
 		public static bool FetchAll(ref List<Rate> output) {
 			output = new List<Rate>();
 
-			SQLiteDataReader reader = DBI.DoQuery($"select * from Rate order by id asc");
-			while(reader.Read()) {
+			SQLiteDataReader reader = DBI.DoQuery(
+				$"SELECT * FROM Rate ORDER BY id ASC;");
+			while (reader.Read()) {
 				output.Add(Rate.Factory(reader));
 			}
 
 			return true;
 		}
 
-		public static bool FetchById(ref Rate output, int id)
-		{
-			SQLiteDataReader reader = DBI.DoQuery($"select * from Rate where id = {id} limit 1;");
-			if ( reader.Read() )
-			{
+		/// <summary>
+		/// Gets a rate by ID
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public static bool FetchById(ref Rate output, int id) {
+			SQLiteDataReader reader = DBI.DoQuery(
+				$"SELECT * FROM Rate WHERE id = {id} LIMIT 1;");
+			if (reader.Read()) {
 				output = Rate.Factory(reader);
 				return true;
 			}
 			return false;
 		}
 
-		public static bool FetchByName(ref Rate output, string name)
-		{
-			SQLiteDataReader reader = DBI.DoQuery($"select * from Rate where name = {name} limit 1;");
-			if ( reader.Read() )
-			{
+		/// <summary>
+		/// Gets a rate by name
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public static bool FetchByName(ref Rate output, string name) {
+			SQLiteDataReader reader = DBI.DoQuery(
+				$"SELECT * FROM Rate WHERE name = {name} LIMIT 1;");
+			if (reader.Read()) {
 				output = Rate.Factory(reader);
 				return true;
 			}
 			return false;
 		}
 
-		public static bool Store(Rate input)
-		{
-			int result = DBI.DoAction($"update Rate set name = '{input.name}', abrv = '{input.abrv}', rank2duration = {input.rank2duration}, rank1duration = {input.rank1duration} where id = {input.id};");
+		/// <summary>
+		/// Updates a rate
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public static bool Store(Rate input) {
+			int result = DBI.DoAction(
+				$@"UPDATE Rate SET name = '{input.name}', abrv = '{input.abrv}',
+				rank2duration = {input.rank2duration}, 
+				rank1duration = {input.rank1duration} 
+				WHERE id = {input.id};");
 			if (result == 1)
 				return true;
 			return false;

@@ -16,7 +16,8 @@ namespace ANWI.Database.Model {
 		public bool canStartOps;
 		public bool isFleetAdmin;
 
-		private UserPrivs(int user, bool canPromote, bool canCertify, bool canAssign, bool canStartOps, bool isFleetAdmin) {
+		private UserPrivs(int user, bool canPromote, bool canCertify,
+			bool canAssign, bool canStartOps, bool isFleetAdmin) {
 			this.user = user;
 			this.canPromote = canPromote;
 			this.canCertify = canCertify;
@@ -41,7 +42,9 @@ namespace ANWI.Database.Model {
 			return result;
 		}
 
-		public static UserPrivs Factory(int user, bool canPromote, bool canCertify, bool canAssign, bool canStartOps, bool isFleetAdmin) {
+		public static UserPrivs Factory(int user, bool canPromote,
+			bool canCertify, bool canAssign, bool canStartOps,
+			bool isFleetAdmin) {
 			UserPrivs result = new UserPrivs(
 				user: user,
 				canPromote: canPromote,
@@ -65,17 +68,40 @@ namespace ANWI.Database.Model {
 			return result;
 		}
 
-		public static bool Create(ref UserPrivs output, int user, bool canPromote, bool canCertify, bool canAssign, bool canStartOps, bool isFleetAdmin) {
-			int result = DBI.DoAction($"insert into UserPrivs (user, canPromote, canCertify, canAssign, canStartOps, isFleetAdmin) values ({user}, {canPromote}, {canCertify}, {canAssign}, {canStartOps}, {isFleetAdmin});");
-			if(result == 1) {
+		/// <summary>
+		/// Creates a new set of privileges for a user
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="user"></param>
+		/// <param name="canPromote"></param>
+		/// <param name="canCertify"></param>
+		/// <param name="canAssign"></param>
+		/// <param name="canStartOps"></param>
+		/// <param name="isFleetAdmin"></param>
+		/// <returns></returns>
+		public static bool Create(ref UserPrivs output, int user,
+			bool canPromote, bool canCertify, bool canAssign, bool canStartOps,
+			bool isFleetAdmin) {
+			int result = DBI.DoAction(
+				$@"INSERT INTO UserPrivs (user, canPromote, canCertify, 
+				canAssign, canStartOps, isFleetAdmin) 
+				VALUES ({user}, {canPromote}, {canCertify}, {canAssign}, 
+				{canStartOps}, {isFleetAdmin});");
+			if (result == 1) {
 				return UserPrivs.FetchByUser(ref output, user);
 			}
 			return false;
 		}
 
+		/// <summary>
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="user"></param>
+		/// <returns></returns>
 		public static bool FetchByUser(ref UserPrivs output, int user) {
-			SQLiteDataReader reader = DBI.DoQuery($"select * from UserPrivs where user={user};");
-			if(reader.Read()) {
+			SQLiteDataReader reader = DBI.DoQuery(
+				$"SELECT * FROM UserPrivs WHERE user={user};");
+			if (reader.Read()) {
 				output = UserPrivs.Factory(reader);
 				return true;
 			}

@@ -11,17 +11,26 @@ namespace ANWI.Database
 
 		private static NLog.Logger logger = LogManager.GetLogger("DBI");
 
+		/// <summary>
+		/// Opens a database connection
+		/// </summary>
+		/// <param name="dbFileName"></param>
+		/// <returns></returns>
 		public static bool Open(string dbFileName = "fleetManager.sqlite3db")
         {
             if (dbConn != null)
                 return false;
 			if (dbFileName == null)
 				dbFileName = "fleetManager.sqlite3db";
-            dbConn = new SQLiteConnection("Data Source=" + dbFileName + ";Version=3;");
+            dbConn = 
+				new SQLiteConnection($"Data Source={dbFileName};Version=3;");
             dbConn.Open();
             return true;
         }
 
+		/// <summary>
+		/// Closes a database connection
+		/// </summary>
         public static void Close()
         {
             if (dbConn == null)
@@ -29,10 +38,19 @@ namespace ANWI.Database
             dbConn.Close();
         }
 
+		/// <summary>
+		/// Checks if the connection is open
+		/// </summary>
+		/// <returns></returns>
 		public static bool IsOpen() {
 			return dbConn != null;
 		}
 
+		/// <summary>
+		/// Runs a query which returns data
+		/// </summary>
+		/// <param name="query"></param>
+		/// <returns></returns>
         public static SQLiteDataReader DoQuery(string query)
         {
             Open();
@@ -40,6 +58,11 @@ namespace ANWI.Database
             return new SQLiteCommand(query, dbConn).ExecuteReader();
         }
 
+		/// <summary>
+		/// Runs a query which does not return data
+		/// </summary>
+		/// <param name="query"></param>
+		/// <returns></returns>
         public static int DoAction(string query)
         {
             Open();
@@ -47,6 +70,9 @@ namespace ANWI.Database
             return new SQLiteCommand(query, dbConn).ExecuteNonQuery();
         }
 
+		/// <summary>
+		/// Returns the last inserted row id
+		/// </summary>
         public static int LastInsertRowId
         {
             get

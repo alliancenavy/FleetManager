@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Data.SQLite;
 
-namespace ANWI.Database.Model
-{
+namespace ANWI.Database.Model {
 	/// <summary>
 	/// Represents a row of the UserShip table.
 	/// </summary>
 
-	public class UserShip
-	{
+	public class UserShip {
 		#region Model
 
 		public int id;
@@ -20,9 +18,9 @@ namespace ANWI.Database.Model
 		public string name;
 		public int status;
 		public long statusDate;
-		
-		private UserShip(int id, int user, int hull, int insurance, int number, string name, int status, long statusDate)
-		{
+
+		private UserShip(int id, int user, int hull, int insurance, int number,
+			string name, int status, long statusDate) {
 			this.id = id;
 			this.user = user;
 			this.hull = hull;
@@ -37,8 +35,7 @@ namespace ANWI.Database.Model
 
 		#region Class-Members
 
-		public static UserShip Factory()
-		{
+		public static UserShip Factory() {
 			UserShip result = new UserShip(
 				id: -1,
 				user: -1,
@@ -52,8 +49,9 @@ namespace ANWI.Database.Model
 			return result;
 		}
 
-		public static UserShip Factory(int id, int user, int hull, int insurance, int number, string name, int status, long statusDate)
-		{
+		public static UserShip Factory(int id, int user, int hull, 
+			int insurance, int number, string name, int status, 
+			long statusDate) {
 
 			UserShip result = new UserShip(
 				id: id,
@@ -82,44 +80,77 @@ namespace ANWI.Database.Model
 			return result;
 		}
 
-		public static bool Create(ref UserShip output, int user, int hull, int insurance, string name, int status)
-		{
-			int result = DBI.DoAction($"insert into UserShip (user, hull, insurance, number, name, status, statusDate) values ({user}, {hull}, {insurance}, COALESCE((SELECT MAX(number)+1 FROM UserShip WHERE hull = {hull}),1), \"{name}\", {status}, strftime('%s', 'now'));");
+		/// <summary>
+		/// Creates a new owned ship.
+		/// Ship starts in drydocked status.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="user"></param>
+		/// <param name="hull"></param>
+		/// <param name="insurance"></param>
+		/// <param name="name"></param>
+		/// <param name="status"></param>
+		/// <returns></returns>
+		public static bool Create(ref UserShip output, int user, int hull, 
+			int insurance, string name, int status) {
+			int result = DBI.DoAction(
+				$@"INSERT INTO UserShip (user, hull, insurance, number, name, 
+				status, statusDate) 
+				VALUES ({user}, {hull}, {insurance}, 
+				COALESCE((SELECT MAX(number)+1 
+				FROM UserShip 
+				WHERE hull = {hull}),1), '{name}', {status}, 
+				strftime('%s', 'now'));");
 
-			if (result == 1)
-			{
+			if (result == 1) {
 				return UserShip.FetchById(ref output, DBI.LastInsertRowId);
 			}
 			return false;
 		}
 
-		public static bool FetchById(ref UserShip output, int id)
-		{
-			SQLiteDataReader reader = DBI.DoQuery($"select * from UserShip where id = {id} limit 1;");
-			if ( reader.Read() )
-			{
+		/// <summary>
+		/// Gets an owned ship by ID
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public static bool FetchById(ref UserShip output, int id) {
+			SQLiteDataReader reader = DBI.DoQuery(
+				$"SELECT * FROM UserShip WHERE id = {id} LIMIT 1;");
+			if (reader.Read()) {
 				output = UserShip.Factory(reader);
 				return true;
 			}
 			return false;
 		}
 
-		public static bool FetchByName(ref UserShip output, string name)
-		{
-			SQLiteDataReader reader = DBI.DoQuery($"select * from UserShip where name = \"{name}\" limit 1;");
-			if ( reader.Read() )
-			{
+		/// <summary>
+		/// Gets an owned ship by name
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public static bool FetchByName(ref UserShip output, string name) {
+			SQLiteDataReader reader = DBI.DoQuery(
+				$@"SELECT * FROM UserShip WHERE name = '{name}' LIMIT 1;");
+			if (reader.Read()) {
 				output = UserShip.Factory(reader);
 				return true;
 			}
 			return false;
 		}
 
+		/// <summary>
+		/// Gets the list of all ships
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
 		public static bool FetchRegistry(ref List<UserShip> output) {
 			output = new List<UserShip>();
 
-			SQLiteDataReader reader = DBI.DoQuery($"select * from UserShip;");
-			while(reader.Read()) {
+			SQLiteDataReader reader = DBI.DoQuery(
+				$"SELECT * FROM UserShip;");
+			while (reader.Read()) {
 				UserShip us = UserShip.Factory(reader);
 				output.Add(us);
 			}
@@ -127,16 +158,33 @@ namespace ANWI.Database.Model
 			return true;
 		}
 
-		public static bool Store(UserShip input)
-		{
-			int result = DBI.DoAction($"update UserShip set user = {input.user}, hull = {input.hull}, insurance = {input.insurance}, number = {input.number}, name = \"{input.name}\", status = {input.status}, statusDate = {input.statusDate} where id = {input.id};");
+		/// <summary>
+		/// Updates a ship
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public static bool Store(UserShip input) {
+			int result = DBI.DoAction(
+				$@"UPDATE UserShip SET user = {input.user}, hull = {input.hull},
+				insurance = {input.insurance}, number = {input.number}, 
+				name = '{input.name}', status = {input.status}, 
+				statusDate = {input.statusDate} 
+				WHERE id = {input.id};");
 			if (result == 1)
 				return true;
 			return false;
 		}
 
+		/// <summary>
+		/// Updates only the status and as of date for a ship
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
 		public static bool StoreUpdateStatus(UserShip input) {
-			int result = DBI.DoAction($"UPDATE UserShip SET status = {input.status}, statusDate = strftime('%s', 'now') WHERE id = {input.id};");
+			int result = DBI.DoAction(
+				$@"UPDATE UserShip 
+				SET status = {input.status}, statusDate = strftime('%s', 'now')
+				WHERE id = {input.id};");
 			if (result == 1)
 				return true;
 			else
