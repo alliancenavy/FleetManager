@@ -26,7 +26,7 @@
     </Window.Resources>
 
     <Grid>
-        <ComboBox x:Name="ComboBox_Rate" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="32" Width="273" ItemsSource="{Binding Path=wpfRateList, UpdateSourceTrigger=PropertyChanged}" ItemTemplate="{DynamicResource RateItemTemplate}"/>
+        <ComboBox x:Name="ComboBox_Rate" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="32" Width="273" ItemsSource="{Binding Path=rateList, UpdateSourceTrigger=PropertyChanged}" ItemTemplate="{DynamicResource RateItemTemplate}"/>
         <RadioButton x:Name="Radio_Rank3" Content="3rd Class" GroupName="RankGroup" HorizontalAlignment="Left" Margin="10,77,0,0" VerticalAlignment="Top" IsChecked="True" Checked="Rank_Changed"/>
         <RadioButton x:Name="Radio_Rank2" Content="2nd Class" GroupName="RankGroup" HorizontalAlignment="Left" Margin="10,62,0,0" VerticalAlignment="Top" Checked="Rank_Changed"/>
         <RadioButton x:Name="Radio_Rank1" Content="1st Class" GroupName="RankGroup" HorizontalAlignment="Left" Margin="10,47,0,0" VerticalAlignment="Top" Checked="Rank_Changed"/>

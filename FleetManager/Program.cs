@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WebSocketSharp;
 using WebSocketSharp.Server;
-using Auth0.Windows;
 using FleetManager.Services;
-using MsgPack.Serialization;
-using System.IO;
 using NLog;
 using System.Security.Cryptography.X509Certificates;
 
 namespace FleetManager {
 
+	/// <summary>
+	/// Server entry point
+	/// </summary>
 	class Program {
 
 		private static NLog.Logger logger = LogManager.GetLogger("Program");
@@ -21,7 +17,8 @@ namespace FleetManager {
 		Dictionary<string, string> CurrentUsers;
 
 		static void Main(string[] args) {
-			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(UEHandler);
+			AppDomain.CurrentDomain.UnhandledException 
+				+= new UnhandledExceptionEventHandler(UEHandler);
 
 			logger.Info("Starting up...");
 
@@ -37,7 +34,10 @@ namespace FleetManager {
 			if (Configuration.hasSSLConfig) {
 				wssv = new WebSocketServer(Configuration.socketPort, true);
 				wssv.SslConfiguration.ServerCertificate =
-					new X509Certificate2(Configuration.sslCertName, Configuration.sslCertPassword);
+					new X509Certificate2(
+						Configuration.sslCertName, 
+						Configuration.sslCertPassword
+						);
 			} else {
 				wssv = new WebSocketServer(Configuration.fullSocketUrl);
 			}
@@ -53,14 +53,17 @@ namespace FleetManager {
 			wssv.Stop();
 		}
 
-		private static void UEHandler(object sender, UnhandledExceptionEventArgs e) {
+		private static void UEHandler(object sender, 
+			UnhandledExceptionEventArgs e) {
 			if (e.IsTerminating) {
-				logger.Fatal("Unhandled Exception! " + (e.ExceptionObject as Exception));
+				logger.Fatal("Unhandled Exception! " 
+					+ (e.ExceptionObject as Exception));
 				logger.Info("Writing crash dump...");
 				ANWI.Utility.DumpWriter.MiniDumpToFile("crashdump.dmp");
 				Environment.Exit(1);
 			} else {
-				logger.Error("Unhandled Exception! " + (e.ExceptionObject as Exception));
+				logger.Error("Unhandled Exception! " 
+					+ (e.ExceptionObject as Exception));
 			}
 		}
 	}

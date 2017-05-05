@@ -7,15 +7,18 @@
 	public class EndAssignment : IMessagePayload {
 		public int userId;
 		public int assignmentId;
+		public int shipId;
 
 		public EndAssignment() {
 			userId = 0;
 			assignmentId = 0;
+			shipId = 0;
 		}
 
-		public EndAssignment(int user, int assignment) {
+		public EndAssignment(int user, int assignment, int ship) {
 			userId = user;
 			assignmentId = assignment;
+			shipId = ship;
 		}
 
 		public override string ToString() {

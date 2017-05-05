@@ -1,16 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using ANWI;
 
@@ -20,19 +9,26 @@ namespace Client {
 	/// </summary>
 	public partial class ChangeRank : Window {
 
-		private ObservableCollection<Rank> rankList = null;
+		private ObservableCollection<Rank> _rankList = null;
+		public ObservableCollection<Rank> rankList { get { return _rankList; } }
 
-		public ObservableCollection<Rank> wpfRankList { get { return rankList; } }
-
+		/// <summary>
+		/// Subscribed to by the caller to receive the new rank
+		/// </summary>
 		public event Action<int> ReturnNewRank;
 
 		public ChangeRank() {
 			this.DataContext = this;
-			rankList = new ObservableCollection<Rank>(CommonData.ranks);
+			_rankList = new ObservableCollection<Rank>(CommonData.ranks);
 
 			InitializeComponent();
 		}
 
+		/// <summary>
+		/// Returns the newly selected rank to the caller
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Button_OK_Click(object sender, RoutedEventArgs e) {
 			if(ReturnNewRank != null && ComboBox_Rank.SelectedItem != null) {
 				ReturnNewRank((ComboBox_Rank.SelectedItem as Rank).id);
@@ -40,6 +36,11 @@ namespace Client {
 			this.Close();
 		}
 
+		/// <summary>
+		/// Closes the window with no changes
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Button_Cancel_Click(object sender, RoutedEventArgs e) {
 			this.Close();
 		}

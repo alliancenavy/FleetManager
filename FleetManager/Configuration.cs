@@ -1,17 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO;
 using NLog;
 
 namespace FleetManager {
+
+	/// <summary>
+	/// Loads and stores configuration data for the server
+	/// </summary>
 	public static class Configuration {
 
-		private static NLog.Logger logger = LogManager.GetLogger("Configuration");
+		private static NLog.Logger logger 
+			= LogManager.GetLogger("Configuration");
 
 		public class Auth0Settings {
 			public string connection;
@@ -19,17 +20,28 @@ namespace FleetManager {
 			public string secret;
 		}
 
+		// Settings for Auth0 connection
 		public static Auth0Settings auth0Settings { get; private set; }
+
+		// SQLite database file name
 		public static string dbFile { get; private set; }
 
+		// Websocket configuration
 		public static string socketUrl { get; private set; }
 		public static short socketPort { get; private set; }
-		public static string fullSocketUrl { get { return $"{socketUrl}:{socketPort}"; } }
+		public static string fullSocketUrl {
+			get { return $"{socketUrl}:{socketPort}"; }
+		}
 
+		// Websocket SSL configuration
 		public static bool hasSSLConfig { get; private set; }
 		public static string sslCertName { get; private set; }
 		public static string sslCertPassword { get; private set; }
 
+		/// <summary>
+		/// Loads the configuration file
+		/// </summary>
+		/// <returns></returns>
 		public static bool Load() {
 			logger.Info("Loading configuration");
 

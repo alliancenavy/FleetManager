@@ -7,7 +7,7 @@
         xmlns:helpers="clr-namespace:Client.VesselRegHelpers"
         xmlns:fa="http://schemas.fontawesome.io/icons/" x:Class="Client.FleetRegistry"
         mc:Ignorable="d"
-        Title="Fleet Registry" Height="735" Width="808" MinHeight="735" MinWidth="808" ResizeMode="CanResizeWithGrip">
+        Title="Fleet Registry" Height="735" Width="808" MinHeight="735" MinWidth="808" ResizeMode="CanResizeWithGrip" Icon="images/afos_logo_VCP_icon.ico">
 
     <Window.Resources>
 
@@ -112,7 +112,7 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <ListBox x:Name="List_Fleet" HorizontalAlignment="Left" Margin="10,34,0,80.333" Width="395" HorizontalContentAlignment="Stretch" ItemsSource="{Binding Path=wpfVesselList}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+        <ListBox x:Name="List_Fleet" HorizontalAlignment="Left" Margin="10,34,0,80.333" Width="395" HorizontalContentAlignment="Stretch" ItemsSource="{Binding Path=vesselList}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
         <TextBlock HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="Registered Vessels" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Height="30" Width="290"/>
         <fa:ImageAwesome x:Name="Spinner_List" Icon="Cog" Spin="True" SpinDuration="10" Margin="36,170,46,236.333" Foreground="#FF316838" Grid.Column="0" Visibility="Hidden"/>
         <Button x:Name="Button_RefreshRegistry" Style="{StaticResource RefreshButton}" Margin="0,5,14,0" VerticalAlignment="Top" Height="25" Background="#FF316838" Foreground="White" Click="Button_RefreshRegistry_Click" ToolTip="Refresh Registry" HorizontalAlignment="Right" Width="27" RenderTransformOrigin="0.512,0.5"/>

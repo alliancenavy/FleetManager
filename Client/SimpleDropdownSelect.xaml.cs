@@ -1,41 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Client {
 	/// <summary>
-	/// Interaction logic for SimpleDropdownSelect.xaml
+	/// A simple dropdown selection modal window
 	/// </summary>
 	public partial class SimpleDropdownSelect : Window {
 
-		private ObservableCollection<object> itemList = null;
-		public ObservableCollection<object> wpfItemList { get { return itemList; } }
+		// List of items that will appear in the combobox
+		private ObservableCollection<object> _itemList = null;
+		public ObservableCollection<object> itemList {
+			get { return _itemList; }
+		}
 
+		// Subscribe to receive the selected item's index
 		public event Action<int> returnSelected;
 
 		public SimpleDropdownSelect(List<object> l) {
-			itemList = new ObservableCollection<object>(l);
+			_itemList = new ObservableCollection<object>(l);
 			this.DataContext = this;
 			InitializeComponent();
 		}
 
 		public SimpleDropdownSelect(List<string> l) {
-			itemList = new ObservableCollection<object>(l);
+			_itemList = new ObservableCollection<object>(l);
 			this.DataContext = this;
 			InitializeComponent();
 		}
 
+		/// <summary>
+		/// Returns the selected index and closes the window
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Button_OK_Click(object sender, RoutedEventArgs e) {
 			if (Combo_ItemList.SelectedIndex != -1) {
 				if (returnSelected != null)
@@ -43,7 +42,12 @@ namespace Client {
 				this.Close();
 			}
 		}
-
+		
+		/// <summary>
+		/// Closes the window without returning anything
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Button_Cancel_Click(object sender, RoutedEventArgs e) {
 			this.Close();
 		}

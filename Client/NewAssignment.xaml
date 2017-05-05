@@ -19,8 +19,8 @@
     <Grid>
         <Button x:Name="Button_OK" Grid.Row="0" Content="OK" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_OK_Click" HorizontalAlignment="Left" Width="100" Margin="50,305,0,0"/>
         <Button x:Name="Button_Cancel" Grid.Row="0" Content="Cancel" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_Cancel_Click" HorizontalAlignment="Left" Width="100" Margin="155,305,0,0"/>
-        <ListBox x:Name="List_Roster" Height="231" Margin="10,69,14.333,0" VerticalAlignment="Top" ItemTemplate="{DynamicResource RosterTemplate}" ItemsSource="{Binding wpfUnassignedPersonnel}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
-        <ComboBox x:Name="Combo_Role" Margin="10,26,14.333,0" VerticalAlignment="Top" ItemsSource="{Binding wpfRoleList}"/>
+        <ListBox x:Name="List_Roster" Height="231" Margin="10,69,14.333,0" VerticalAlignment="Top" ItemTemplate="{DynamicResource RosterTemplate}" ItemsSource="{Binding unassignedPersonnel}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+        <ComboBox x:Name="Combo_Role" Margin="10,26,14.333,0" VerticalAlignment="Top" ItemsSource="{Binding roleList}"/>
         <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Role" VerticalAlignment="Top" FontWeight="Bold"/>
         <TextBlock HorizontalAlignment="Left" Margin="10,53,0,0" TextWrapping="Wrap" Text="Unassigned Personnel" VerticalAlignment="Top" FontWeight="Bold" Width="200"/>
         <fa:ImageAwesome x:Name="Spinner_Roster" Icon="Cog" Spin="True" SpinDuration="10" Margin="37,139,44.667,120" Foreground="#FF316838" Grid.Column="0" Visibility="Hidden"/>

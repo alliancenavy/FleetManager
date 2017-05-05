@@ -1,40 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using WebSocketSharp;
 using ANWI;
-using MsgPack.Serialization;
-using System.IO;
 using System.Collections.ObjectModel;
-using Client.VesselRegHelpers;
 using System.Threading;
 using System.ComponentModel;
 
 namespace Client {
 	/// <summary>
-	/// Interaction logic for MainWindow.xaml
+	/// Main application window
+	/// Shows personnel jackets, full roster, and active operations
 	/// </summary>
 	public partial class MainWindow : Window, INotifyPropertyChanged {
+
+		public event PropertyChangedEventHandler PropertyChanged;
 
 		private readonly WebSocket socket;
 		private AuthenticatedAccount account = null;
 		private Profile currentProfile = null;
 		private List<LiteProfile> originalRoster = null;
-		private ObservableCollection<LiteProfile> rosterList = new ObservableCollection<LiteProfile>();
-		private ObservableCollection<Operation> operationList = new ObservableCollection<Operation>();
-
-		public event PropertyChangedEventHandler PropertyChanged;
+		private ObservableCollection<LiteProfile> rosterList 
+			= new ObservableCollection<LiteProfile>();
+		private ObservableCollection<Operation> operationList 
+			= new ObservableCollection<Operation>();
 
 		#region Other Windows
 		private FleetRegistry fleetReg = null;
@@ -51,23 +40,31 @@ namespace Client {
 				}
 			}
 		}
-		public ObservableCollection<LiteProfile> wpfRosterList { get { return rosterList; } }
-		public ObservableCollection<Operation> wpfOpList { get { return operationList; } }
+		public ObservableCollection<LiteProfile> wpfRosterList {
+			get { return rosterList; }
+		}
+		public ObservableCollection<Operation> wpfOpList {
+			get { return operationList; }
+		}
 
 		public Privs userPrivileges { get { return account.profile.privs; } }
 		public bool canSetPrimaryRate { get {
-				return currentProfile != null && account.profile.id == currentProfile.id;
+				return currentProfile != null && 
+					account.profile.id == currentProfile.id;
 			} }
 		#endregion
 
 		#region Initialization
 		/// <summary>
 		/// Form constructor
-		/// Opens a modal login window first.  When control returns it checks if there's
-		/// a valid user and populates their profile info.
+		/// Opens a modal login window first.  When control returns it checks 
+		/// if there's a valid user it populates the rest of the window.
 		/// </summary>
 		public MainWindow() {
-			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(UEHandler);
+			
+			// Last resort for any unhandled exceptions
+			AppDomain.CurrentDomain.UnhandledException 
+				+= new UnhandledExceptionEventHandler(UEHandler);
 
 			// Open a modal login window
 			// When the window closes the authclient member will be either null
@@ -94,8 +91,12 @@ namespace Client {
 			socket = new WebSocket($"{CommonData.serverAddress}/main");
 			socket.OnMessage += OnMessage;
 			socket.OnError += SocketError;
-			socket.SetCookie(new WebSocketSharp.Net.Cookie("name", account.profile.nickname));
-			socket.SetCookie(new WebSocketSharp.Net.Cookie("authtoken", account.authToken));
+			socket.SetCookie(
+				new WebSocketSharp.Net.Cookie("name", account.profile.nickname)
+				);
+			socket.SetCookie(
+				new WebSocketSharp.Net.Cookie("authtoken", account.authToken)
+				);
 			socket.Connect();
 
 			// Note: blocking
@@ -108,69 +109,144 @@ namespace Client {
 		#endregion
 
 		#region Window Event Handlers
+		/// <summary>
+		/// Closes the application
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void QuitButton_Click(object sender, RoutedEventArgs e) {
 			Application.Current.Shutdown();
 		}
 
-		private void Button_RefreshRoster_Click(object sender, RoutedEventArgs e) {
+		/// <summary>
+		/// Refreshes the roster listbox
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void Button_RefreshRoster_Click(object sender,
+			RoutedEventArgs e) {
 			FetchRoster();
 		}
 
-		private void Button_RefreshOps_Click(object sender, RoutedEventArgs e) {
+		/// <summary>
+		/// Refreshes the operations listbox
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void Button_RefreshOps_Click(object sender, 
+			RoutedEventArgs e) {
 			FetchOps();
 		}
 
+		/// <summary>
+		/// Starts a new operation
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Button_NewOp_Click(object sender, RoutedEventArgs e) {
 
 		}
 
+		/// <summary>
+		/// Opens an operation's details window
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Button_OpenOp_Click(object sender, RoutedEventArgs e) {
 			if(List_Ops.SelectedIndex >= 0) {
 				// TODO
 			}
 		}
 
+		/// <summary>
+		/// Opens the AddRate window
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Button_AddRate_Click(object sender, RoutedEventArgs e) {
 			AddRate ar = new AddRate();
-			ar.returnNewRate += (rateId, rank) => { AddRate(currentProfile.id, rateId, rank); };
+			ar.returnNewRate += (rateId, rank) => {
+				AddRate(currentProfile.id, rateId, rank);
+			};
 			ar.ShowDialog();
 		}
 
+		/// <summary>
+		/// Removes a rate from the currently selected user
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Button_DeleteRate_Click(object sender, RoutedEventArgs e) {
 			Rate selected = (List_Rates.SelectedItem as Rate);
 			if (selected != null) {
-				Confirm c = new Confirm($"Are you sure you want to delete {selected.fullName} from {currentProfile.rank.abbrev} {currentProfile.nickname}?");
-				c.yesAction += () => { DeleteRate(currentProfile.id, selected.struckId); };
+				Confirm c = new Confirm(
+					$"Are you sure you want to delete {selected.fullName} from"+
+					$" {currentProfile.rank.abbrev} {currentProfile.nickname}?"
+					);
+				c.yesAction += () => {
+					DeleteRate(currentProfile.id, selected.struckId);
+				};
 				c.ShowDialog();
 			}
 		}
 
-		private void Button_SetPrimaryRate_Click(object sender, RoutedEventArgs e) {
+		/// <summary>
+		/// Sets the primary rate for the currently selected user
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void Button_SetPrimaryRate_Click(object sender, 
+			RoutedEventArgs e) {
 			Rate selected = (List_Rates.SelectedItem as Rate);
 			if (selected != null) {  
-				Confirm c = new Confirm($"Are you sure you want to change your rate from {currentProfile.primaryRate.fullName} to {selected.fullName}?");
-				c.yesAction += () => { SetPrimaryRate(currentProfile.id, selected.struckId); };
+				Confirm c = new Confirm(
+					$"Are you sure you want to change your rate from " +
+					$"{currentProfile.primaryRate.fullName} to " +
+					$"{selected.fullName}?"
+					);
+				c.yesAction += () => {
+					SetPrimaryRate(currentProfile.id, selected.struckId);
+				};
 				c.ShowDialog();
 			}
 		}
 
+		/// <summary>
+		/// Opens the ChangeRank window
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Button_ChangeRank_Click(object sender, RoutedEventArgs e) {
 			ChangeRank cr = new ChangeRank();
-			cr.ReturnNewRank += (rank) => { ChangeRank(currentProfile.id, rank); };
+			cr.ReturnNewRank += (rank) => {
+				ChangeRank(currentProfile.id, rank);
+			};
 			cr.ShowDialog();
 		}
 
+		/// <summary>
+		/// Requests the full profile of the selected user
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Button_ViewJacket_Click(object sender, RoutedEventArgs e) {
 			if(List_Roster.SelectedItem != null) {
 				LiteProfile p = List_Roster.SelectedItem as LiteProfile;
 				ANWI.Messaging.Message.Send(
 					socket,
 					ANWI.Messaging.Message.Routing.Main,
-					new ANWI.Messaging.Request(ANWI.Messaging.Request.Type.GetProfile, p.id));
+					new ANWI.Messaging.Request(
+						ANWI.Messaging.Request.Type.GetProfile, p.id));
 			}
 		}
 
-		private void Button_OpenFleetReg_Click(object sender, RoutedEventArgs e) {
+		/// <summary>
+		/// Opens the FleetRegistry window
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void Button_OpenFleetReg_Click(object sender, 
+			RoutedEventArgs e) {
 			if (fleetReg == null) {
 				fleetReg = new FleetRegistry(socket, account.profile);
 				fleetReg.OnClose += (t) => { fleetReg = null; };
@@ -178,6 +254,11 @@ namespace Client {
 			}
 		}
 
+		/// <summary>
+		/// Changes the sort method of the roster listbox
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Radio_RosterSort_Click(object sender, RoutedEventArgs e) {
 			rosterList.Clear();
 
@@ -203,8 +284,14 @@ namespace Client {
 		#endregion
 
 		#region Sockets and Messaging
+		/// <summary>
+		/// Handles routing for received messages
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void OnMessage(object sender, MessageEventArgs e) {
-			ANWI.Messaging.Message msg = ANWI.Messaging.Message.Receive(e.RawData);
+			ANWI.Messaging.Message msg 
+				= ANWI.Messaging.Message.Receive(e.RawData);
 
 			switch(msg.address.dest) {
 				case ANWI.Messaging.Message.Routing.Target.Main:
@@ -221,58 +308,6 @@ namespace Client {
 			}
 		}
 
-		private void SocketError(object sender, WebSocketSharp.ErrorEventArgs e) {
-			// TODO
-		}
-		#endregion
-
-		#region Helpers
-
-		private void AddRate(int userId, int rateId, int rank) {
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.Main,
-				new ANWI.Messaging.AddRate(userId, rateId, rank));
-		}
-
-		private void DeleteRate(int userId, int rateId) {
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.Main,
-				new ANWI.Messaging.DeleteRate(userId, rateId));
-		}
-
-		private void SetPrimaryRate(int userId, int rateId) {
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.Main,
-				new ANWI.Messaging.SetPrimaryRate(userId, rateId));
-		}
-
-		private void ChangeRank(int userId, int rankId) {
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.Main,
-				new ANWI.Messaging.ChangeRank(userId, rankId));
-		}
-
-		/// <summary>
-		/// Gets commonly used data like the list of ranks and rates from the server
-		/// for storing globally.
-		/// Waits in a loop until the response is received so the program can't move
-		/// forward without the data.
-		/// </summary>
-		private void FetchCommonData() {
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.Main,
-				new ANWI.Messaging.Request(ANWI.Messaging.Request.Type.GetCommonData));
-
-			while(!CommonData.loaded) {
-				Thread.Sleep(10);
-			}
-		}
-
 		/// <summary>
 		/// Processes messages meant to be delivered to the main window
 		/// </summary>
@@ -285,11 +320,43 @@ namespace Client {
 			} else if (m.payload is ANWI.Messaging.AllCommonData) {
 				CommonData.LoadAll(m.payload as ANWI.Messaging.AllCommonData);
 			} else if (m.payload is ANWI.Messaging.ConfirmUpdate) {
-				ANWI.Messaging.ConfirmUpdate cpu = m.payload as ANWI.Messaging.ConfirmUpdate;
+				ANWI.Messaging.ConfirmUpdate cpu 
+					= m.payload as ANWI.Messaging.ConfirmUpdate;
 				FetchProfile(cpu.updatedId);
 			} else if (m.payload is ANWI.Messaging.FullProfile) {
-				ANWI.Messaging.FullProfile fp = m.payload as ANWI.Messaging.FullProfile;
+				ANWI.Messaging.FullProfile fp
+					= m.payload as ANWI.Messaging.FullProfile;
 				wpfProfile = fp.profile;
+			}
+		}
+
+		/// <summary>
+		/// Handles socket errors
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void SocketError(object sender, 
+			WebSocketSharp.ErrorEventArgs e) {
+			// TODO
+		}
+		#endregion
+
+		#region Request Senders
+		/// <summary>
+		/// Gets commonly used data like the list of ranks and rates from 
+		/// the server for storing globally.
+		/// Waits in a loop until the response is received so the program can't 
+		/// move forward without the data.
+		/// </summary>
+		private void FetchCommonData() {
+			ANWI.Messaging.Message.Send(
+				socket,
+				ANWI.Messaging.Message.Routing.Main,
+				new ANWI.Messaging.Request(
+					ANWI.Messaging.Request.Type.GetCommonData));
+
+			while (!CommonData.loaded) {
+				Thread.Sleep(10);
 			}
 		}
 
@@ -305,10 +372,44 @@ namespace Client {
 
 			// Send a request to the server
 			ANWI.Messaging.Message.Send(
-				socket, 
+				socket,
 				ANWI.Messaging.Message.Routing.Main,
-				new ANWI.Messaging.Request(ANWI.Messaging.Request.Type.GetRoster));
+				new ANWI.Messaging.Request(
+					ANWI.Messaging.Request.Type.GetRoster));
 		}
+
+		/// <summary>
+		/// Sends a request to the server for the list of active operations
+		/// </summary>
+		private void FetchOps() {
+			// Clear the old list
+			this.Dispatcher.Invoke(() => {
+				operationList.Clear();
+				Spinner_Ops.Visibility = Visibility.Visible;
+			});
+
+			// Send a request to the server
+			ANWI.Messaging.Message.Send(
+				socket,
+				ANWI.Messaging.Message.Routing.Main,
+				new ANWI.Messaging.Request(
+					ANWI.Messaging.Request.Type.GetOperations));
+		}
+
+		/// <summary>
+		/// Sends a request for a user's full profile
+		/// </summary>
+		/// <param name="userId"></param>
+		private void FetchProfile(int userId) {
+			ANWI.Messaging.Message.Send(
+				socket,
+				ANWI.Messaging.Message.Routing.Main,
+				new ANWI.Messaging.Request(
+					ANWI.Messaging.Request.Type.GetProfile, userId));
+		}
+		#endregion
+
+		#region Response Processors
 
 		/// <summary>
 		/// Response handler for the full roster request.
@@ -343,22 +444,9 @@ namespace Client {
 		}
 
 		/// <summary>
-		/// Sends a request to the server for the list of active operations
+		/// Loads the list of operations
 		/// </summary>
-		private void FetchOps() {
-			// Clear the old list
-			this.Dispatcher.Invoke(() => {
-				operationList.Clear();
-				Spinner_Ops.Visibility = Visibility.Visible;
-			});
-
-			// Send a request to the server
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.Main,
-				new ANWI.Messaging.Request(ANWI.Messaging.Request.Type.GetOperations));
-		}
-
+		/// <param name="fol"></param>
 		private void LoadOps(ANWI.Messaging.FullOperationsList fol) {
 			this.Dispatcher.Invoke(() => {
 				operationList.Clear();
@@ -376,22 +464,76 @@ namespace Client {
 			}
 		}
 
-		private void FetchProfile(int userId) {
+		#endregion
+
+		#region Callbacks
+		/// <summary>
+		/// Adds a rate to the given user
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <param name="rateId"></param>
+		/// <param name="rank"></param>
+		private void AddRate(int userId, int rateId, int rank) {
 			ANWI.Messaging.Message.Send(
 				socket,
 				ANWI.Messaging.Message.Routing.Main,
-				new ANWI.Messaging.Request(ANWI.Messaging.Request.Type.GetProfile, userId));
+				new ANWI.Messaging.AddRate(userId, rateId, rank));
 		}
 
+		/// <summary>
+		/// Removes a rate from the given user
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <param name="rateId"></param>
+		private void DeleteRate(int userId, int rateId) {
+			ANWI.Messaging.Message.Send(
+				socket,
+				ANWI.Messaging.Message.Routing.Main,
+				new ANWI.Messaging.DeleteRate(userId, rateId));
+		}
+
+		/// <summary>
+		/// Sets the primary rate of a given user
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <param name="rateId"></param>
+		private void SetPrimaryRate(int userId, int rateId) {
+			ANWI.Messaging.Message.Send(
+				socket,
+				ANWI.Messaging.Message.Routing.Main,
+				new ANWI.Messaging.SetPrimaryRate(userId, rateId));
+		}
+
+		/// <summary>
+		/// Changes the rank of a given user
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <param name="rankId"></param>
+		private void ChangeRank(int userId, int rankId) {
+			ANWI.Messaging.Message.Send(
+				socket,
+				ANWI.Messaging.Message.Routing.Main,
+				new ANWI.Messaging.ChangeRank(userId, rankId));
+		}
 		#endregion
 
+		/// <summary>
+		/// Notifies the UI when a bound property changes
+		/// </summary>
+		/// <param name="name"></param>
 		public void NotifyPropertyChanged(string name) {
 			if(PropertyChanged != null) {
 				PropertyChanged(this, new PropertyChangedEventArgs(name));
 			}
 		}
 
-		private static void UEHandler(object sender, UnhandledExceptionEventArgs e) {
+		/// <summary>
+		/// Writes crash dumps in the event of a fatal exception
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private static void UEHandler(object sender, 
+			UnhandledExceptionEventArgs e) {
 			if (e.IsTerminating) {
 				ANWI.Utility.DumpWriter.MiniDumpToFile("crashdump.dmp");
 				Application.Current.Shutdown();

@@ -1,25 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using WebSocketSharp;
-using FontAwesome;
 using Newtonsoft.Json;
 using ANWI;
-using MsgPack;
-using MsgPack.Serialization;
 using System.IO;
-using System.Diagnostics;
 using Newtonsoft.Json.Linq;
 
 namespace Client {
@@ -29,13 +16,19 @@ namespace Client {
 	/// </summary>
 	public partial class Login : Window {
 
+		// Socket for talking to auth service
 		private WebSocket ws;
 
+		// Subscribe to receive the user login result
 		public event Action<AuthenticatedAccount> returnuser;
 
-		private Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+		// Version of the client
+		private Version version 
+			= System.Reflection.Assembly.GetExecutingAssembly().
+				GetName().Version;
 		public string versionString { get { return $"version {version}"; } }
 
+		// Name of file to store remember-me credentials
 		private static readonly string credentialsFile = ".login.json";
 
 		#region General
@@ -80,29 +73,35 @@ namespace Client {
 		/// <summary>
 		/// Called when a message is received from the websocket.
 		/// If this login failed it tells the user and ends
-		/// A successful login will return the user information to the main window
-		/// and close the login window.
+		/// A successful login will return the user information to the main 
+		/// window and close the login window.
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void OnMessage(object sender, MessageEventArgs e) {
-			ANWI.Messaging.Message msg = ANWI.Messaging.Message.Receive(e.RawData);
+			ANWI.Messaging.Message msg 
+				= ANWI.Messaging.Message.Receive(e.RawData);
+
 			if (msg.payload is ANWI.Messaging.LoginResponse) {
 				Login_Response(msg.payload as ANWI.Messaging.LoginResponse);
 			} else if (msg.payload is ANWI.Messaging.RegisterResponse) {
-				Register_Response(msg.payload as ANWI.Messaging.RegisterResponse);
+				Register_Response(
+					msg.payload as ANWI.Messaging.RegisterResponse);
 			} else {
 				Login_EndWorkingFailed("Login Failed: Invalid Message Format");
 			}
 		}
 
 		/// <summary>
-		/// Called when there is a socket error.  Assumed some kind of login failure.
+		/// Called when there is a socket error.  Assumed some kind of 
+		/// login failure.
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void SocketError(object sender, WebSocketSharp.ErrorEventArgs e) {
-			Login_EndWorkingFailed("Login Failed: Network Error");
+		private void SocketError(object sender, 
+			WebSocketSharp.ErrorEventArgs e) {
+			Login_EndWorkingFailed("Network Error");
+			Register_EndWorkingFailed("Network Error");
 		}
 		#endregion
 
@@ -124,10 +123,19 @@ namespace Client {
 			t.Start();
 		}
 
+		/// <summary>
+		/// Sends the login message to the server
+		/// Also records credentials to file if checkbox is clicked
+		/// </summary>
+		/// <param name="uname"></param>
+		/// <param name="pass"></param>
+		/// <param name="remember"></param>
 		private void SendLogin(string uname, string pass, bool remember) {
+			// Make sure fields have text
 			if (uname != "" && pass != "") {
 				ws.Connect();
 
+				// Send message to login server
 				ANWI.Messaging.Message.Send(
 					ws,
 					ANWI.Messaging.Message.Routing.NoReturn,
@@ -150,6 +158,12 @@ namespace Client {
 			}
 		}
 
+		/// <summary>
+		/// If the login was successful this closes the window and returns
+		/// the logged in user.
+		/// If login failed it keeps the window opened
+		/// </summary>
+		/// <param name="resp"></param>
 		private void Login_Response(ANWI.Messaging.LoginResponse resp) {
 			if (resp.code == ANWI.Messaging.LoginResponse.Code.OK) {
 				Login_EndWorkingSucceeded();
@@ -161,6 +175,9 @@ namespace Client {
 			}
 		}
 
+		/// <summary>
+		/// Hides the failure text and shows the spinning gear
+		/// </summary>
 		private void Login_StartWorking() {
 			this.Dispatcher.Invoke(() => {
 				Text_Failed.Visibility = Visibility.Hidden;
@@ -170,6 +187,9 @@ namespace Client {
 			});
 		}
 
+		/// <summary>
+		/// Hides the working spinner and shows the button again
+		/// </summary>
 		private void Login_EndWorkingSucceeded() {
 			this.Dispatcher.Invoke(() => {
 				Button_Login.Visibility = Visibility.Visible;
@@ -178,6 +198,10 @@ namespace Client {
 			});
 		}
 
+		/// <summary>
+		/// Hides the spinner and shows the button and error text
+		/// </summary>
+		/// <param name="reason"></param>
 		private void Login_EndWorkingFailed(string reason) {
 			this.Dispatcher.Invoke(() => {
 				Button_Login.Visibility = Visibility.Visible;
@@ -187,7 +211,13 @@ namespace Client {
 			});
 		}
 
-		private string Login_GetFailedText(ANWI.Messaging.LoginResponse.Code c) {
+		/// <summary>
+		/// Writes a failure message based on the result code.
+		/// </summary>
+		/// <param name="c"></param>
+		/// <returns></returns>
+		private string Login_GetFailedText(
+			ANWI.Messaging.LoginResponse.Code c) {
 			switch(c) {
 				case ANWI.Messaging.LoginResponse.Code.FAILED_CREDENTIALS:
 					return "Login Failed: Invalid Credentials";
@@ -202,6 +232,11 @@ namespace Client {
 			}
 		}
 
+		/// <summary>
+		/// Capture enter key so user doesn't need to click the button
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Textbox_Login_KeyDown(object sender, KeyEventArgs e) {
 			if (e.Key == Key.Return) {
 				Login_StartWorking();
@@ -215,28 +250,57 @@ namespace Client {
 				t.Start();
 			}
 		}
+
+		/// <summary>
+		/// Deletes the credentials file if unchecking.
+		/// Does not save the credentials on checking, wait for login attempt
+		/// to do that.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void Checkbox_RememberMe_Click(object sender, 
+			RoutedEventArgs e) {
+			if (Checkbox_RememberMe.IsChecked.Value == false) {
+				// Delete file
+				File.Delete(credentialsFile);
+			}
+		}
 		#endregion
 
+		#region Registration
+		/// <summary>
+		/// Send registration message
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Button_Register_Click(object sender, RoutedEventArgs e) {
 			SendRegister();
 		}
 
+		/// <summary>
+		/// Sends a registration message to the server
+		/// </summary>
 		private void SendRegister() {
 			Register_StartWorking();
 
-			if(Textbox_RegisterEmail.Text == "" || Textbox_RegisterNickname.Text == "" ||
-				Textbox_RegisterPassword.Password == "" || Textbox_RegisterPassword2.Password == "") {
+			// Check that all fields are filled in
+			if(Textbox_RegisterEmail.Text == "" || 
+				Textbox_RegisterNickname.Text == "" ||
+				Textbox_RegisterPassword.Password == "" || 
+				Textbox_RegisterPassword2.Password == "") {
 				return;
 			}
 
 			// Check that passwords match
-			if (Textbox_RegisterPassword.Password != Textbox_RegisterPassword2.Password) {
+			if (Textbox_RegisterPassword.Password 
+				!= Textbox_RegisterPassword2.Password) {
 				Register_EndWorkingFailed("Passwords do not match");
 				return;
 			}
 
 			ws.Connect();
 
+			// Send message to server
 			ANWI.Messaging.Message.Send(
 				ws,
 				ANWI.Messaging.Message.Routing.NoReturn,
@@ -247,6 +311,10 @@ namespace Client {
 					Textbox_RegisterPassword.Password));
 		}
 
+		/// <summary>
+		/// Fills in appropriate text based on code
+		/// </summary>
+		/// <param name="resp"></param>
 		private void Register_Response(ANWI.Messaging.RegisterResponse resp) {
 			if (resp.code == ANWI.Messaging.RegisterResponse.Code.OK) {
 				Register_EndWorkingSucceeded();
@@ -255,7 +323,13 @@ namespace Client {
 			}
 		}
 
-		private string Register_GetFailedText(ANWI.Messaging.RegisterResponse.Code code) {
+		/// <summary>
+		/// Turns error code into useful error message.
+		/// </summary>
+		/// <param name="code"></param>
+		/// <returns></returns>
+		private string Register_GetFailedText(
+			ANWI.Messaging.RegisterResponse.Code code) {
 			switch(code) {
 				case ANWI.Messaging.RegisterResponse.Code.FAILED_ALREADY_EXISTS:
 					return "Registration Failed: Email Already In Use";
@@ -268,6 +342,9 @@ namespace Client {
 			}
 		}
 
+		/// <summary>
+		/// Show spinner and hides button
+		/// </summary>
 		private void Register_StartWorking() {
 			this.Dispatcher.Invoke(() => {
 				Button_Register.Visibility = Visibility.Hidden;
@@ -276,16 +353,25 @@ namespace Client {
 			});
 		}
 
+		/// <summary>
+		/// Hides spinner and shows success message
+		/// </summary>
 		private void Register_EndWorkingSucceeded() {
 			this.Dispatcher.Invoke(() => {
 				Button_Register.Visibility = Visibility.Visible;
 				Spinner_Register.Visibility = Visibility.Hidden;
 				Text_RegisterResult.Visibility = Visibility.Visible;
 				Text_RegisterResult.Foreground = Brushes.Green;
-				Text_RegisterResult.Text = "Account Registered: Please confirm your email before logging in.";
+				Text_RegisterResult.Text
+					= "Account Registered: Please confirm your email " +
+					"before logging in.";
 			});
 		}
 
+		/// <summary>
+		/// Hides spinner and shows error message
+		/// </summary>
+		/// <param name="reason"></param>
 		private void Register_EndWorkingFailed(string reason) {
 			this.Dispatcher.Invoke(() => {
 				Button_Register.Visibility = Visibility.Visible;
@@ -296,16 +382,15 @@ namespace Client {
 			});
 		}
 
+		/// <summary>
+		/// Capture enter key so user doesn't need to click the register button
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Textbox_Register_KeyDown(object sender, KeyEventArgs e) {
 			if (e.Key == Key.Return)
 				SendRegister();
 		}
-
-		private void Checkbox_RememberMe_Click(object sender, RoutedEventArgs e) {
-			if(Checkbox_RememberMe.IsChecked.Value == false) {
-				// Delete file
-				File.Delete(credentialsFile);
-			}
-		}
+		#endregion
 	}
 }

@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using ANWI;
 using Client.VesselRegHelpers;
 using WebSocketSharp;
@@ -18,21 +8,31 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace Client {
+	
 	/// <summary>
-	/// Interaction logic for FleetRegistry.xaml
+	/// Window for viewing the ships currently in the fleet
 	/// </summary>
 	public partial class FleetRegistry : MailboxWindow, INotifyPropertyChanged {
 
+		#region Instance Members
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		private WebSocket socket = null;
 		private Profile user = null;
 
-		private ObservableCollection<VesselRecord> vesselList = new ObservableCollection<VesselRecord>();
-		public ObservableCollection<VesselRecord> wpfVesselList { get { return vesselList; } }
+		// List of registered vessels
+		private ObservableCollection<VesselRecord> _vesselList 
+			= new ObservableCollection<VesselRecord>();
+		public ObservableCollection<VesselRecord> vesselList {
+			get { return _vesselList; } }
 
+		// The window for adding assignments
+		// Must be recorded even though it is modal because it needs to wait
+		// for the list of unassigned personnel
 		private NewAssignment newAssignmentWindow = null;
 
+		// The currently selected vessel
+		// Automatically updates the window when changed via notifications
 		private Vessel _currentVessel = null;
 		public Vessel currentVessel {
 			get { return _currentVessel; }
@@ -45,37 +45,135 @@ namespace Client {
 				}
 			}
 		}
-		public bool vesselSelectedAssign { get { return _currentVessel != null && user.privs.canAssign; } }
-		public bool vesselSelectedStatus { get { return _currentVessel != null && (_currentVessel.ownerId == user.id || user.privs.isFleetAdmin); } }
+		#endregion
 
+		#region WPF Helpers
+		// Helper for if the current user can assign people to this ship
+		public bool vesselSelectedAssign { get {
+				return _currentVessel != null && user.privs.canAssign; } }
+
+		// Helper for if the current user can edit the status of this ship
+		// They can if they are the owner or if they are a fleet admin
+		public bool vesselSelectedStatus { get {
+				return _currentVessel != null && 
+					(_currentVessel.ownerId == user.id || 
+						user.privs.isFleetAdmin);
+			} }
+		#endregion
+
+		#region Constructors
 		public FleetRegistry(WebSocket ws, Profile user) {
 			this.DataContext = this;
 			InitializeComponent();
 			socket = ws;
 			this.user = user;
 
-			base.AddProcessor(typeof(ANWI.Messaging.FullVesselReg), LoadVesselList);
-			base.AddProcessor(typeof(ANWI.Messaging.FullVessel), LoadVesselDetail);
-			base.AddProcessor(typeof(ANWI.Messaging.ConfirmUpdate), ProcessConfirmUpdate);
-			base.AddProcessor(typeof(ANWI.Messaging.FullRoster), ProcessUnassignedRoster);
+			base.AddProcessor(
+				typeof(ANWI.Messaging.FullVesselReg), LoadVesselList);
+			base.AddProcessor(
+				typeof(ANWI.Messaging.FullVessel), LoadVesselDetail);
+			base.AddProcessor(
+				typeof(ANWI.Messaging.ConfirmUpdate), ProcessConfirmUpdate);
+			base.AddProcessor(
+				typeof(ANWI.Messaging.FullRoster), ProcessUnassignedRoster);
 
 			FetchVesselList();
 		}
+		#endregion
 
+		#region Requests
+		/// <summary>
+		/// Sends a request for the vessel list to the server
+		/// </summary>
 		private void FetchVesselList() {
 			this.Dispatcher.Invoke(() => {
-				vesselList.Clear();
+				_vesselList.Clear();
 				Spinner_List.Visibility = Visibility.Visible;
 			});
 
 			ANWI.Messaging.Message.Send(
 				socket,
 				ANWI.Messaging.Message.Routing.FleetReg,
-				new ANWI.Messaging.Request(ANWI.Messaging.Request.Type.GetFleet));
+				new ANWI.Messaging.Request(
+					ANWI.Messaging.Request.Type.GetFleet));
 		}
 
+		/// <summary>
+		/// Requests the details on a specific vessel from the server
+		/// </summary>
+		/// <param name="id"></param>
+		private void FetchVesselDetail(int id) {
+			this.Dispatcher.Invoke(() => {
+				Spinner_Detail.Visibility = Visibility.Visible;
+				Button_ViewShip.IsEnabled = false;
+			});
+
+			ANWI.Messaging.Message.Send(
+				socket,
+				ANWI.Messaging.Message.Routing.FleetReg,
+				new ANWI.Messaging.Request(
+					ANWI.Messaging.Request.Type.GetVesselDetail, id));
+		}
+
+		/// <summary>
+		/// Callback function for the NewAssignment window
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <param name="roleId"></param>
+		private void AddNewAssignment(int userId, int roleId) {
+			ANWI.Messaging.Message.Send(
+				socket,
+				ANWI.Messaging.Message.Routing.FleetReg,
+				new ANWI.Messaging.NewAssignment(
+					userId, currentVessel.id, roleId));
+		}
+
+		/// <summary>
+		/// Callback function for the EditStatus window
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="status"></param>
+		private void UpdateShipStatus(int id, VesselStatus status) {
+			ANWI.Messaging.Message.Send(
+				socket,
+				ANWI.Messaging.Message.Routing.FleetReg,
+				new ANWI.Messaging.ChangeShipStatus(id, status));
+		}
+
+		/// <summary>
+		/// Callback function for the NewShip window
+		/// </summary>
+		/// <param name="p"></param>
+		private void AddNewShip(NewShip.Parameters p) {
+			ANWI.Messaging.Message.Send(
+				socket,
+				ANWI.Messaging.Message.Routing.FleetReg,
+				new ANWI.Messaging.NewShip(
+					p.hullId, p.name, p.isLTI, p.fleetOwned ? 0 : user.id));
+		}
+
+		/// <summary>
+		/// Callback function for removing an assigned user
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <param name="assignmentId"></param>
+		private void RemoveAssignment(int userId, int assignmentId, int ship) {
+			ANWI.Messaging.Message.Send(
+				socket,
+				ANWI.Messaging.Message.Routing.FleetReg,
+				new ANWI.Messaging.EndAssignment(userId, assignmentId, ship));
+		}
+		#endregion
+
+		#region Response Processors
+		/// <summary>
+		/// Called upon receiving the FullVesselReg message.
+		/// Loads the data into the list.
+		/// </summary>
+		/// <param name="m"></param>
 		private void LoadVesselList(ANWI.Messaging.IMessagePayload m) {
-			ANWI.Messaging.FullVesselReg fvr = m as ANWI.Messaging.FullVesselReg;
+			ANWI.Messaging.FullVesselReg fvr 
+				= m as ANWI.Messaging.FullVesselReg;
 
 			fvr.vessels.Sort((a, b) => {
 				if (a.hull.ordering < b.hull.ordering)
@@ -86,31 +184,27 @@ namespace Client {
 			});
 
 			foreach(LiteVessel v in fvr.vessels) {
-				// For now 100 will be the boundary between named and unnamed vessels
+				// For now 100 will be the boundary between named and 
+				// unnamed vessels
 				if (v.hull.ordering < 100) {
 					NamedVessel vr = new NamedVessel();
 					vr.v = v;
-					this.Dispatcher.Invoke(() => { vesselList.Add(vr); });
+					this.Dispatcher.Invoke(() => { _vesselList.Add(vr); });
 				} else {
 					// TODO
 				}
 			}
 
-			this.Dispatcher.Invoke(() => { Spinner_List.Visibility = Visibility.Hidden; });
-		}
-
-		private void FetchVesselDetail(int id) {
 			this.Dispatcher.Invoke(() => {
-				Spinner_Detail.Visibility = Visibility.Visible;
-				Button_ViewShip.IsEnabled = false;
+				Spinner_List.Visibility = Visibility.Hidden;
 			});
-
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.FleetReg,
-				new ANWI.Messaging.Request(ANWI.Messaging.Request.Type.GetVesselDetail, id));
 		}
 
+		/// <summary>
+		/// Called when the vessel details are received
+		/// Loads the details into the detail pane
+		/// </summary>
+		/// <param name="m"></param>
 		private void LoadVesselDetail(ANWI.Messaging.IMessagePayload m) {
 			this.Dispatcher.Invoke(() => {
 				Spinner_Detail.Visibility = Visibility.Hidden;
@@ -121,6 +215,10 @@ namespace Client {
 			currentVessel = fvd.vessel;
 		}
 
+		/// <summary>
+		/// When an update is confirmed, requests a refresh of the vessel
+		/// </summary>
+		/// <param name="m"></param>
 		private void ProcessConfirmUpdate(ANWI.Messaging.IMessagePayload m) {
 			ANWI.Messaging.ConfirmUpdate cu = m as ANWI.Messaging.ConfirmUpdate;
 			if(cu.success) {
@@ -128,18 +226,35 @@ namespace Client {
 			}
 		}
 
+		/// <summary>
+		/// The NewAssignment window needs a list of unassigned personnel
+		/// This passes the list to the window if it is open
+		/// </summary>
+		/// <param name="m"></param>
 		private void ProcessUnassignedRoster(ANWI.Messaging.IMessagePayload m) {
 			ANWI.Messaging.FullRoster fr = m as ANWI.Messaging.FullRoster;
 			if (newAssignmentWindow != null)
 				newAssignmentWindow.SetUnassignedPersonnel(fr.members);
 		}
+		#endregion
 
+		#region Window Event Handlers
+		/// <summary>
+		/// Opens up the NewShip window
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Button_NewShip_Click(object sender, RoutedEventArgs e) {
 			NewShip ns = new NewShip();
 			ns.returnNewShip += AddNewShip;
 			ns.ShowDialog();
 		}
 
+		/// <summary>
+		/// View Ship button clicked
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Button_ViewShip_Click(object sender, RoutedEventArgs e) {
 			if(List_Fleet.SelectedItem != null) {
 				NamedVessel nv = List_Fleet.SelectedItem as NamedVessel;
@@ -149,11 +264,11 @@ namespace Client {
 			}
 		}
 
-		private void Button_Close_Click(object sender, RoutedEventArgs e) {
-			InvokeOnClose();
-			this.Close();
-		}
-
+		/// <summary>
+		/// Opens the change ship status window
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Button_EditStatus_Click(object sender, RoutedEventArgs e) {
 			List<string> statuses = new List<string>() {
 				VesselStatus.ACTIVE.ToFriendlyString(),
@@ -164,34 +279,54 @@ namespace Client {
 			};
 
 			SimpleDropdownSelect select = new SimpleDropdownSelect(statuses);
-			select.returnSelected += (s) => { UpdateShipStatus(currentVessel.id, (VesselStatus)s); };
+			select.returnSelected += (s) => {
+				UpdateShipStatus(currentVessel.id, (VesselStatus)s);
+			};
 			select.ShowDialog();
 		}
 
-		private void Button_RefreshRegistry_Click(object sender, RoutedEventArgs e) {
+		/// <summary>
+		/// Refreshes the vessel list
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void Button_RefreshRegistry_Click(object sender, 
+			RoutedEventArgs e) {
 			FetchVesselList();
 		}
 
-		public void NotifyPropertyChanged(string name) {
-			if (PropertyChanged != null) {
-				PropertyChanged(this, new PropertyChangedEventArgs(name));
-			}
-		}
-
-		private void List_Company_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-			// Protect against firing this event twice when the other listbox deselects us
+		/// <summary>
+		/// Called when the selection changes in the ship's company list
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void List_Company_SelectionChanged(object sender, 
+			SelectionChangedEventArgs e) {
+			// Protect against firing this event twice when the other 
+			// listbox deselects us
 			if (e.AddedItems.Count > 0) {
 				// Set the other list's select to null
 				List_Embarked.SelectedIndex = -1;
 			}
 		}
 
-		private void List_Embarked_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+		/// <summary>
+		/// Called when the selection changes in the ship's embarked list
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void List_Embarked_SelectionChanged(object sender, 
+			SelectionChangedEventArgs e) {
 			if (e.AddedItems.Count > 0) {
 				List_Company.SelectedIndex = -1;
 			}
 		}
 
+		/// <summary>
+		/// Opens the NewAssignment window
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Button_AssignNew_Click(object sender, RoutedEventArgs e) {
 			newAssignmentWindow = new NewAssignment(socket);
 			newAssignmentWindow.returnNewAssignment += AddNewAssignment;
@@ -199,37 +334,51 @@ namespace Client {
 			newAssignmentWindow = null;
 		}
 
-		private void Button_RemoveAssigned_Click(object sender, RoutedEventArgs e) {
+		/// <summary>
+		/// Removes a selected user from their assignment
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void Button_RemoveAssigned_Click(object sender, 
+			RoutedEventArgs e) {
 			LiteProfile company = List_Company.SelectedItem as LiteProfile;
 			LiteProfile embarked = List_Embarked.SelectedItem as LiteProfile;
-			LiteProfile selected = company != null ? company : embarked != null ? embarked : null;
+			LiteProfile selected = company != null ? 
+				company : embarked != null ? embarked : null;
+
 			if(selected != null) {
-				ANWI.Messaging.Message.Send(
-					socket,
-					ANWI.Messaging.Message.Routing.FleetReg,
-					new ANWI.Messaging.EndAssignment(selected.id, selected.assignment.id));
+				Confirm c = new Confirm("Are you sure you want to remove" +
+					$"{selected.fullName} from this ship?");
+				c.yesAction += () => {
+					RemoveAssignment(
+						selected.id, 
+						selected.assignment.id,
+						currentVessel.id);
+				};
+				c.ShowDialog();
 			}
 		}
 
-		private void AddNewAssignment(int userId, int roleId) {
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.FleetReg,
-				new ANWI.Messaging.NewAssignment(userId, currentVessel.id, roleId));
+		/// <summary>
+		/// Closes the window
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void Button_Close_Click(object sender, RoutedEventArgs e) {
+			InvokeOnClose();
+			this.Close();
 		}
 
-		private void UpdateShipStatus(int id, VesselStatus status) {
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.FleetReg,
-				new ANWI.Messaging.ChangeShipStatus(id, status));
-		}
+		#endregion
 
-		private void AddNewShip(NewShip.Parameters p) {
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.FleetReg,
-				new ANWI.Messaging.NewShip(p.hullId, p.name, p.isLTI, p.fleetOwned ? 0 : user.id));
+		/// <summary>
+		/// Notifies the UI that a bound property has changed
+		/// </summary>
+		/// <param name="name"></param>
+		public void NotifyPropertyChanged(string name) {
+			if (PropertyChanged != null) {
+				PropertyChanged(this, new PropertyChangedEventArgs(name));
+			}
 		}
 	}
 }

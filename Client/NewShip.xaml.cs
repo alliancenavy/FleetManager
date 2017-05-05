@@ -1,25 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using ANWI;
 
 namespace Client {
 	/// <summary>
-	/// Interaction logic for NewShip.xaml
+	/// Window for registering a new ship
 	/// </summary>
 	public partial class NewShip : Window {
 
+		/// <summary>
+		/// Parameters of the new ship.
+		/// There are enough to make it easier to return a class
+		/// </summary>
 		public class Parameters {
 			public int hullId;
 			public string name;
@@ -31,9 +24,13 @@ namespace Client {
 			}
 		}
 
+		// List of all available hulls
 		private ObservableCollection<Hull> hullList = null;
-		public ObservableCollection<Hull> wpfHullList { get { return hullList; } }
+		public ObservableCollection<Hull> wpfHullList {
+			get { return hullList; }
+		}
 
+		// Subscribe to receive the new ship
 		public event Action<Parameters> returnNewShip;
 
 		public NewShip() {
@@ -43,6 +40,11 @@ namespace Client {
 			InitializeComponent();
 		}
 
+		/// <summary>
+		/// Returns the new ship's information to the caller
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Button_OK_Click(object sender, RoutedEventArgs e) {
 			Hull selectedHull = Combobox_Hull.SelectedItem as Hull;
 			if (Textbox_Name.Text.Length > 0 && selectedHull != null) {
@@ -59,10 +61,20 @@ namespace Client {
 			}
 		}
 
+		/// <summary>
+		/// Closes the window with no changes
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Button_Cancel_Click(object sender, RoutedEventArgs e) {
 			this.Close();
 		}
 
+		/// <summary>
+		/// Returns whether or not the fleet will own this ship.
+		/// If false, the current user is the owner.
+		/// </summary>
+		/// <returns></returns>
 		private bool getFleetOwned() {
 			return Radio_OwnerFleet.IsChecked.Value;
 		}
