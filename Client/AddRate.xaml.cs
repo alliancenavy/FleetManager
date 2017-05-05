@@ -93,7 +93,7 @@ namespace Client {
 					}
 				});
 
-				NotifyPropertyChanged("wpfRateList");
+				NotifyPropertyChanged("rateList");
 				ComboBox_Rate.Items.Refresh();
 			}
 		}

@@ -80,9 +80,12 @@
 
         <DataTemplate x:Key="AssignmentTemplate">
             <Canvas Height="50" VerticalAlignment="Top" Background="White">
-                <TextBlock Canvas.Left="9" TextWrapping="Wrap" Text="{Binding shipHullNumber}" Canvas.Top="8" Width="90" FontSize="24" FontWeight="Bold" FontFamily="Segoe UI Black" TextAlignment="Right" Height="30"/>
-                <TextBlock Canvas.Left="111" TextWrapping="Wrap" Text="{Binding roleName}" Canvas.Top="8" Canvas.Right="10"/>
-                <TextBlock Canvas.Left="111" TextWrapping="Wrap" Text="{Binding dateRange}" Canvas.Top="24" Canvas.Right="10"/>
+                <Border BorderThickness="1" BorderBrush="Black" Canvas.Left="10" Canvas.Top="18">
+                    <TextBlock TextWrapping="Wrap" Text="{Binding shipHullNumber}" Width="90" FontSize="22" FontWeight="Bold" FontFamily="Segoe UI Black" TextAlignment="Center" Height="30"/>
+                </Border>
+                <TextBlock Canvas.Left="10" TextWrapping="Wrap" TextAlignment="Center" FontWeight="Medium" Text="{Binding shipName}" Canvas.Top="3" Canvas.Right="10"/>
+                <TextBlock Canvas.Left="111" TextWrapping="Wrap" Text="{Binding roleName}" Canvas.Top="16" Canvas.Right="10"/>
+                <TextBlock Canvas.Left="111" TextWrapping="Wrap" Text="{Binding dateRange}" Canvas.Top="32" Canvas.Right="10"/>
             </Canvas>
         </DataTemplate>
     </Window.Resources>
