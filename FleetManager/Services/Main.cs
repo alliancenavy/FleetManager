@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ANWI;
 using Datamodel = ANWI.Database.Model;
 using WebSocketSharp;
@@ -32,12 +29,6 @@ namespace FleetManager.Services {
 					ProcessChangeNickname },
 				{ typeof(ANWI.Messaging.AddRate),
 					ProcessAddRate },
-				{ typeof(ANWI.Messaging.DeleteRate),
-					ProcessDeleteRate },
-				{ typeof(ANWI.Messaging.SetPrimaryRate),
-					ProcessSetPrimaryRate },
-				{ typeof(ANWI.Messaging.ChangeRank),
-					ProcessChangeRank },
 				{ typeof(ANWI.Messaging.NewAssignment),
 					ProcessNewAssignment },
 				{ typeof(ANWI.Messaging.EndAssignment),
@@ -124,6 +115,8 @@ namespace FleetManager.Services {
 			base.OnError(e);
 		}
 
+
+		#region Message Processors
 		/// <summary>
 		/// Handles the simple request message
 		/// </summary>
@@ -206,6 +199,24 @@ namespace FleetManager.Services {
 							= LiteProfile.FetchAllUnassigned();
 						return new ANWI.Messaging.FullRoster(unassigned);
 					}
+
+				case ANWI.Messaging.Request.Type.ChangeRank: {
+						ANWI.Messaging.ReqExp.UserIdPlus uidp
+							= req.detail as ANWI.Messaging.ReqExp.UserIdPlus;
+						return ChangeRank(uidp.userId, uidp.otherId);
+					}
+
+				case ANWI.Messaging.Request.Type.DeleteRate: {
+						ANWI.Messaging.ReqExp.UserIdPlus uidp
+							= req.detail as ANWI.Messaging.ReqExp.UserIdPlus;
+						return DeleteRate(uidp.userId, uidp.otherId);
+					}
+
+				case ANWI.Messaging.Request.Type.SetPrimaryRate: {
+						ANWI.Messaging.ReqExp.UserIdPlus uidp
+							= req.detail as ANWI.Messaging.ReqExp.UserIdPlus;
+						return SetPrimaryRate(uidp.userId, uidp.otherId);
+					}
 			}
 
 			return null;
@@ -272,85 +283,6 @@ namespace FleetManager.Services {
 			}
 
 			return new ANWI.Messaging.ConfirmUpdate(success, ar.userId);
-		}
-
-		/// <summary>
-		/// Handles the DeleteRate message
-		/// </summary>
-		/// <param name="p"></param>
-		/// <returns></returns>
-		private ANWI.Messaging.IMessagePayload ProcessDeleteRate(
-			ANWI.Messaging.IMessagePayload p) {
-			ANWI.Messaging.DeleteRate dr = p as ANWI.Messaging.DeleteRate;
-
-			bool success = false;
-			if(Datamodel.StruckRate.DeleteById(dr.rateId)) {
-				logger.Info($"Deleted rate {dr.rateId} from user {dr.userId}");
-				success = true;
-			} else {
-				logger.Error($"Failed to delete rate {dr.rateId} from " +
-					$"user {dr.userId}");
-			}
-
-			return new ANWI.Messaging.ConfirmUpdate(success, dr.userId);
-		}
-
-		/// <summary>
-		/// Handles the SetPrimaryRate message
-		/// </summary>
-		/// <param name="p"></param>
-		/// <returns></returns>
-		private ANWI.Messaging.IMessagePayload ProcessSetPrimaryRate(
-			ANWI.Messaging.IMessagePayload p) {
-			ANWI.Messaging.SetPrimaryRate spr 
-				= p as ANWI.Messaging.SetPrimaryRate;
-
-			bool success = false;
-			Datamodel.User u = null;
-			if(Datamodel.User.FetchById(ref u, spr.userId)) {
-				u.rate = spr.rateId;
-				if(Datamodel.User.Store(u)) {
-					logger.Info($"Updated primary rate on user {spr.userId}" +
-						$" to {spr.rateId}");
-					success = true;
-				} else {
-					logger.Error("Failed to update primary rate on user" + 
-						$" {spr.userId} to {spr.rateId}");
-				}
-			} else {
-				logger.Error("Could not set primary rate: no user with" + 
-					$" id {spr.userId} found");
-			}
-
-			return new ANWI.Messaging.ConfirmUpdate(success, spr.userId);
-		}
-
-		/// <summary>
-		/// Handles the ChangeRank message
-		/// </summary>
-		/// <param name="p"></param>
-		/// <returns></returns>
-		private ANWI.Messaging.IMessagePayload ProcessChangeRank(
-			ANWI.Messaging.IMessagePayload p) {
-			ANWI.Messaging.ChangeRank cr = p as ANWI.Messaging.ChangeRank;
-
-			bool success = false;
-			Datamodel.User u = null;
-			if(Datamodel.User.FetchById(ref u, cr.userId)) {
-				u.rank = cr.rankId;
-				if(Datamodel.User.Store(u)) {
-					logger.Info($"Updated rank of user {cr.userId} " +
-						$"to {cr.rankId}");
-					success = true;
-				} else {
-					logger.Error($"Failed to update rank of user {cr.userId}");
-				}
-			} else {
-				logger.Error("Could not set rank: no user with id " +
-					$"{cr.userId} found");
-			}
-
-			return new ANWI.Messaging.ConfirmUpdate(success, cr.userId);
 		}
 
 		/// <summary>
@@ -452,5 +384,74 @@ namespace FleetManager.Services {
 
 			return new ANWI.Messaging.ConfirmUpdate(success, confirmId);
 		}
+		#endregion
+
+		#region Request Processing Helpers
+		/// <summary>
+		/// Changes the rank of a user
+		/// </summary>
+		/// <param name="p"></param>
+		/// <returns></returns>
+		private ANWI.Messaging.IMessagePayload ChangeRank(int uid, int rid) {
+			bool success = false;
+			Datamodel.User u = null;
+			if (Datamodel.User.FetchById(ref u, uid)) {
+				u.rank = rid;
+				if (Datamodel.User.Store(u)) {
+					logger.Info($"Updated rank of user {uid} to {rid}");
+					success = true;
+				} else {
+					logger.Error($"Failed to update rank of user {uid}");
+				}
+			} else {
+				logger.Error("Could not set rank: no user with id {uid} found");
+			}
+
+			return new ANWI.Messaging.ConfirmUpdate(success, uid);
+		}
+
+		/// <summary>
+		/// Deletes a struck rate from a user
+		/// </summary>
+		/// <param name="p"></param>
+		/// <returns></returns>
+		private ANWI.Messaging.IMessagePayload DeleteRate(int uid, int rid) {
+			bool success = false;
+			if (Datamodel.StruckRate.DeleteById(rid)) {
+				logger.Info($"Deleted rate {rid} from user {uid}");
+				success = true;
+			} else {
+				logger.Error($"Failed to delete rate {rid} from user {uid}");
+			}
+
+			return new ANWI.Messaging.ConfirmUpdate(success, uid);
+		}
+
+		/// <summary>
+		/// Sets a user's primary rate
+		/// </summary>
+		/// <param name="p"></param>
+		/// <returns></returns>
+		private ANWI.Messaging.IMessagePayload SetPrimaryRate(int uid, 
+			int rid) {
+			bool success = false;
+			Datamodel.User u = null;
+			if (Datamodel.User.FetchById(ref u, uid)) {
+				u.rate = rid;
+				if (Datamodel.User.Store(u)) {
+					logger.Info($"Updated primary rate on user {uid} to {rid}");
+					success = true;
+				} else {
+					logger.Error("Failed to update primary rate on user" +
+						$" {uid} to {rid}");
+				}
+			} else {
+				logger.Error("Could not set primary rate: no user with" +
+					$" id {uid} found");
+			}
+
+			return new ANWI.Messaging.ConfirmUpdate(success, uid);
+		}
+		#endregion
 	}
 }

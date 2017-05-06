@@ -26,7 +26,7 @@ namespace FleetManager {
 				logger.Info($"AFOS Server version {v}");
 			}
 
-				logger.Info("Starting up...");
+			logger.Info("Starting up...");
 
 			Configuration.Load();
 

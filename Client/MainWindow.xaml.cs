@@ -495,7 +495,9 @@ namespace Client {
 			ANWI.Messaging.Message.Send(
 				socket,
 				ANWI.Messaging.Message.Routing.Main,
-				new ANWI.Messaging.DeleteRate(userId, rateId));
+				new ANWI.Messaging.Request(
+					ANWI.Messaging.Request.Type.DeleteRate,
+					new ANWI.Messaging.ReqExp.UserIdPlus(userId, rateId)));
 		}
 
 		/// <summary>
@@ -507,7 +509,9 @@ namespace Client {
 			ANWI.Messaging.Message.Send(
 				socket,
 				ANWI.Messaging.Message.Routing.Main,
-				new ANWI.Messaging.SetPrimaryRate(userId, rateId));
+				new ANWI.Messaging.Request(
+					ANWI.Messaging.Request.Type.SetPrimaryRate,
+					new ANWI.Messaging.ReqExp.UserIdPlus(userId, rateId)));
 		}
 
 		/// <summary>
@@ -519,7 +523,9 @@ namespace Client {
 			ANWI.Messaging.Message.Send(
 				socket,
 				ANWI.Messaging.Message.Routing.Main,
-				new ANWI.Messaging.ChangeRank(userId, rankId));
+				new ANWI.Messaging.Request(
+					ANWI.Messaging.Request.Type.ChangeRank,
+					new ANWI.Messaging.ReqExp.UserIdPlus(userId, rankId)));
 		}
 		#endregion
 

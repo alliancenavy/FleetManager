@@ -105,10 +105,8 @@
     <Compile Include="Messaging\AddRate.cs" />
     <Compile Include="Messaging\AllCommonData.cs" />
     <Compile Include="Messaging\ChangeNickname.cs" />
-    <Compile Include="Messaging\ChangeRank.cs" />
     <Compile Include="Messaging\ChangeShipStatus.cs" />
     <Compile Include="Messaging\ConfirmUpdate.cs" />
-    <Compile Include="Messaging\DeleteRate.cs" />
     <Compile Include="Messaging\FullOperationsList.cs" />
     <Compile Include="Messaging\FullProfile.cs" />
     <Compile Include="Messaging\FullRoster.cs" />
@@ -123,8 +121,9 @@
     <Compile Include="Messaging\RegisterRequest.cs" />
     <Compile Include="Messaging\RegisterResponse.cs" />
     <Compile Include="Messaging\RemoveAssignment.cs" />
+    <Compile Include="Messaging\ReqExp\IRequestDetail.cs" />
+    <Compile Include="Messaging\ReqExp\UserIdPlus.cs" />
     <Compile Include="Messaging\Request.cs" />
-    <Compile Include="Messaging\SetPrimaryRate.cs" />
     <Compile Include="Operation.cs" />
     <Compile Include="Privs.cs" />
     <Compile Include="Profile.cs" />

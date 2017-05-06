@@ -44,6 +44,6 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <Image x:Name="image" Height="142" Margin="55,-11,56.667,0" VerticalAlignment="Top" Source="images/AFOS_Logo.png"/>
+        <Image x:Name="image" Height="142" Margin="55,-11,56.667,0" VerticalAlignment="Top" Source="images/AFOS_Logo.png" IsHitTestVisible="False"/>
     </Grid>
 </Window>
