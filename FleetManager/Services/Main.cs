@@ -19,6 +19,8 @@ namespace FleetManager.Services {
 		private Dictionary<string, ConnectedUser> connectedUsers
 			= new Dictionary<string, ConnectedUser>();
 
+		OperationManager opManager = new OperationManager();
+
 		public Main() {
 			logger.Info("Started");
 
@@ -136,8 +138,8 @@ namespace FleetManager.Services {
 		/// </summary>
 		/// <param name="p"></param>
 		/// <returns></returns>
-		private ANWI.Messaging.IMessagePayload ProcessRequestMessage(
-			ANWI.Messaging.IMessagePayload p) {
+		private ANWI.Messaging.IMessagePayload 
+		ProcessRequestMessage(ANWI.Messaging.IMessagePayload p) {
 			ANWI.Messaging.Request req = p as ANWI.Messaging.Request;
 
 			switch(req.type) {
@@ -163,38 +165,7 @@ namespace FleetManager.Services {
 					}
 
 				case ANWI.Messaging.Request.Type.GetOperations: {
-						List<Operation> ops = new List<Operation>();
-
-						//ops.Add(new Operation() {
-						//	name = "Daily Homeguard",
-						//	type = Operation.Type.PATROL,
-						//	status = Operation.Status.SORTIED,
-						//	currentMembers = 6,
-						//	neededMembers = 5,
-						//	totalSlots = 8,
-						//	id = 1238456
-						//});
-
-						//ops.Add(new Operation() {
-						//	name = "Attack Station",
-						//	type = Operation.Type.ASSAULT,
-						//	status = Operation.Status.STAGING,
-						//	currentMembers = 3,
-						//	neededMembers = 10,
-						//	totalSlots = 20,
-						//	id = 1203913
-						//});
-
-						//ops.Add(new Operation() {
-						//	name = "Unrep ANS Legend of Dave",
-						//	type = Operation.Type.LOGISTICS,
-						//	status = Operation.Status.DISMISSING,
-						//	currentMembers = 2,
-						//	neededMembers = 2,
-						//	totalSlots = 3,
-						//	id = 2357345
-						//});
-
+						List<LiteOperation> ops = opManager.GetAllOperations();
 						return new ANWI.Messaging.FullOperationsList(ops);
 					}
 					
@@ -259,8 +230,8 @@ namespace FleetManager.Services {
 		/// </summary>
 		/// <param name="p"></param>
 		/// <returns></returns>
-		private ANWI.Messaging.IMessagePayload ProcessAddRate(
-			ANWI.Messaging.IMessagePayload p) {
+		private ANWI.Messaging.IMessagePayload 
+		ProcessAddRate(ANWI.Messaging.IMessagePayload p) {
 			ANWI.Messaging.AddRate ar = p as ANWI.Messaging.AddRate;
 
 			bool success = false;
@@ -296,8 +267,8 @@ namespace FleetManager.Services {
 		/// </summary>
 		/// <param name="p"></param>
 		/// <returns></returns>
-		private ANWI.Messaging.IMessagePayload ProcessNewAssignment(
-			ANWI.Messaging.IMessagePayload p) {
+		private ANWI.Messaging.IMessagePayload 
+		ProcessNewAssignment(ANWI.Messaging.IMessagePayload p) {
 			ANWI.Messaging.NewAssignment ns = p as ANWI.Messaging.NewAssignment;
 
 			Datamodel.Assignment a = null;
@@ -341,8 +312,8 @@ namespace FleetManager.Services {
 		/// </summary>
 		/// <param name="p"></param>
 		/// <returns></returns>
-		private ANWI.Messaging.IMessagePayload ProcessChangeShipStatus(
-			ANWI.Messaging.IMessagePayload p) {
+		private ANWI.Messaging.IMessagePayload 
+		ProcessChangeShipStatus(ANWI.Messaging.IMessagePayload p) {
 			ANWI.Messaging.ChangeShipStatus css 
 				= p as ANWI.Messaging.ChangeShipStatus;
 
@@ -371,8 +342,8 @@ namespace FleetManager.Services {
 		/// </summary>
 		/// <param name="p"></param>
 		/// <returns></returns>
-		private ANWI.Messaging.IMessagePayload ProcessNewShip(
-			ANWI.Messaging.IMessagePayload p) {
+		private ANWI.Messaging.IMessagePayload 
+		ProcessNewShip(ANWI.Messaging.IMessagePayload p) {
 			ANWI.Messaging.NewShip ns = p as ANWI.Messaging.NewShip;
 
 			bool success = false;
@@ -438,8 +409,8 @@ namespace FleetManager.Services {
 		/// </summary>
 		/// <param name="p"></param>
 		/// <returns></returns>
-		private ANWI.Messaging.IMessagePayload SetPrimaryRate(int uid, 
-			int rid) {
+		private ANWI.Messaging.IMessagePayload 
+		SetPrimaryRate(int uid, int rid) {
 			bool success = false;
 			Datamodel.User u = null;
 			if (Datamodel.User.FetchById(ref u, uid)) {
@@ -464,8 +435,8 @@ namespace FleetManager.Services {
 		/// </summary>
 		/// <param name="p"></param>
 		/// <returns></returns>
-		private ANWI.Messaging.IMessagePayload ChangeNickname(int uid,
-			string name) {
+		private ANWI.Messaging.IMessagePayload 
+		ChangeNickname(int uid, string name) {
 			bool success = false;
 			Datamodel.User user = null;
 			if (Datamodel.User.FetchById(ref user, uid)) {
@@ -484,8 +455,8 @@ namespace FleetManager.Services {
 			return new ANWI.Messaging.ConfirmUpdate(success, uid);
 		}
 
-		private ANWI.Messaging.IMessagePayload AddEquipment(int shipId, 
-			int hullId) {
+		private ANWI.Messaging.IMessagePayload 
+		AddEquipment(int shipId, int hullId) {
 			Datamodel.ShipEquipment e = null;
 			bool success 
 				= Datamodel.ShipEquipment.Create(ref e, hullId, shipId);
@@ -498,8 +469,8 @@ namespace FleetManager.Services {
 			return new ANWI.Messaging.ConfirmUpdate(success, shipId);
 		}
 
-		private ANWI.Messaging.IMessagePayload RemoveEquipment(int shipId,
-			int hullId) {
+		private ANWI.Messaging.IMessagePayload 
+		RemoveEquipment(int shipId, int hullId) {
 
 			bool success = Datamodel.ShipEquipment.DeleteOneOfHullOnShip(
 				hullId, shipId);

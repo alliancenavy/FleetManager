@@ -101,6 +101,7 @@
     <Compile Include="Database\Model\UserPrivs.cs" />
     <Compile Include="Database\Model\UserShip.cs" />
     <Compile Include="Hull.cs" />
+    <Compile Include="LiteOperation.cs" />
     <Compile Include="LiteProfile.cs" />
     <Compile Include="LiteVessel.cs" />
     <Compile Include="Messaging\AddRate.cs" />
@@ -125,7 +126,6 @@
     <Compile Include="Messaging\ReqExp\IRequestDetail.cs" />
     <Compile Include="Messaging\ReqExp\UserIdPlus.cs" />
     <Compile Include="Messaging\Request.cs" />
-    <Compile Include="Operation.cs" />
     <Compile Include="Privs.cs" />
     <Compile Include="Profile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

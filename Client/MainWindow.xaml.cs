@@ -22,8 +22,8 @@ namespace Client {
 		private List<LiteProfile> originalRoster = null;
 		private ObservableCollection<LiteProfile> rosterList 
 			= new ObservableCollection<LiteProfile>();
-		private ObservableCollection<Operation> operationList 
-			= new ObservableCollection<Operation>();
+		private ObservableCollection<LiteOperation> operationList 
+			= new ObservableCollection<LiteOperation>();
 
 		#region Other Windows
 		private FleetRegistry fleetReg = null;
@@ -44,7 +44,7 @@ namespace Client {
 		public ObservableCollection<LiteProfile> wpfRosterList {
 			get { return rosterList; }
 		}
-		public ObservableCollection<Operation> wpfOpList {
+		public ObservableCollection<LiteOperation> wpfOpList {
 			get { return operationList; }
 		}
 
@@ -491,7 +491,7 @@ namespace Client {
 			});
 
 			// Insert each into the list
-			foreach(Operation op in fol.ops) {
+			foreach(LiteOperation op in fol.ops) {
 				this.Dispatcher.Invoke(() => { operationList.Add(op); });
 			}
 		}

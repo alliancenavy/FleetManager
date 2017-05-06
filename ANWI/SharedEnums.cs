@@ -11,6 +11,27 @@
 		DECOMMISSIONED = 4
 	}
 
+	/// <summary>
+	/// Describes the primary purpose of an operation
+	/// </summary>
+	public enum OperationType {
+		PATROL,
+		ASSAULT,
+		DEFENSE,
+		MINING,
+		LOGISTICS
+	}
+
+	/// <summary>
+	/// Current stage in an operation's lifecycle
+	/// </summary>
+	public enum OperationStatus {
+		CONFIGURING = 0,
+		STAGING = 1,
+		SORTIED = 2,
+		DISMISSING = 3
+	}
+
 	public static class SharedEnumExtensions {
 
 		/// <summary>
@@ -32,6 +53,38 @@
 					return "Decommissioned/Sold";
 				default:
 					return "Unknown";
+			}
+		}
+
+		public static string ToFriendlyString(this OperationType type) {
+			switch (type) {
+				case OperationType.PATROL:
+					return "Patrol";
+				case OperationType.ASSAULT:
+					return "Assault";
+				case OperationType.DEFENSE:
+					return "Defense";
+				case OperationType.MINING:
+					return "Mining";
+				case OperationType.LOGISTICS:
+					return "Logistics";
+				default:
+					return "";
+			}
+		}
+
+		public static string ToFriendlyString(this OperationStatus status) {
+			switch (status) {
+				case OperationStatus.CONFIGURING:
+					return "Configuring";
+				case OperationStatus.STAGING:
+					return "Staging";
+				case OperationStatus.SORTIED:
+					return "Sortied";
+				case OperationStatus.DISMISSING:
+					return "Dismissing";
+				default:
+					return "";
 			}
 		}
 

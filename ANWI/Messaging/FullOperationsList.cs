@@ -11,13 +11,13 @@ namespace ANWI.Messaging {
 	/// Returns the list of all active operations
 	/// </summary>
 	public class FullOperationsList : IMessagePayload {
-		public List<Operation> ops = null;
+		public List<LiteOperation> ops = null;
 
 		public FullOperationsList() {
 			ops = null;
 		}
 
-		public FullOperationsList(List<Operation> o) {
+		public FullOperationsList(List<LiteOperation> o) {
 			ops = o;
 		}
 
