@@ -97,9 +97,12 @@ namespace ANWI.Database.Model {
 				$@"INSERT INTO UserShip (user, hull, insurance, number, name, 
 				status, statusDate) 
 				VALUES ({user}, {hull}, {insurance}, 
-				COALESCE((SELECT MAX(number)+1 
-				FROM UserShip 
-				WHERE hull = {hull}),1), '{name}', {status}, 
+				COALESCE((
+					SELECT MAX(number)+1 FROM UserShip 
+					WHERE hull IN (
+						SELECT h1.id FROM Hull h1, Hull h2 
+						WHERE h1.symbol = h2.symbol AND h2.id = {hull}
+					)),1), '{name}', {status}, 
 				strftime('%s', 'now'));");
 
 			if (result == 1) {
