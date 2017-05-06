@@ -281,6 +281,12 @@ namespace Client {
 			}
 		}
 
+		protected override void OnClosed(EventArgs e) {
+			base.OnClosed(e);
+
+			Application.Current.Shutdown();
+		}
+
 		#endregion
 
 		#region Sockets and Messaging

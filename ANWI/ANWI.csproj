@@ -137,6 +137,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Database\schema.sql" />
+    <Content Include="Database\InitialData.sql" />
     <Content Include="Database\TestData.sql" />
   </ItemGroup>
   <ItemGroup />

@@ -7,10 +7,10 @@ using System.Windows;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Client")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("AFOS Client")]
+[assembly: AssemblyDescription("Alliance Navy Fleet Operations System")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Eridanus Industries")]
 [assembly: AssemblyProduct("Client")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
@@ -53,3 +53,5 @@ using System.Windows;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("0.1.*")]
 [assembly: AssemblyFileVersion("0.1.*")]
+[assembly: NeutralResourcesLanguage("en-US")]
+

@@ -9,7 +9,12 @@ namespace Client {
 	/// </summary>
 	public static class CommonData {
 
+#if DEBUG
 		public static readonly string serverAddress = "wss://localhost:9000";
+#else
+		public static readonly string serverAddress 
+			= "wss://apps.alliancenavy.org:9000";
+#endif
 
 		public static List<Rank> ranks { get; private set; } = null;
 		public static List<Rate> rates { get; private set; } = null;

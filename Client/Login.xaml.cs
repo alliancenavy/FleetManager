@@ -51,10 +51,11 @@ namespace Client {
 			ws.OnError += SocketError;
 
 			// Load credentials
-			if (File.Exists(credentialsFile)) {
+			if (Appdata.CheckFileExists(credentialsFile)) {
 				try {
 					File.Decrypt(credentialsFile);
-					StreamReader stream = File.OpenText(credentialsFile);
+					StreamReader stream 
+						= Appdata.OpenTextFileEncrypted(credentialsFile);
 					JsonTextReader reader = new JsonTextReader(stream);
 					JObject root = (JObject)JToken.ReadFrom(reader);
 
@@ -62,10 +63,9 @@ namespace Client {
 					Textbox_Password.Password = (string)root["password"];
 					Checkbox_RememberMe.IsChecked = true;
 					stream.Close();
-					File.Encrypt(credentialsFile);
 				} catch (Exception e) {
 					// Delete the credentials file so we don't fail again
-					File.Delete(credentialsFile);
+					Appdata.DeleteFile(credentialsFile);
 				}
 			}
 		}
@@ -149,8 +149,8 @@ namespace Client {
 							new JProperty("username", uname),
 							new JProperty("password", pass));
 
-						File.WriteAllText(credentialsFile, root.ToString());
-						File.Encrypt(credentialsFile);
+						Appdata.WriteFileEncrypted(
+							credentialsFile, root.ToString());
 					} catch(Exception e) {
 						// Fail silently, just prevent crashes
 					}

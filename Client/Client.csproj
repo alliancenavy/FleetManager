@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Client</RootNamespace>
-    <AssemblyName>FleetOpsClient</AssemblyName>
+    <AssemblyName>AFOSClient</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -18,7 +18,7 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>C:\Users\SCHIAVO\Documents\Projects\Published\Client\</PublishUrl>
+    <PublishUrl>C:\Users\SCHIAVO\Documents\Projects\Published\AFOSClient\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -28,8 +28,11 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
+    <TargetCulture>en-US</TargetCulture>
+    <ProductName>AFOS Client</ProductName>
+    <PublisherName>Eridanus Industries</PublisherName>
     <AutorunEnabled>true</AutorunEnabled>
-    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationRevision>6</ApplicationRevision>
     <ApplicationVersion>0.1.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -54,6 +57,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug Full|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -138,6 +142,7 @@
     <Compile Include="AddRate.xaml.cs">
       <DependentUpon>AddRate.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Appdata.cs" />
     <Compile Include="ChangeRank.xaml.cs">
       <DependentUpon>ChangeRank.xaml</DependentUpon>
     </Compile>
@@ -306,7 +311,6 @@
     <Resource Include="images\rates\GM3.png" />
     <Resource Include="images\rates\QM1.png" />
     <Resource Include="images\rates\QM2.png" />
-    <Resource Include="images\rates\UD.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\afos_logo_VCP_icon.ico" />
@@ -315,6 +319,9 @@
     <Resource Include="images\rates\AC1.png" />
     <Resource Include="images\rates\AC2.png" />
     <Resource Include="images\rates\AC3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\AFOS_Logo.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />

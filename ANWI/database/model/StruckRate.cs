@@ -81,7 +81,7 @@ namespace ANWI.Database.Model {
 				return "null";
 			} else {
 				return $"(SELECT strftime('%s', 'now') + " + 
-					"(SELECT rank{rank}duration FROM Rate WHERE id = {rate}))";
+					$"(SELECT rank{rank}duration FROM Rate WHERE id = {rate}))";
 			}
 		}
 

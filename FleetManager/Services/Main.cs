@@ -158,35 +158,35 @@ namespace FleetManager.Services {
 				case ANWI.Messaging.Request.Type.GetOperations: {
 						List<Operation> ops = new List<Operation>();
 
-						ops.Add(new Operation() {
-							name = "Daily Homeguard",
-							type = Operation.Type.PATROL,
-							status = Operation.Status.SORTIED,
-							currentMembers = 6,
-							neededMembers = 5,
-							totalSlots = 8,
-							id = 1238456
-						});
+						//ops.Add(new Operation() {
+						//	name = "Daily Homeguard",
+						//	type = Operation.Type.PATROL,
+						//	status = Operation.Status.SORTIED,
+						//	currentMembers = 6,
+						//	neededMembers = 5,
+						//	totalSlots = 8,
+						//	id = 1238456
+						//});
 
-						ops.Add(new Operation() {
-							name = "Attack Station",
-							type = Operation.Type.ASSAULT,
-							status = Operation.Status.STAGING,
-							currentMembers = 3,
-							neededMembers = 10,
-							totalSlots = 20,
-							id = 1203913
-						});
+						//ops.Add(new Operation() {
+						//	name = "Attack Station",
+						//	type = Operation.Type.ASSAULT,
+						//	status = Operation.Status.STAGING,
+						//	currentMembers = 3,
+						//	neededMembers = 10,
+						//	totalSlots = 20,
+						//	id = 1203913
+						//});
 
-						ops.Add(new Operation() {
-							name = "Unrep ANS Legend of Dave",
-							type = Operation.Type.LOGISTICS,
-							status = Operation.Status.DISMISSING,
-							currentMembers = 2,
-							neededMembers = 2,
-							totalSlots = 3,
-							id = 2357345
-						});
+						//ops.Add(new Operation() {
+						//	name = "Unrep ANS Legend of Dave",
+						//	type = Operation.Type.LOGISTICS,
+						//	status = Operation.Status.DISMISSING,
+						//	currentMembers = 2,
+						//	neededMembers = 2,
+						//	totalSlots = 3,
+						//	id = 2357345
+						//});
 
 						return new ANWI.Messaging.FullOperationsList(ops);
 					}

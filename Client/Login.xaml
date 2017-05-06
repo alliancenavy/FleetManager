@@ -6,7 +6,7 @@
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="Login" Height="420.333" Width="258.333" ShowInTaskbar="False" ResizeMode="NoResize">
+        Title="Login" Height="455.333" Width="258.333" ResizeMode="NoResize" Icon="images/afos_logo_VCP_icon.ico">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -14,9 +14,8 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <TextBlock HorizontalAlignment="Center" Margin="16,10,20.667,0" TextWrapping="Wrap" Text="Alliance Navy Infrastructure Login" VerticalAlignment="Top" Width="216" FontSize="22" TextAlignment="Center" FontFamily="Gadugi" FontWeight="Bold"/>
         <TextBlock x:Name="Text_Version" Margin="10,0,9.667,3" TextWrapping="Wrap" Text="{Binding versionString}" Height="16" VerticalAlignment="Bottom" TextAlignment="Center"/>
-        <TabControl x:Name="tabControl" Margin="10,74,9.667,24">
+        <TabControl x:Name="tabControl" Margin="10,0,9.667,24" Height="294" VerticalAlignment="Bottom">
             <TabItem Header="Log In">
                 <Grid Background="#FFE5E5E5" Margin="0,0,-0.333,-0.667">
                     <TextBox x:Name="Textbox_Username" Height="25" Margin="26,25,26,0" TextWrapping="NoWrap" VerticalAlignment="Top" FontSize="14" AcceptsReturn="False" KeyDown="Textbox_Login_KeyDown"/>
@@ -45,5 +44,6 @@
                 </Grid>
             </TabItem>
         </TabControl>
+        <Image x:Name="image" Height="142" Margin="55,-11,56.667,0" VerticalAlignment="Top" Source="images/AFOS_Logo.png"/>
     </Grid>
 </Window>

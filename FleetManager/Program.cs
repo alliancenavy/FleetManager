@@ -20,18 +20,26 @@ namespace FleetManager {
 			AppDomain.CurrentDomain.UnhandledException 
 				+= new UnhandledExceptionEventHandler(UEHandler);
 
-			logger.Info("Starting up...");
+			{
+				Version v = System.Reflection.Assembly.GetExecutingAssembly().
+					GetName().Version;
+				logger.Info($"AFOS Server version {v}");
+			}
+
+				logger.Info("Starting up...");
 
 			Configuration.Load();
 
 			// Open database connection
 			if(!ANWI.Database.DBI.Open(Configuration.dbFile)) {
-				Console.WriteLine("Failed to open database connection");
+				logger.Error("Failed to open database connection");
+				Console.ReadKey(true);
 				return;
 			}
 
 			WebSocketServer wssv = null;
 			if (Configuration.hasSSLConfig) {
+				logger.Info("Starting WebSocket with SSL");
 				wssv = new WebSocketServer(Configuration.socketPort, true);
 				wssv.SslConfiguration.ServerCertificate =
 					new X509Certificate2(
@@ -39,6 +47,7 @@ namespace FleetManager {
 						Configuration.sslCertPassword
 						);
 			} else {
+				logger.Info("Starting WebSocket without SSL");
 				wssv = new WebSocketServer(Configuration.fullSocketUrl);
 			}
 
@@ -49,20 +58,22 @@ namespace FleetManager {
 
 			// Start the web socket
 			wssv.Start();
-			Console.ReadKey(true);
-			wssv.Stop();
+
+			while (true)
+				;
 		}
 
 		private static void UEHandler(object sender, 
 			UnhandledExceptionEventArgs e) {
 			if (e.IsTerminating) {
-				logger.Fatal("Unhandled Exception! " 
+				Console.WriteLine("Unhandled Exception! " 
 					+ (e.ExceptionObject as Exception));
 				logger.Info("Writing crash dump...");
 				ANWI.Utility.DumpWriter.MiniDumpToFile("crashdump.dmp");
+				Console.ReadKey(true);
 				Environment.Exit(1);
 			} else {
-				logger.Error("Unhandled Exception! " 
+				Console.WriteLine("Unhandled Exception! " 
 					+ (e.ExceptionObject as Exception));
 			}
 		}
