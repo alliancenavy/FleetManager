@@ -97,6 +97,9 @@ namespace Client {
 			socket.SetCookie(
 				new WebSocketSharp.Net.Cookie("authtoken", account.authToken)
 				);
+			socket.SetCookie(
+				new WebSocketSharp.Net.Cookie("auth0id", account.auth0_id)
+				);
 			socket.Connect();
 
 			// Note: blocking

@@ -106,14 +106,22 @@ namespace ANWI.Messaging {
 		/// Serializes the message and sends it to the server
 		/// </summary>
 		/// <param name="sock"></param>
+		/// <param name="m"></param>
+		public static void Send(WebSocket sock, Message m) {
+			MemoryStream stream = new MemoryStream();
+			MessagePackSerializer.Get<Message>().Pack(stream, m);
+			sock.Send(stream.ToArray());
+		}
+
+		/// <summary>
+		/// Convenience function for sending a message
+		/// </summary>
+		/// <param name="sock"></param>
 		/// <param name="returnTo"></param>
 		/// <param name="data"></param>
 		public static void Send(WebSocket sock, Routing returnTo, 
 			IMessagePayload data) {
-			Message m = new Message(returnTo, data);
-			MemoryStream stream = new MemoryStream();
-			MessagePackSerializer.Get<Message>().Pack(stream, m);
-			sock.Send(stream.ToArray());
+			Send(sock, new Message(returnTo, data));
 		}
 
 		/// <summary>

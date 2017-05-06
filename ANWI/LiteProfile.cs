@@ -92,6 +92,20 @@ namespace ANWI {
 		}
 
 		/// <summary>
+		/// Gets a profile by the Auth0 ID
+		/// </summary>
+		/// <param name="auth0"></param>
+		/// <returns></returns>
+		public static LiteProfile FetchByAuth0(string auth0) {
+			Datamodel.User u = null;
+			if (Datamodel.User.FetchByAuth0(ref u, auth0)) {
+				return new LiteProfile(u);
+			} else {
+				return null;
+			}
+		}
+
+		/// <summary>
 		/// Gets all the profiles on the roster
 		/// </summary>
 		/// <returns></returns>

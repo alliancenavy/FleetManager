@@ -92,7 +92,7 @@ namespace ANWI.Database.Model {
 
 			SQLiteDataReader reader = DBI.DoQuery(
 				$"SELECT * FROM Rate ORDER BY id ASC;");
-			while (reader.Read()) {
+			while (reader != null && reader.Read()) {
 				output.Add(Rate.Factory(reader));
 			}
 
@@ -108,7 +108,7 @@ namespace ANWI.Database.Model {
 		public static bool FetchById(ref Rate output, int id) {
 			SQLiteDataReader reader = DBI.DoQuery(
 				$"SELECT * FROM Rate WHERE id = {id} LIMIT 1;");
-			if (reader.Read()) {
+			if (reader != null && reader.Read()) {
 				output = Rate.Factory(reader);
 				return true;
 			}
@@ -124,7 +124,7 @@ namespace ANWI.Database.Model {
 		public static bool FetchByName(ref Rate output, string name) {
 			SQLiteDataReader reader = DBI.DoQuery(
 				$"SELECT * FROM Rate WHERE name = {name} LIMIT 1;");
-			if (reader.Read()) {
+			if (reader != null && reader.Read()) {
 				output = Rate.Factory(reader);
 				return true;
 			}

@@ -16,6 +16,9 @@ namespace FleetManager.Services {
 		private Dictionary<Type, Func<ANWI.Messaging.IMessagePayload, 
 			ANWI.Messaging.IMessagePayload>> msgProcessors = null;
 
+		private Dictionary<string, ConnectedUser> connectedUsers
+			= new Dictionary<string, ConnectedUser>();
+
 		public Main() {
 			logger.Info("Started");
 
@@ -95,7 +98,15 @@ namespace FleetManager.Services {
 		/// </summary>
 		protected override void OnOpen() {
 			base.OnOpen();
-			logger.Info("Connection received");
+			logger.Info($"Connection received from {GetLogIdentifier()}");
+
+			// Add this user to the connected list
+			connectedUsers.Add(
+				GetTokenCookie(),
+				new ConnectedUser(Context)
+				);
+
+			logger.Info("Connected user count now " + connectedUsers.Count);
 		}
 
 		/// <summary>
@@ -104,7 +115,12 @@ namespace FleetManager.Services {
 		/// <param name="e"></param>
 		protected override void OnClose(CloseEventArgs e) {
 			base.OnClose(e);
-			logger.Info("Connection closed");
+			logger.Info($"Connection from {GetLogIdentifier()} closed");
+
+			// Remove user from the dictionary
+			connectedUsers.Remove(GetTokenCookie());
+
+			logger.Info("Conneccted user count now " + connectedUsers.Count);
 		}
 
 		/// <summary>

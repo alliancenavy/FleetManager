@@ -85,7 +85,7 @@ namespace ANWI.Database.Model {
 			SQLiteDataReader reader = DBI.DoQuery(
 				$@"SELECT * FROM HullVendor 
 				WHERE id = {id} LIMIT 1;");
-			if (reader.Read()) {
+			if (reader != null && reader.Read()) {
 				output = HullVendor.Factory(reader);
 				return true;
 			}
@@ -102,7 +102,7 @@ namespace ANWI.Database.Model {
 			SQLiteDataReader reader = DBI.DoQuery(
 				$@"SELECT * FROM HullVendor 
 				WHERE name = {name} LIMIT 1;");
-			if (reader.Read()) {
+			if (reader != null && reader.Read()) {
 				output = HullVendor.Factory(reader);
 				return true;
 			}

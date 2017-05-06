@@ -97,7 +97,7 @@ namespace ANWI.Database.Model {
 		public static bool FetchByUser(ref UserPrivs output, int user) {
 			SQLiteDataReader reader = DBI.DoQuery(
 				$"SELECT * FROM UserPrivs WHERE user={user};");
-			if (reader.Read()) {
+			if (reader != null && reader.Read()) {
 				output = UserPrivs.Factory(reader);
 				return true;
 			}

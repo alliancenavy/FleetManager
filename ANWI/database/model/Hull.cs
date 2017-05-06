@@ -101,7 +101,7 @@ namespace ANWI.Database.Model {
 			SQLiteDataReader reader = DBI.DoQuery(
 				$@"SELECT * FROM Hull 
 				WHERE id = {id} LIMIT 1;");
-			if (reader.Read()) {
+			if (reader != null && reader.Read()) {
 				output = Hull.Factory(reader);
 				return true;
 			}
@@ -118,7 +118,7 @@ namespace ANWI.Database.Model {
 
 			SQLiteDataReader reader = DBI.DoQuery(
 				$"SELECT * FROM Hull ORDER BY ordering ASC;");
-			while (reader.Read()) {
+			while (reader != null && reader.Read()) {
 				Hull h = Hull.Factory(reader);
 				output.Add(h);
 			}
@@ -137,7 +137,7 @@ namespace ANWI.Database.Model {
 			SQLiteDataReader reader = DBI.DoQuery(
 				$@"SELECT * FROM Hull 
 				WHERE ordering <= 100 ORDER BY series ASC;");
-			while (reader.Read()) {
+			while (reader != null && reader.Read()) {
 				Hull h = Hull.Factory(reader);
 				output.Add(h);
 			}
@@ -155,7 +155,7 @@ namespace ANWI.Database.Model {
 			SQLiteDataReader reader = DBI.DoQuery(
 				$@"SELECT * FROM Hull 
 				WHERE ordering > 100 ORDER BY series ASC;");
-			while (reader.Read()) {
+			while (reader != null && reader.Read()) {
 				Hull h = Hull.Factory(reader);
 				output.Add(h);
 			}

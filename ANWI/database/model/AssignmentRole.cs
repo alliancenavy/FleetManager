@@ -80,7 +80,7 @@ namespace ANWI.Database.Model {
 			SQLiteDataReader reader = DBI.DoQuery(
 				$@"SELECT * FROM AssignmentRole 
 				WHERE id = {id} LIMIT 1;");
-			if (reader.Read()) {
+			if (reader != null && reader.Read()) {
 				output = AssignmentRole.Factory(reader);
 				return true;
 			}
@@ -97,7 +97,7 @@ namespace ANWI.Database.Model {
 			SQLiteDataReader reader = DBI.DoQuery(
 				$@"SELECT * FROM AssignmentRole 
 				WHERE name = {name} LIMIT 1;");
-			if (reader.Read()) {
+			if (reader != null && reader.Read()) {
 				output = AssignmentRole.Factory(reader);
 				return true;
 			}
@@ -114,7 +114,7 @@ namespace ANWI.Database.Model {
 
 			SQLiteDataReader reader = DBI.DoQuery(
 				"SELECT * FROM AssignmentRole;");
-			while (reader.Read()) {
+			while (reader != null && reader.Read()) {
 				AssignmentRole ar = AssignmentRole.Factory(reader);
 				output.Add(ar);
 			}

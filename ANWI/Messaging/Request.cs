@@ -61,7 +61,7 @@ namespace ANWI.Messaging {
 		}
 
 		public override string ToString() {
-			return "Type: Request.  Request Type: " + type.ToString();
+			return $"Type: Request ({type.ToString()})";
 		}
 	}
 }

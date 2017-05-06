@@ -117,7 +117,7 @@ namespace ANWI.Database.Model {
 		public static bool FetchById(ref UserShip output, int id) {
 			SQLiteDataReader reader = DBI.DoQuery(
 				$"SELECT * FROM UserShip WHERE id = {id} LIMIT 1;");
-			if (reader.Read()) {
+			if (reader != null && reader.Read()) {
 				output = UserShip.Factory(reader);
 				return true;
 			}
@@ -133,7 +133,7 @@ namespace ANWI.Database.Model {
 		public static bool FetchByName(ref UserShip output, string name) {
 			SQLiteDataReader reader = DBI.DoQuery(
 				$@"SELECT * FROM UserShip WHERE name = '{name}' LIMIT 1;");
-			if (reader.Read()) {
+			if (reader != null && reader.Read()) {
 				output = UserShip.Factory(reader);
 				return true;
 			}
@@ -157,7 +157,7 @@ namespace ANWI.Database.Model {
 					(status == 1 OR status == 4)
 					AND statusDate > strftime('%s', 'now', '-1 month')
 				);");
-			while (reader.Read()) {
+			while (reader != null && reader.Read()) {
 				UserShip us = UserShip.Factory(reader);
 				output.Add(us);
 			}

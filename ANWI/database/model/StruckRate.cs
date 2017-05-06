@@ -120,7 +120,7 @@ namespace ANWI.Database.Model {
 				COALESCE(expires, -1) AS expires 
 				FROM StruckRate 
 				WHERE id = {id} LIMIT 1;");
-			if (reader.Read()) {
+			if (reader != null && reader.Read()) {
 				output = StruckRate.Factory(reader);
 				return true;
 			}
@@ -141,7 +141,7 @@ namespace ANWI.Database.Model {
 				COALESCE(expires, -1) AS expires 
 				FROM StruckRate 
 				WHERE user = {uid} AND id = {rid};");
-			if (reader.Read()) {
+			if (reader != null && reader.Read()) {
 				output = StruckRate.Factory(reader);
 				return true;
 			}
@@ -161,7 +161,7 @@ namespace ANWI.Database.Model {
 				COALESCE(expires, -1) AS expires 
 				FROM StruckRate 
 				WHERE user = {user};");
-			if (reader.Read()) {
+			if (reader != null && reader.Read()) {
 				output = new List<StruckRate>();
 				do {
 					output.Add(StruckRate.Factory(reader));
@@ -185,7 +185,7 @@ namespace ANWI.Database.Model {
 				COALESCE(expires, -1) AS expires 
 				FROM StruckRate 
 				WHERE id = {rate};");
-			if (reader.Read()) {
+			if (reader != null && reader.Read()) {
 				output = new List<StruckRate>();
 				do {
 					output.Add(StruckRate.Factory(reader));

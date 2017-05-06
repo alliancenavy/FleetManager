@@ -122,7 +122,7 @@ namespace ANWI.Database.Model {
 				COALESCE(until, -1) AS until 
 				FROM Assignment 
 				WHERE id = {id} LIMIT 1;");
-			if (reader.Read()) {
+			if (reader != null && reader.Read()) {
 				output = Assignment.Factory(reader);
 				return true;
 			}
@@ -142,7 +142,7 @@ namespace ANWI.Database.Model {
 				COALESCE(until, -1) AS until 
 				FROM Assignment 
 				WHERE user = {userId} AND until IS NULL LIMIT 1;");
-			if (reader.Read()) {
+			if (reader != null && reader.Read()) {
 				output = Assignment.Factory(reader);
 				return true;
 			}
@@ -165,7 +165,7 @@ namespace ANWI.Database.Model {
 				COALESCE(until, -1) AS until 
 				FROM Assignment 
 				WHERE user = {userId} ORDER BY start DESC;");
-			while (reader.Read()) {
+			while (reader != null && reader.Read()) {
 				Assignment a = Assignment.Factory(reader);
 				output.Add(a);
 			}

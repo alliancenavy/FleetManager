@@ -16,7 +16,8 @@ namespace ANWI.Database.Model {
 		public string icon;
 		public int ordering;
 
-		private Rank(int id, string name, string abrv, string icon, int ordering) {
+		private Rank(int id, string name, string abrv, string icon, 
+			int ordering) {
 			this.id = id;
 			this.name = name;
 			this.abrv = abrv;
@@ -39,7 +40,8 @@ namespace ANWI.Database.Model {
 			return result;
 		}
 
-		public static Rank Factory(int id, string name, string abrv, string icon, int ordering) {
+		public static Rank Factory(int id, string name, string abrv, 
+			string icon, int ordering) {
 			Rank result = new Rank(
 				id: id,
 				name: name,
@@ -91,7 +93,7 @@ namespace ANWI.Database.Model {
 
 			SQLiteDataReader reader = DBI.DoQuery(
 				$"SELECT * FROM Rank ORDER BY ordering ASC");
-			while (reader.Read()) {
+			while (reader != null && reader.Read()) {
 				output.Add(Rank.Factory(reader));
 			}
 
@@ -107,7 +109,7 @@ namespace ANWI.Database.Model {
 		public static bool FetchById(ref Rank output, int id) {
 			SQLiteDataReader reader = DBI.DoQuery(
 				$"SELECT * FROM Rank WHERE id = {id} LIMIT 1;");
-			if (reader.Read()) {
+			if (reader != null && reader.Read()) {
 				output = Rank.Factory(reader);
 				return true;
 			}
@@ -123,7 +125,7 @@ namespace ANWI.Database.Model {
 		public static bool FetchByName(ref Rank output, string name) {
 			SQLiteDataReader reader = DBI.DoQuery(
 				$"SELECT * FROM Rank WHERE name = {name} LIMIT 1;");
-			if (reader.Read()) {
+			if (reader != null && reader.Read()) {
 				output = Rank.Factory(reader);
 				return true;
 			}

@@ -53,9 +53,14 @@ namespace ANWI.Database
 		/// <returns></returns>
         public static SQLiteDataReader DoQuery(string query)
         {
-            Open();
-			logger.Info("Running query: " + query);
-            return new SQLiteCommand(query, dbConn).ExecuteReader();
+			try {
+				Open();
+				return new SQLiteCommand(query, dbConn).ExecuteReader();
+			} catch (SQLiteException e) {
+				logger.Error("Failed to run query\n\n" + query +
+					"\n\nException: " + e);
+				return null;
+			}
         }
 
 		/// <summary>
@@ -65,9 +70,14 @@ namespace ANWI.Database
 		/// <returns></returns>
         public static int DoAction(string query)
         {
-            Open();
-			logger.Info("Running action: " + query);
-            return new SQLiteCommand(query, dbConn).ExecuteNonQuery();
+			try {
+				Open();
+				return new SQLiteCommand(query, dbConn).ExecuteNonQuery();
+			} catch (SQLiteException e) {
+				logger.Error("Failed to run query\n\n" + query +
+					"\n\nException: " + e);
+				return -1;
+			}
         }
 
 		/// <summary>

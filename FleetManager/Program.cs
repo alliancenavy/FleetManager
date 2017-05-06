@@ -14,8 +14,6 @@ namespace FleetManager {
 
 		private static NLog.Logger logger = LogManager.GetLogger("Program");
 
-		Dictionary<string, string> CurrentUsers;
-
 		static void Main(string[] args) {
 			AppDomain.CurrentDomain.UnhandledException 
 				+= new UnhandledExceptionEventHandler(UEHandler);
@@ -32,7 +30,7 @@ namespace FleetManager {
 
 			// Open database connection
 			if(!ANWI.Database.DBI.Open(Configuration.dbFile)) {
-				logger.Error("Failed to open database connection");
+				logger.Fatal("Failed to open database connection");
 				Console.ReadKey(true);
 				return;
 			}

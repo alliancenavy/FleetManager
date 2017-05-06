@@ -113,7 +113,7 @@ namespace ANWI.Database.Model {
 
 			SQLiteDataReader reader = DBI.DoQuery(
 				$"SELECT * FROM User WHERE id != 0");
-			while (reader.Read()) {
+			while (reader != null && reader.Read()) {
 				User u = User.Factory(reader);
 				output.Add(u);
 			}
@@ -140,7 +140,7 @@ namespace ANWI.Database.Model {
 				WHERE a.user = u.id AND a.role = ar.id 
 				AND ar.isCompany = {isCompany} AND a.ship = {shipId} 
 				AND a.until is null ORDER BY ar.id ASC;");
-			while (reader.Read()) {
+			while (reader != null && reader.Read()) {
 				User u = User.Factory(reader);
 				output.Add(u);
 			}
@@ -162,7 +162,7 @@ namespace ANWI.Database.Model {
 				WHERE u.id NOT IN 
 					(SELECT user FROM Assignment WHERE until IS NULL) 
 				AND u.id != 0;");
-			while (reader.Read()) {
+			while (reader != null && reader.Read()) {
 				User u = User.Factory(reader);
 				output.Add(u);
 			}
@@ -179,7 +179,7 @@ namespace ANWI.Database.Model {
 		public static bool FetchById(ref User output, int id) {
 			SQLiteDataReader reader = DBI.DoQuery(
 				$"SELECT * FROM User WHERE id = {id} LIMIT 1;");
-			if (reader.Read()) {
+			if (reader != null && reader.Read()) {
 				output = User.Factory(reader);
 				return true;
 			}
@@ -195,7 +195,7 @@ namespace ANWI.Database.Model {
 		public static bool FetchByName(ref User output, string name) {
 			SQLiteDataReader reader = DBI.DoQuery(
 				$"SELECT * FROM User WHERE name = '{name}' LIMIT 1;");
-			if (reader.Read()) {
+			if (reader != null && reader.Read()) {
 				output = User.Factory(reader);
 				return true;
 			}
@@ -211,7 +211,7 @@ namespace ANWI.Database.Model {
 		public static bool FetchByAuth0(ref User output, string auth0) {
 			SQLiteDataReader reader = DBI.DoQuery(
 				$"SELECT * FROM User WHERE auth0 = '{auth0}' LIMIT 1;");
-			if (reader.Read()) {
+			if (reader != null && reader.Read()) {
 				output = User.Factory(reader);
 				return true;
 			}
