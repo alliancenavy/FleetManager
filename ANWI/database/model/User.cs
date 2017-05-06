@@ -15,13 +15,16 @@ namespace ANWI.Database.Model {
 		public string auth0;
 		public int rank;
 		public int rate;
+		public int created;
 
-		private User(int id, string name, string auth0, int rank, int rate) {
+		private User(int id, string name, string auth0, int rank, int rate, 
+			int created) {
 			this.id = id;
 			this.name = name;
 			this.auth0 = auth0;
 			this.rank = rank;
 			this.rate = rate;
+			this.created = created;
 		}
 
 		#endregion
@@ -34,20 +37,22 @@ namespace ANWI.Database.Model {
 				name: "",
 				auth0: "",
 				rank: -1,
-				rate: -1
+				rate: -1,
+				created: 0
 			);
 			return result;
 		}
 
 		public static User Factory(int id, string name, string auth0, int rank,
-			int rate) {
+			int rate, int created) {
 
 			User result = new User(
 				id: id,
 				name: name,
 				auth0: auth0,
 				rank: rank,
-				rate: rate
+				rate: rate,
+				created: created
 			);
 			return result;
 		}
@@ -58,8 +63,9 @@ namespace ANWI.Database.Model {
 				name: (string)reader["name"],
 				auth0: (string)reader["auth0"],
 				rank: Convert.ToInt32(reader["rank"]),
-				rate: reader["rate"] is DBNull ? 0 : 
-					Convert.ToInt32(reader["rate"])
+				rate: reader["rate"] is DBNull ? 0 :
+					Convert.ToInt32(reader["rate"]),
+				created: Convert.ToInt32(reader["created"])
 			);
 			return result;
 		}
@@ -75,8 +81,9 @@ namespace ANWI.Database.Model {
 		public static bool Create(ref User output, string name, string auth0,
 			int rank) {
 			int result = DBI.DoAction(
-				$@"INSERT INTO User (name, auth0, rank, rate) 
-				VALUES ('{name}', '{auth0}', {rank}, null);");
+				$@"INSERT INTO User (name, auth0, rank, rate, created) 
+				VALUES ('{name}', '{auth0}', {rank}, null, 
+				strftime('%s','now'));");
 			if (result == 1) {
 				return User.FetchById(ref output, DBI.LastInsertRowId);
 			}
@@ -95,8 +102,9 @@ namespace ANWI.Database.Model {
 		public static bool Create(ref User output, string name, string auth0,
 			int rank, int rate) {
 			int result = DBI.DoAction(
-				$@"INSERT INTO User (name, auth0, rank, rate) 
-				VALUES ('{name}', '{auth0}', {rank}, {rate});");
+				$@"INSERT INTO User (name, auth0, rank, rate, created) 
+				VALUES ('{name}', '{auth0}', {rank}, {rate},
+				strftime('%s','now');");
 			if (result == 1) {
 				return User.FetchById(ref output, DBI.LastInsertRowId);
 			}
@@ -135,7 +143,7 @@ namespace ANWI.Database.Model {
 
 			int isCompany = Convert.ToInt32(company);
 			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT u.id, u.name, u.auth0, u.rank, u.rate 
+				$@"SELECT u.id, u.name, u.auth0, u.rank, u.rate, u.created 
 				FROM User u, Assignment a, AssignmentRole ar 
 				WHERE a.user = u.id AND a.role = ar.id 
 				AND ar.isCompany = {isCompany} AND a.ship = {shipId} 
@@ -157,7 +165,7 @@ namespace ANWI.Database.Model {
 			output = new List<User>();
 
 			SQLiteDataReader reader = DBI.DoQuery(
-				@"SELECT u.id, u.name, u.auth0, u.rank, u.rate 
+				@"SELECT u.id, u.name, u.auth0, u.rank, u.rate, u.created 
 				FROM User u 
 				WHERE u.id NOT IN 
 					(SELECT user FROM Assignment WHERE until IS NULL) 

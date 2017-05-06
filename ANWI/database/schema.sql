@@ -75,7 +75,8 @@ create table if not exists User (
  name text not null unique,
  auth0 text not null default '',
  rank integer not null references Rank(id),
- rate integer references StruckRate(id)
+ rate integer references StruckRate(id),
+ createdDate integer not null
 );
 
 drop table if exists Assignment;

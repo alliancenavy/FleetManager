@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Datamodel = ANWI.Database.Model;
 using ANWI.Database;
+using System;
 
 namespace ANWI {
 
@@ -13,6 +14,15 @@ namespace ANWI {
 		#region Instance Variables
 		public int id;
 		public string nickname { get; set; }
+
+		// User's time in service
+		public DateTime createdDate;
+		public string serviceTime {
+			get {
+				TimeSpan span = DateTime.UtcNow - createdDate;
+				return $"Time in Service: {span.Days} days";
+			}
+		}
 
 		// The user's rank
 		private int _rankId;
@@ -93,6 +103,7 @@ namespace ANWI {
 		public Profile() {
 			id = 0;
 			nickname = "";
+			createdDate = DateTime.Now;
 		}
 
 		private Profile(Datamodel.User user) {
@@ -100,6 +111,9 @@ namespace ANWI {
 			nickname = user.name;
 			_rankId = user.rank;
 			_primaryRateId = user.rate;
+
+			createdDate
+				= DateTimeOffset.FromUnixTimeSeconds(user.created).DateTime;
 		}
 
 		/// <summary>
