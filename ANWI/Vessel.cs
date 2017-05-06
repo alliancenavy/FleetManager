@@ -50,16 +50,37 @@ namespace ANWI {
 		}
 
 		// List of all users embarked on this ship
-		private List<LiteProfile> _shipsEmbarked = null;
-		public List<LiteProfile> shipsEmbarked {
+		private List<LiteProfile> _embarkedPersonnel = null;
+		public List<LiteProfile> embarkedPersonnel {
 			get {
-				if(DBI.IsOpen() && _shipsEmbarked == null) {
-					_shipsEmbarked = LiteProfile.FetchByAssignment(id, false);
+				if(DBI.IsOpen() && _embarkedPersonnel == null) {
+					_embarkedPersonnel 
+						= LiteProfile.FetchByAssignment(id, false);
 				}
-				return _shipsEmbarked;
+				return _embarkedPersonnel;
 			}
-			set { _shipsEmbarked = value; }
+			set { _embarkedPersonnel = value; }
 		}
+
+		// List of all equipment embarked on this ship
+		private List<ShipEquipment> _embarkedEquipment = null;
+		public List<ShipEquipment> embarkedEquipment {
+			get {
+				if(DBI.IsOpen() && _embarkedEquipment == null) {
+					_embarkedEquipment = ShipEquipment.FetchAllByShip(id);
+				}
+				return _embarkedEquipment;
+			}
+			set {
+				_embarkedEquipment = value;
+				totalEquipmentEmbarked = 0;
+				foreach(ShipEquipment e in _embarkedEquipment) {
+					totalEquipmentEmbarked += e.count;
+				}
+			}
+		}
+		[MessagePackIgnore]
+		public int totalEquipmentEmbarked { get; private set; }
 		#endregion
 
 		#region WPF Helpers

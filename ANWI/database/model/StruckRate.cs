@@ -156,20 +156,18 @@ namespace ANWI.Database.Model {
 		/// <returns></returns>
 		public static bool FetchByUserId(ref List<StruckRate> output, 
 			int user) {
+			output = new List<StruckRate>();
+
 			SQLiteDataReader reader = DBI.DoQuery(
 				$@"SELECT id, user, rate, rank, earned, 
 				COALESCE(expires, -1) AS expires 
 				FROM StruckRate 
 				WHERE user = {user};");
-			if (reader != null && reader.Read()) {
-				output = new List<StruckRate>();
-				do {
-					output.Add(StruckRate.Factory(reader));
-				}
-				while (reader.Read());
-				return true;
+			while (reader != null && reader.Read()) {
+				output.Add(StruckRate.Factory(reader));
 			}
-			return false;
+
+			return true;
 		}
 
 		/// <summary>
@@ -180,20 +178,18 @@ namespace ANWI.Database.Model {
 		/// <returns></returns>
 		public static bool FetchByRateId(ref List<StruckRate> output, 
 			int rate) {
+			output = new List<StruckRate>();
+
 			SQLiteDataReader reader = DBI.DoQuery(
 				$@"SELECT id, user, rate, rank, earned, 
 				COALESCE(expires, -1) AS expires 
 				FROM StruckRate 
 				WHERE id = {rate};");
-			if (reader != null && reader.Read()) {
-				output = new List<StruckRate>();
-				do {
-					output.Add(StruckRate.Factory(reader));
-				}
-				while (reader.Read());
-				return true;
+			while (reader != null && reader.Read()) { 
+				output.Add(StruckRate.Factory(reader));
 			}
-			return false;
+
+			return true;
 		}
 
 		/// <summary>

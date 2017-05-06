@@ -14,6 +14,7 @@ namespace ANWI {
 		public string symbol { get; set; }
 		public string manufacturer { get; set; }
 		public int ordering;
+		public string icon;
 
 		private int _roleId;
 		public string role { get; set; }

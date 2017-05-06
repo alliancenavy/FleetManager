@@ -4,18 +4,18 @@
 	/// Request expounding detail
 	/// Many requests require a user ID plus the ID of another object
 	/// </summary>
-	public class UserIdPlus : IRequestDetail {
-		public int userId;
-		public int otherId;
+	public class TwoIDs : IRequestDetail {
+		public int id1;
+		public int id2;
 
-		public UserIdPlus() {
-			userId = 0;
-			otherId = 0;
+		public TwoIDs() {
+			id1 = 0;
+			id2 = 0;
 		}
 
-		public UserIdPlus(int uid, int oid) {
-			userId = uid;
-			otherId = oid;
+		public TwoIDs(int uid, int oid) {
+			id1 = uid;
+			id2 = oid;
 		}
 	}
 }

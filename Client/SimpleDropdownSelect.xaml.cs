@@ -16,7 +16,7 @@ namespace Client {
 		}
 
 		// Subscribe to receive the selected item's index
-		public event Action<int> returnSelected;
+		public event Action<int> ReturnSelected;
 
 		public SimpleDropdownSelect(List<object> l) {
 			_itemList = new ObservableCollection<object>(l);
@@ -37,8 +37,8 @@ namespace Client {
 		/// <param name="e"></param>
 		private void Button_OK_Click(object sender, RoutedEventArgs e) {
 			if (Combo_ItemList.SelectedIndex != -1) {
-				if (returnSelected != null)
-					returnSelected(Combo_ItemList.SelectedIndex);
+				if (ReturnSelected != null)
+					ReturnSelected(Combo_ItemList.SelectedIndex);
 				this.Close();
 			}
 		}

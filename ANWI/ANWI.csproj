@@ -95,6 +95,7 @@
     <Compile Include="Database\Model\HullVendor.cs" />
     <Compile Include="Database\Model\Rank.cs" />
     <Compile Include="Database\Model\Rate.cs" />
+    <Compile Include="Database\Model\ShipEquipment.cs" />
     <Compile Include="Database\Model\StruckRate.cs" />
     <Compile Include="Database\Model\User.cs" />
     <Compile Include="Database\Model\UserPrivs.cs" />
@@ -131,6 +132,7 @@
     <Compile Include="Rank.cs" />
     <Compile Include="Rate.cs" />
     <Compile Include="SharedEnums.cs" />
+    <Compile Include="ShipEquipment.cs" />
     <Compile Include="Utility\DumpWriter.cs" />
     <Compile Include="Vessel.cs" />
   </ItemGroup>

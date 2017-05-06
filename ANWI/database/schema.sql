@@ -103,6 +103,14 @@ create table if not exists UserShip (
  statusDate integer not null default 0
 );
 
+DROP TABLE IF EXISTS ShipEquipment;
+
+CREATE TABLE IF NOT EXISTS ShipEquipment (
+	id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	hull INTEGER NOT NULL REFERENCES Hull(id),
+	ship INTEGER NOT NULL REFERENCES UserShip(id)
+);
+
 drop table if exists UserPrivs;
 
 create table if not exists UserPrivs (

@@ -163,6 +163,38 @@ namespace Client {
 				ANWI.Messaging.Message.Routing.FleetReg,
 				new ANWI.Messaging.EndAssignment(userId, assignmentId, ship));
 		}
+
+		/// <summary>
+		/// Adds a hull embarked on the given ship
+		/// </summary>
+		/// <param name="shipId"></param>
+		/// <param name="hullIndex">Index of the hull in the smallHulls
+		/// array.  Not the ID in the database.</param>
+		private void AddEquipment(int shipId, int hullIndex) {
+			ANWI.Messaging.Message.Send(
+					socket,
+					ANWI.Messaging.Message.Routing.FleetReg,
+					new ANWI.Messaging.Request(
+						ANWI.Messaging.Request.Type.AddEquipment,
+						new ANWI.Messaging.ReqExp.TwoIDs(
+								shipId,
+								CommonData.smallHulls[hullIndex].id
+							)));
+		}
+
+		/// <summary>
+		/// Removes a single instance of an embarked hull from the ship
+		/// </summary>
+		/// <param name="shipId"></param>
+		/// <param name="hullId"></param>
+		private void RemoveEquipment(int shipId, int hullId) {
+			ANWI.Messaging.Message.Send(
+				socket,
+				ANWI.Messaging.Message.Routing.FleetReg,
+				new ANWI.Messaging.Request(
+					ANWI.Messaging.Request.Type.RemoveEquipment,
+					new ANWI.Messaging.ReqExp.TwoIDs(shipId, hullId)));
+		}
 		#endregion
 
 		#region Response Processors
@@ -279,7 +311,7 @@ namespace Client {
 			};
 
 			SimpleDropdownSelect select = new SimpleDropdownSelect(statuses);
-			select.returnSelected += (s) => {
+			select.ReturnSelected += (s) => {
 				UpdateShipStatus(currentVessel.id, (VesselStatus)s);
 			};
 			select.ShowDialog();
@@ -306,7 +338,7 @@ namespace Client {
 			// listbox deselects us
 			if (e.AddedItems.Count > 0) {
 				// Set the other list's select to null
-				List_Embarked.SelectedIndex = -1;
+				List_EmbarkedPersonnel.SelectedIndex = -1;
 			}
 		}
 
@@ -328,6 +360,9 @@ namespace Client {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void Button_AssignNew_Click(object sender, RoutedEventArgs e) {
+			if (Tabs_Embarked.SelectedIndex != 0)
+				return;
+
 			newAssignmentWindow = new NewAssignment(socket);
 			newAssignmentWindow.returnNewAssignment += AddNewAssignment;
 			newAssignmentWindow.ShowDialog();
@@ -341,8 +376,12 @@ namespace Client {
 		/// <param name="e"></param>
 		private void Button_RemoveAssigned_Click(object sender, 
 			RoutedEventArgs e) {
+			if (Tabs_Embarked.SelectedIndex != 0)
+				return;
+
 			LiteProfile company = List_Company.SelectedItem as LiteProfile;
-			LiteProfile embarked = List_Embarked.SelectedItem as LiteProfile;
+			LiteProfile embarked 
+				= List_EmbarkedPersonnel.SelectedItem as LiteProfile;
 			LiteProfile selected = company != null ? 
 				company : embarked != null ? embarked : null;
 
@@ -356,6 +395,42 @@ namespace Client {
 						currentVessel.id);
 				};
 				c.ShowDialog();
+			}
+		}
+
+		/// <summary>
+		/// Adds an embarked hull to this ship
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void Button_AddEquip_Click(object sender, RoutedEventArgs e) {
+			if (Tabs_Embarked.SelectedIndex != 1)
+				return;
+
+			SimpleDropdownSelect select
+				= new SimpleDropdownSelect(
+					CommonData.smallHulls.ConvertAll<string>((h) => {
+						return h.name;
+					}));
+			select.ReturnSelected += (i) => {
+				AddEquipment(currentVessel.id, i);
+			};
+			select.ShowDialog();
+		}
+
+		/// <summary>
+		/// Removes one instance of the select hull
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void Button_RemoveEquip_Click(object sender, RoutedEventArgs e) {
+			if (Tabs_Embarked.SelectedIndex != 1)
+				return;
+
+			ShipEquipment equip 
+				= List_EmbarkedEquip.SelectedItem as ShipEquipment;
+			if(equip != null) {
+				RemoveEquipment(currentVessel.id, equip.hull.id);
 			}
 		}
 

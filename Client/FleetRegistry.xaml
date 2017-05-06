@@ -11,6 +11,8 @@
 
     <Window.Resources>
 
+        <BitmapImage x:Key="NoImageFound" UriSource="/images/no_image.png"/>
+
         <DataTemplate DataType="{x:Type helpers:CategoryDivider}">
             <Canvas x:Name="Base" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="360" Background="#FFD4D4D4">
                 <TextBlock Canvas.Left="10" TextWrapping="Wrap" Text="{Binding Path=text}" Canvas.Top="3" Width="313" FontSize="16" FontWeight="Bold"/>
@@ -100,8 +102,23 @@
         <DataTemplate x:Key="CrewTemplate">
             <Canvas x:Name="Base" Height="45" VerticalAlignment="Top" Background="White">
                 <Image x:Name="Image_Rank" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="25" OpacityMask="Black" Source="{Binding rank.icon}" Canvas.Left="10" Canvas.Top="10"/>
-                <TextBlock x:Name="Text_Name" TextWrapping="Wrap" Text="{Binding fullName}" VerticalAlignment="Top" Height="16" Canvas.Left="40" Canvas.Top="7" Canvas.Right="10" FontWeight="Bold"/>
-                <TextBlock x:Name="Text_Assignment" TextWrapping="Wrap" Text="{Binding Path=assignment.shortText, FallbackValue='Unassigned'}" VerticalAlignment="Top" Height="16" Canvas.Left="40" Canvas.Top="23" Width="250"/>
+                <TextBlock x:Name="Text_Name" TextWrapping="Wrap" Text="{Binding fullName}" VerticalAlignment="Top" Height="16" Canvas.Left="40" Canvas.Top="7" Canvas.Right="10" FontWeight="DemiBold"/>
+                <TextBlock x:Name="Text_Assignment" TextWrapping="Wrap" Text="{Binding Path=assignment.shortText, FallbackValue='Unassigned'}" VerticalAlignment="Top" Height="16" Canvas.Left="40" Canvas.Top="23" Width="250" FontWeight="Regular"/>
+            </Canvas>
+        </DataTemplate>
+
+        <DataTemplate x:Key="EquipmentTemplate">
+            <Canvas x:Name="Base" Height="50" VerticalAlignment="Top" Background="White">
+                <Image x:Name="Image_Silhouette" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" OpacityMask="Black" Source="{Binding Path=hull.icon, FallbackValue={StaticResource NoImageFound}}" Canvas.Left="5" Canvas.Top="5"/>
+                <TextBlock x:Name="Text_Name" TextWrapping="Wrap" Text="{Binding Path=hull.name, FallbackValue='Equipment Name'}" VerticalAlignment="Top" Height="16" Canvas.Left="85" Canvas.Top="10" Canvas.Right="10" FontWeight="DemiBold"/>
+                <TextBlock x:Name="Text_Role" TextWrapping="Wrap" Text="{Binding Path=hull.role, FallbackValue='No Role'}" VerticalAlignment="Top" Height="16" Canvas.Left="85" Canvas.Top="25" Width="250" FontWeight="Regular"/>
+                <TextBlock x:Name="Text_Count" Canvas.Left="50" TextWrapping="NoWrap" FontWeight="Bold" FontSize="16" Canvas.Top="13">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="x{0}" FallbackValue="x0">
+                            <Binding Path="count"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
             </Canvas>
         </DataTemplate>
     </Window.Resources>
@@ -158,19 +175,10 @@
                 </TextBlock.Text>
             </TextBlock>
 
-            <ListBox x:Name="List_Embarked" Grid.Row="2" Margin="10,20,14.333,0" HorizontalContentAlignment="Stretch" ItemTemplate="{DynamicResource CrewTemplate}" ItemsSource="{Binding currentVessel.shipsEmbarked}" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionChanged="List_Embarked_SelectionChanged"/>
-            <TextBlock Grid.Row="2" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="290" FontWeight="Bold" Height="16" Grid.RowSpan="2">
-                <TextBlock.Text>
-                    <MultiBinding StringFormat="Embarked Personnel: {0}" FallbackValue="Embarked Personnel">
-                        <Binding Path="currentVessel.shipsEmbarked.Count"/>
-                    </MultiBinding>
-                </TextBlock.Text>
-            </TextBlock>
-
-            <Grid Margin="111,0,15.333,10" Grid.Row="3" Height="58" VerticalAlignment="Bottom">
+            <Grid Margin="111,0,15.333,0.333" Grid.Row="3" Height="71" VerticalAlignment="Bottom">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="33*"/>
-                    <RowDefinition Height="25*"/>
+                    <RowDefinition Height="34*"/>
+                    <RowDefinition Height="37*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="19*"/>
@@ -178,7 +186,40 @@
                 </Grid.ColumnDefinitions>
                 <Button x:Name="Button_AssignNew" Grid.Column="0" Grid.Row="0" Content="Assign New" IsEnabled="{Binding vesselSelectedAssign}" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_AssignNew_Click" Margin="0,0,8.333,0"/>
                 <Button x:Name="Button_RemoveAssigned" Grid.Column="1" Grid.Row="0" Content="Remove Assigned" IsEnabled="{Binding vesselSelectedAssign}" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_RemoveAssigned_Click" Margin="0.667,0,0.333,0"/>
+                <Button x:Name="Button_AddEquip" Grid.Column="0" Grid.Row="1" Content="Add Equipment" IsEnabled="{Binding vesselSelectedAssign}" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_AddEquip_Click" Margin="0,0,8.333,0"/>
+                <Button x:Name="Button_RemoveEquip" Grid.Column="1" Grid.Row="1" Content="Remove Equipment" IsEnabled="{Binding vesselSelectedAssign}" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_RemoveEquip_Click" Margin="0.667,0,0.333,0"/>
             </Grid>
+
+            <TabControl x:Name="Tabs_Embarked" Grid.Row="2" Margin="10,0,10.333,0.333" IsEnabled="{Binding vesselSelectedStatus}">
+                <TabItem>
+                    <TabItem.Header>
+                        <TextBlock FontWeight="Bold">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="Embarked Personnel: {0}" FallbackValue="Embarked Personnel">
+                                    <Binding Path="currentVessel.embarkedPersonnel.Count"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </TabItem.Header>
+                    <Grid Background="#FFE5E5E5">
+                        <ListBox x:Name="List_EmbarkedPersonnel" Grid.Row="2" Margin="0,0,0,0" HorizontalContentAlignment="Stretch" ItemTemplate="{DynamicResource CrewTemplate}" ItemsSource="{Binding currentVessel.embarkedPersonnel}" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionChanged="List_Embarked_SelectionChanged"/>
+                    </Grid>
+                </TabItem>
+                <TabItem>
+                    <TabItem.Header>
+                        <TextBlock FontWeight="Bold">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="Embarked Equipment: {0}" FallbackValue="Embarked Equipment">
+                                    <Binding Path="currentVessel.totalEquipmentEmbarked"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </TabItem.Header>
+                    <Grid Background="#FFE5E5E5">
+                        <ListBox x:Name="List_EmbarkedEquip" Grid.Row="2" Margin="0,0,0,0" HorizontalContentAlignment="Stretch" ItemTemplate="{DynamicResource EquipmentTemplate}" ItemsSource="{Binding currentVessel.embarkedEquipment}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+                    </Grid>
+                </TabItem>
+            </TabControl>
 
             <fa:ImageAwesome x:Name="Spinner_Detail" Icon="Cog" Spin="True" SpinDuration="10" Margin="46,214.667,36.333,215" Foreground="#FF316838" Visibility="Hidden" Grid.Row="1" Grid.RowSpan="2"/>
         </Grid>

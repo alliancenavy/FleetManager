@@ -113,7 +113,8 @@ namespace ANWI {
 			List<Datamodel.User> dbUsers = null;
 			Datamodel.User.FetchAll(ref dbUsers);
 
-			return dbUsers.ConvertAll<LiteProfile>((a) => { return new LiteProfile(a); });
+			return dbUsers.ConvertAll<LiteProfile>((a) => {
+				return new LiteProfile(a); });
 		}
 
 		/// <summary>
@@ -122,11 +123,13 @@ namespace ANWI {
 		/// <param name="shipId"></param>
 		/// <param name="company"></param>
 		/// <returns></returns>
-		public static List<LiteProfile> FetchByAssignment(int shipId, bool company) {
+		public static List<LiteProfile> FetchByAssignment(int shipId, 
+			bool company) {
 			List<Datamodel.User> dbUsers = null;
 			Datamodel.User.FetchAllByAssignment(ref dbUsers, shipId, company);
 
-			return dbUsers.ConvertAll<LiteProfile>((a) => { return new LiteProfile(a); });
+			return dbUsers.ConvertAll<LiteProfile>((a) => {
+				return new LiteProfile(a); });
 		}
 
 		/// <summary>
@@ -137,7 +140,8 @@ namespace ANWI {
 			List<Datamodel.User> dbUsers = null;
 			Datamodel.User.FetchAllUnassigned(ref dbUsers);
 
-			return dbUsers.ConvertAll<LiteProfile>((a) => { return new LiteProfile(a); });
+			return dbUsers.ConvertAll<LiteProfile>((a) => {
+				return new LiteProfile(a); });
 		}
 		#endregion
 	}

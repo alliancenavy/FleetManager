@@ -27,16 +27,18 @@ namespace ANWI.Messaging {
 
 			//
 			// Change requests
-			ChangeRank,				// Detail: UserIdPlus
-			DeleteRate,				// Detail: UserIdPlus
-			SetPrimaryRate,			// Detail: UserIdPlus
-			ChangeName				// Detail: IdString
+			ChangeRank,				// Detail: TwoIDs
+			DeleteRate,				// Detail: TwoIDs
+			SetPrimaryRate,			// Detail: TwoIDs
+			ChangeName,				// Detail: IdString
+			AddEquipment,			// Detail: TwoIDs
+			RemoveEquipment			// Detail: TwoIDs
 		}
 
 		public Type type { get; set; }
 		public int id { get; set; }
 
-		[MessagePackKnownType("uidp", typeof(UserIdPlus))]
+		[MessagePackKnownType("2ids", typeof(TwoIDs))]
 		[MessagePackKnownType("idstr", typeof(IdString))]
 		public IRequestDetail detail { get; set; }
 

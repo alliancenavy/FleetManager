@@ -215,27 +215,39 @@ namespace FleetManager.Services {
 					}
 
 				case ANWI.Messaging.Request.Type.ChangeRank: {
-						ANWI.Messaging.ReqExp.UserIdPlus uidp
-							= req.detail as ANWI.Messaging.ReqExp.UserIdPlus;
-						return ChangeRank(uidp.userId, uidp.otherId);
+						ANWI.Messaging.ReqExp.TwoIDs tid
+							= req.detail as ANWI.Messaging.ReqExp.TwoIDs;
+						return ChangeRank(tid.id1, tid.id2);
 					}
 
 				case ANWI.Messaging.Request.Type.DeleteRate: {
-						ANWI.Messaging.ReqExp.UserIdPlus uidp
-							= req.detail as ANWI.Messaging.ReqExp.UserIdPlus;
-						return DeleteRate(uidp.userId, uidp.otherId);
+						ANWI.Messaging.ReqExp.TwoIDs tid
+							= req.detail as ANWI.Messaging.ReqExp.TwoIDs;
+						return DeleteRate(tid.id1, tid.id2);
 					}
 
 				case ANWI.Messaging.Request.Type.SetPrimaryRate: {
-						ANWI.Messaging.ReqExp.UserIdPlus uidp
-							= req.detail as ANWI.Messaging.ReqExp.UserIdPlus;
-						return SetPrimaryRate(uidp.userId, uidp.otherId);
+						ANWI.Messaging.ReqExp.TwoIDs tid
+							= req.detail as ANWI.Messaging.ReqExp.TwoIDs;
+						return SetPrimaryRate(tid.id1, tid.id2);
 					}
 
 				case ANWI.Messaging.Request.Type.ChangeName: {
 						ANWI.Messaging.ReqExp.IdString ids
 							= req.detail as ANWI.Messaging.ReqExp.IdString;
 						return ChangeNickname(ids.id, ids.str);
+					}
+
+				case ANWI.Messaging.Request.Type.AddEquipment: {
+						ANWI.Messaging.ReqExp.TwoIDs tid
+							= req.detail as ANWI.Messaging.ReqExp.TwoIDs;
+						return AddEquipment(tid.id1, tid.id2);
+					}
+
+				case ANWI.Messaging.Request.Type.RemoveEquipment: {
+						ANWI.Messaging.ReqExp.TwoIDs tid
+							= req.detail as ANWI.Messaging.ReqExp.TwoIDs;
+						return RemoveEquipment(tid.id1, tid.id2);
 					}
 			}
 
@@ -470,6 +482,34 @@ namespace FleetManager.Services {
 			}
 
 			return new ANWI.Messaging.ConfirmUpdate(success, uid);
+		}
+
+		private ANWI.Messaging.IMessagePayload AddEquipment(int shipId, 
+			int hullId) {
+			Datamodel.ShipEquipment e = null;
+			bool success 
+				= Datamodel.ShipEquipment.Create(ref e, hullId, shipId);
+
+			if (success)
+				logger.Info($"Added new equipment {hullId} to ship {shipId}");
+			else
+				logger.Error($"Failed to add equipment to ship {shipId}");
+
+			return new ANWI.Messaging.ConfirmUpdate(success, shipId);
+		}
+
+		private ANWI.Messaging.IMessagePayload RemoveEquipment(int shipId,
+			int hullId) {
+
+			bool success = Datamodel.ShipEquipment.DeleteOneOfHullOnShip(
+				hullId, shipId);
+
+			if (success)
+				logger.Info($"Removed equipment {hullId} from ship {shipId}");
+			else
+				logger.Error($"Failed to remove equipment from ship {shipId}");
+
+			return new ANWI.Messaging.ConfirmUpdate(success, shipId);
 		}
 		#endregion
 	}
