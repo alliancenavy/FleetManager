@@ -10,7 +10,7 @@
             <Setter Property="ContentTemplate">
                 <Setter.Value>
                     <DataTemplate>
-                        <fa:ImageAwesome Icon="Pencil" ToolTip="Edit" Foreground="White"/>
+                        <fa:ImageAwesome Icon="Pencil" Foreground="White"/>
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
@@ -21,7 +21,7 @@
             <Setter Property="ContentTemplate">
                 <Setter.Value>
                     <DataTemplate>
-                        <fa:ImageAwesome Icon="refresh" ToolTip="Edit" Foreground="White"/>
+                        <fa:ImageAwesome Icon="refresh" ToolTip="Refresh" Foreground="White"/>
                     </DataTemplate>
                 </Setter.Value>
             </Setter>

@@ -28,8 +28,6 @@ namespace FleetManager.Services {
 				ANWI.Messaging.IMessagePayload>>() {
 				{ typeof(ANWI.Messaging.Request),
 					ProcessRequestMessage },
-				{ typeof(ANWI.Messaging.ChangeNickname),
-					ProcessChangeNickname },
 				{ typeof(ANWI.Messaging.AddRate),
 					ProcessAddRate },
 				{ typeof(ANWI.Messaging.NewAssignment),
@@ -233,34 +231,14 @@ namespace FleetManager.Services {
 							= req.detail as ANWI.Messaging.ReqExp.UserIdPlus;
 						return SetPrimaryRate(uidp.userId, uidp.otherId);
 					}
+
+				case ANWI.Messaging.Request.Type.ChangeName: {
+						ANWI.Messaging.ReqExp.IdString ids
+							= req.detail as ANWI.Messaging.ReqExp.IdString;
+						return ChangeNickname(ids.id, ids.str);
+					}
 			}
 
-			return null;
-		}
-
-		/// <summary>
-		/// Handles the ChangeNickname message
-		/// </summary>
-		/// <param name="p"></param>
-		/// <returns></returns>
-		private ANWI.Messaging.IMessagePayload ProcessChangeNickname(
-			ANWI.Messaging.IMessagePayload p) {
-			ANWI.Messaging.ChangeNickname cn 
-				= p as ANWI.Messaging.ChangeNickname;
-
-			Datamodel.User user = null;
-			if(!Datamodel.User.FetchByAuth0(ref user, cn.auth0_id)) {
-				logger.Error("Failed to change name.  Could not select user.");
-				return null;
-			}
-
-			user.name = cn.newName;
-			if(!Datamodel.User.Store(user)) {
-				logger.Error("Failed to update name is database.");
-				return null;
-			}
-
-			logger.Info("Name successfully changed.");
 			return null;
 		}
 
@@ -464,6 +442,31 @@ namespace FleetManager.Services {
 			} else {
 				logger.Error("Could not set primary rate: no user with" +
 					$" id {uid} found");
+			}
+
+			return new ANWI.Messaging.ConfirmUpdate(success, uid);
+		}
+
+		/// <summary>
+		/// Changes a user's name
+		/// </summary>
+		/// <param name="p"></param>
+		/// <returns></returns>
+		private ANWI.Messaging.IMessagePayload ChangeNickname(int uid,
+			string name) {
+			bool success = false;
+			Datamodel.User user = null;
+			if (Datamodel.User.FetchById(ref user, uid)) {
+				user.name = name;
+				if (Datamodel.User.Store(user)) {
+					logger.Info($"Changed name of user {uid} to {name}");
+					success = true;
+				} else {
+					logger.Error("Failed to update name of user " +
+						$"{uid} to {name}.");
+				}
+			} else {
+				logger.Error($"Could not change name: no user with id {uid}.");
 			}
 
 			return new ANWI.Messaging.ConfirmUpdate(success, uid);

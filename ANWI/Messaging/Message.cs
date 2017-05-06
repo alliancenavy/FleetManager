@@ -73,7 +73,6 @@ namespace ANWI.Messaging {
 		[MessagePackKnownType("rr", typeof(RegisterResponse))]
 		[MessagePackKnownType("rv", typeof(Request))]
 		[MessagePackKnownType("fvr", typeof(FullVesselReg))]
-		[MessagePackKnownType("cn", typeof(ChangeNickname))]
 		[MessagePackKnownType("fol", typeof(FullOperationsList))]
 		[MessagePackKnownType("ros", typeof(FullRoster))]
 		[MessagePackKnownType("acd", typeof(AllCommonData))]

@@ -104,7 +104,6 @@
     <Compile Include="LiteVessel.cs" />
     <Compile Include="Messaging\AddRate.cs" />
     <Compile Include="Messaging\AllCommonData.cs" />
-    <Compile Include="Messaging\ChangeNickname.cs" />
     <Compile Include="Messaging\ChangeShipStatus.cs" />
     <Compile Include="Messaging\ConfirmUpdate.cs" />
     <Compile Include="Messaging\FullOperationsList.cs" />
@@ -121,6 +120,7 @@
     <Compile Include="Messaging\RegisterRequest.cs" />
     <Compile Include="Messaging\RegisterResponse.cs" />
     <Compile Include="Messaging\RemoveAssignment.cs" />
+    <Compile Include="Messaging\ReqExp\IdString.cs" />
     <Compile Include="Messaging\ReqExp\IRequestDetail.cs" />
     <Compile Include="Messaging\ReqExp\UserIdPlus.cs" />
     <Compile Include="Messaging\Request.cs" />

@@ -37,6 +37,7 @@ namespace Client {
 					currentProfile = value;
 					NotifyPropertyChanged("wpfProfile");
 					NotifyPropertyChanged("canSetPrimaryRate");
+					NotifyPropertyChanged("canEditName");
 				}
 			}
 		}
@@ -52,6 +53,10 @@ namespace Client {
 				return currentProfile != null && 
 					account.profile.id == currentProfile.id;
 			} }
+		public bool canEditName {
+			get { return currentProfile != null && 
+					account.profile.id == currentProfile.id; }
+		}
 		#endregion
 
 		#region Initialization
@@ -284,6 +289,24 @@ namespace Client {
 			}
 		}
 
+		/// <summary>
+		/// Edit user nickname button
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void Button_EditName_Click(object sender, RoutedEventArgs e) {
+			SimpleTextPrompt prompt = new SimpleTextPrompt("Edit Name", 
+				currentProfile.nickname);
+			prompt.ReturnText += (name) => {
+				ChangeNickname(currentProfile.id, name);
+			};
+			prompt.ShowDialog();
+		}
+
+		/// <summary>
+		/// Causes the application to quit when the main window closes
+		/// </summary>
+		/// <param name="e"></param>
 		protected override void OnClosed(EventArgs e) {
 			base.OnClosed(e);
 
@@ -529,6 +552,20 @@ namespace Client {
 				new ANWI.Messaging.Request(
 					ANWI.Messaging.Request.Type.ChangeRank,
 					new ANWI.Messaging.ReqExp.UserIdPlus(userId, rankId)));
+		}
+
+		/// <summary>
+		/// Changes the name of a given user
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <param name="name"></param>
+		private void ChangeNickname(int userId, string name) {
+			ANWI.Messaging.Message.Send(
+				socket,
+				ANWI.Messaging.Message.Routing.Main,
+				new ANWI.Messaging.Request(
+					ANWI.Messaging.Request.Type.ChangeName,
+					new ANWI.Messaging.ReqExp.IdString(userId, name)));
 		}
 		#endregion
 

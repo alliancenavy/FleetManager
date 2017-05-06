@@ -100,7 +100,7 @@
             <ColumnDefinition Width="371*"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock x:Name="Text_Nickname" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" FontSize="20" FontWeight="Bold" Margin="10,5,10.333,0">
+        <TextBlock x:Name="Text_Nickname" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" FontSize="20" FontWeight="Bold" Margin="10,5,30.333,0">
             <TextBlock.Text>
                 <MultiBinding StringFormat="{}{0} {1}">
                     <Binding Path="wpfProfile.rank.abbrev"/>
@@ -144,6 +144,7 @@
                 <Button x:Name="Button_ChangeRank" Content="Change Rank" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_ChangeRank_Click" IsEnabled="{Binding userPrivileges.canPromote}" Margin="0,33,0,0" Grid.RowSpan="2"/>
                 <Button x:Name="Button_SetPrimaryRate" Grid.Column="2" Grid.Row="0" Content="Set Primary Rate" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_SetPrimaryRate_Click" IsEnabled="{Binding canSetPrimaryRate}" Margin="0.667,0,-0.667,0"/>
             </Grid>
+            <Button x:Name="Button_EditName" Grid.Row="0" Style="{StaticResource EditButton}" Content="Button" IsEnabled="{Binding canEditName}" HorizontalAlignment="Right" Margin="0,12,6.333,0" VerticalAlignment="Top" Width="19" Height="16" Click="Button_EditName_Click" ToolTip="Edit Name"/>
         </Grid>
         <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="30" FontSize="20" FontWeight="Bold" Margin="9.667,5,289.333,0" Grid.Column="1">
             <TextBlock.Text>Roster</TextBlock.Text>

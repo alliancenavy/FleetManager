@@ -140,7 +140,7 @@
             <TextBlock Grid.Row="0" Margin="10,0,8.333,0" TextWrapping="Wrap" Text="{Binding currentVessel.detailName, FallbackValue='[No Ship Selected]'}" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Height="30"/>
             <TextBlock Grid.Row="0" Margin="10,30,8.333,0" TextWrapping="Wrap" Text="{Binding currentVessel.detailType}" VerticalAlignment="Top" FontWeight="Bold" Height="16"/>
             <TextBlock Grid.Row="0" Margin="34,62,7.333,0" TextWrapping="Wrap" Text="{Binding currentVessel.statusStringWithDate}" VerticalAlignment="Top" Height="16"/>
-            <Button x:Name="Button_EditStatus" Grid.Row="0" Style="{StaticResource EditButton}" Content="Button" IsEnabled="{Binding vesselSelectedStatus}" HorizontalAlignment="Left" Margin="10,62,0,0" VerticalAlignment="Top" Width="19" Height="16" Click="Button_EditStatus_Click"/>
+            <Button x:Name="Button_EditStatus" Grid.Row="0" Style="{StaticResource EditButton}" Content="Button" IsEnabled="{Binding vesselSelectedStatus}" HorizontalAlignment="Left" Margin="10,62,0,0" VerticalAlignment="Top" Width="19" Height="16" Click="Button_EditStatus_Click" ToolTip="Edit Status"/>
             <TextBlock Grid.Row="0" Margin="10,46,6.333,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="16">
                 <TextBlock.Text>
                     <MultiBinding StringFormat="Owned by {0}">

@@ -166,6 +166,9 @@
     <Compile Include="SimpleDropdownSelect.xaml.cs">
       <DependentUpon>SimpleDropdownSelect.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SimpleTextPrompt.xaml.cs">
+      <DependentUpon>SimpleTextPrompt.xaml</DependentUpon>
+    </Compile>
     <Compile Include="VesselRegHelpers.cs" />
     <Page Include="AddRate.xaml">
       <SubType>Designer</SubType>
@@ -215,6 +218,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="SimpleDropdownSelect.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SimpleTextPrompt.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
