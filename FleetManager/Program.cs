@@ -21,7 +21,18 @@ namespace FleetManager {
 			{
 				Version v = System.Reflection.Assembly.GetExecutingAssembly().
 					GetName().Version;
-				logger.Info($"AFOS Server version {v}");
+
+				Console.Write(
+$@"                                         
+   _|_|    _|_|_|_|    _|_|      _|_|_|  
+ _|    _|  _|        _|    _|  _|        
+ _|_|_|_|  _|_|_|    _|    _|    _|_|    
+ _|    _|  _|        _|    _|        _|  
+ _|    _|  _|          _|_|    _|_|_|    
+   Server version {v}                    
+                                         
+"
+					);
 			}
 
 			logger.Info("Starting up...");
