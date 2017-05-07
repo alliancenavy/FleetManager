@@ -1,4 +1,6 @@
 ﻿using ANWI;
+using ANWI.Utility;
+using NLog;
 using System;
 using System.Collections.Generic;
 
@@ -7,7 +9,10 @@ namespace FleetManager {
 	/// <summary>
 	/// Keeps track of all running operations.
 	/// </summary>
-	public class OperationManager {
+	public class OperationManager : Mailbox {
+		private static NLog.Logger logger
+			= LogManager.GetLogger("Operation Manager");
+
 		#region Instance Members
 		Dictionary<string, Operation> activeOps 
 			= new Dictionary<string, Operation>();
@@ -21,10 +26,7 @@ namespace FleetManager {
 		#endregion
 
 		#region Message Processing
-		public ANWI.Messaging.IMessagePayload 
-		DeliverMessage(ANWI.Messaging.IMessagePayload p) {
-			return null;
-		}
+		
 		#endregion
 
 		#region Main Service Access
@@ -47,6 +49,9 @@ namespace FleetManager {
 				OperationType.PATROL);
 
 			activeOps.Add(op.uuid, op);
+
+			logger.Info($"Created new operation with UUID {op.uuid}");
+			logger.Info($"There are now {activeOps.Count} active operations");
 		}
 		#endregion
 
@@ -65,7 +70,7 @@ namespace FleetManager {
 				i *= ((int)b + 1);
 			}
 			return string.Format("{0:x}", i - DateTime.Now.Ticks);
-		}
+		} 
 		#endregion
 	}
 }

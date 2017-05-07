@@ -6,6 +6,8 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
 
+        <BitmapImage x:Key="NoImageFound" UriSource="/images/no_image.png"/>
+
         <Style x:Key="EditButton" TargetType="Button">
             <Setter Property="ContentTemplate">
                 <Setter.Value>
@@ -22,6 +24,17 @@
                 <Setter.Value>
                     <DataTemplate>
                         <fa:ImageAwesome Icon="refresh" ToolTip="Refresh" Foreground="White"/>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Background" Value="#FF316838"/>
+        </Style>
+
+        <Style x:Key="XButton" TargetType="Button">
+            <Setter Property="ContentTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <fa:ImageAwesome Icon="close" ToolTip="Remove" Foreground="White"/>
                     </DataTemplate>
                 </Setter.Value>
             </Setter>

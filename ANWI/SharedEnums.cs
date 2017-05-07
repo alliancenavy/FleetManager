@@ -15,6 +15,7 @@
 	/// Describes the primary purpose of an operation
 	/// </summary>
 	public enum OperationType {
+		UNSELECTED,
 		PATROL,
 		ASSAULT,
 		DEFENSE,
@@ -58,6 +59,8 @@
 
 		public static string ToFriendlyString(this OperationType type) {
 			switch (type) {
+				case OperationType.UNSELECTED:
+					return "Unselected";
 				case OperationType.PATROL:
 					return "Patrol";
 				case OperationType.ASSAULT:
@@ -85,6 +88,21 @@
 					return "Dismissing";
 				default:
 					return "";
+			}
+		}
+
+		public static OperationStatus Next(this OperationStatus status) {
+			switch(status) {
+				case OperationStatus.CONFIGURING:
+					return OperationStatus.STAGING;
+				case OperationStatus.STAGING:
+					return OperationStatus.SORTIED;
+				case OperationStatus.SORTIED:
+					return OperationStatus.DISMISSING;
+				case OperationStatus.DISMISSING:
+					return OperationStatus.DISMISSING;
+				default:
+					return OperationStatus.DISMISSING;
 			}
 		}
 

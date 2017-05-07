@@ -27,6 +27,7 @@ namespace Client {
 
 		#region Other Windows
 		private FleetRegistry fleetReg = null;
+		private OperationDetails opDet = null;
 		#endregion
 
 		#region Observable Members
@@ -152,7 +153,10 @@ namespace Client {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void Button_NewOp_Click(object sender, RoutedEventArgs e) {
-
+			if (opDet == null) {
+				opDet = new OperationDetails();
+				opDet.Show();
+			}
 		}
 
 		/// <summary>

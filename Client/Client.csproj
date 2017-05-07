@@ -150,6 +150,7 @@
     <Compile Include="Confirm.xaml.cs">
       <DependentUpon>Confirm.xaml</DependentUpon>
     </Compile>
+    <Compile Include="FleetCompElement.cs" />
     <Compile Include="FleetRegistry.xaml.cs">
       <DependentUpon>FleetRegistry.xaml</DependentUpon>
     </Compile>

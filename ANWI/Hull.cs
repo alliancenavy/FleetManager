@@ -24,6 +24,9 @@ namespace ANWI {
 		#endregion
 
 		#region WPF Helpers
+		public string nameAndRole {
+			get { return $"{name} class {role}"; }
+		}
 		public override string ToString() {
 			return $"{name} ({symbol})";
 		}

@@ -9,7 +9,6 @@
         mc:Ignorable="d"
         Title="Alliance Fleet Operations System" Height="761" Width="1113" MinHeight="761" MinWidth="1113" ResizeMode="CanResizeWithGrip" Icon="images/afos_logo_VCP_icon.ico">
     <Window.Resources>
-        <BitmapImage x:Key="NoImageFound" UriSource="/images/no_image.png"/>
 
         <DataTemplate x:Key="RateTemplate">
             <Canvas Height="70">
@@ -67,7 +66,7 @@
             <Canvas x:Name="Base" Height="60" VerticalAlignment="Top" Background="White">
                 <Image x:Name="Image_Rank" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" OpacityMask="Black" Source="{Binding rank.icon}" Canvas.Left="10" Canvas.Top="10"/>
                 <Image x:Name="Image_PrimaryRate" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="40" OpacityMask="Black" Source="{Binding Path=primaryRate.icon, FallbackValue={StaticResource NoImageFound}}" Canvas.Left="55" Canvas.Top="10"/>
-                <TextBlock x:Name="Text_Name" TextWrapping="Wrap" Text="{Binding fullName}" VerticalAlignment="Top" Height="16" Canvas.Left="100" Canvas.Top="10" Canvas.Right="10" FontWeight="Bold"/>
+                <TextBlock x:Name="Text_Name" TextWrapping="Wrap" Text="{Binding fullName}" VerticalAlignment="Top" Height="16" Canvas.Left="100" Canvas.Top="10" Canvas.Right="10" FontWeight="DemiBold"/>
                 <TextBlock x:Name="Text_Assignment" TextWrapping="Wrap" Text="{Binding Path=assignment.shipName, FallbackValue='No Assignment'}" VerticalAlignment="Top" Height="16" Canvas.Left="100" Canvas.Top="31" Width="205"/>
             </Canvas>
 

@@ -11,8 +11,6 @@
 
     <Window.Resources>
 
-        <BitmapImage x:Key="NoImageFound" UriSource="/images/no_image.png"/>
-
         <DataTemplate DataType="{x:Type helpers:CategoryDivider}">
             <Canvas x:Name="Base" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="360" Background="#FFD4D4D4">
                 <TextBlock Canvas.Left="10" TextWrapping="Wrap" Text="{Binding Path=text}" Canvas.Top="3" Width="313" FontSize="16" FontWeight="Bold"/>
