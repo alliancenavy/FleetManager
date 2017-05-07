@@ -127,6 +127,7 @@
     <Compile Include="Messaging\ReqExp\UserIdPlus.cs" />
     <Compile Include="Messaging\Request.cs" />
     <Compile Include="OpParticipant.cs" />
+    <Compile Include="OpPosition.cs" />
     <Compile Include="Privs.cs" />
     <Compile Include="Profile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

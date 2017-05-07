@@ -8,7 +8,7 @@
         xmlns:OOB="clr-namespace:Client.FleetComp"
         mc:Ignorable="d"
         MouseDown="MailboxWindow_MouseDown"
-        Title="Operation Details" Height="665.833" Width="1098.333" ResizeMode="CanResizeWithGrip" Icon="images/afos_logo_VCP_icon.ico">
+        Title="Operation Details" Height="667" Width="1100" MinHeight="667" MinWidth="1100" ResizeMode="CanResizeWithGrip" Icon="images/afos_logo_VCP_icon.ico">
     <Window.Resources>
 
         <DataTemplate x:Key="RosterTemplate">
@@ -16,9 +16,39 @@
                 <Image x:Name="Image_Rank" HorizontalAlignment="Left" Margin="10,10,0,0" Height="40" Width="40" VerticalAlignment="Top" OpacityMask="Black" Source="{Binding profile.rank.icon}"/>
                 <Image x:Name="Image_PrimaryRate" HorizontalAlignment="Left" Margin="55,10,0,0" Height="40" VerticalAlignment="Top" Width="40" OpacityMask="Black" Source="{Binding Path=profile.primaryRate.icon, FallbackValue={StaticResource NoImageFound}}"/>
                 <TextBlock x:Name="Text_Name" TextWrapping="Wrap" Margin="100,10,0,0" Text="{Binding Path=profile.fullName, FallbackValue='Name'}" VerticalAlignment="Top" Height="16" FontWeight="DemiBold"/>
-                <fa:ImageAwesome x:Name="Icon_FC" Icon="Star" Margin="100,30,0,0" Height="15" Width="15" ToolTip="Fleet Command"/>
+                <fa:ImageAwesome x:Name="Icon_FC" Icon="Star" Margin="100,30,0,0" Height="15" Width="15" ToolTip="Fleet Command" Visibility="Hidden"/>
                 <Button x:Name="Button_Remove" Style="{StaticResource XButton}" IsEnabled="True" Width="20" Height="20" Click="Button_Remove_Click" ToolTip="Remove" Canvas.Right="10" Canvas.Top="18"/>
             </Canvas>
+
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding isFC}" Value="True">
+                    <Setter TargetName="Icon_FC" Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <DataTemplate x:Key="PositionTemplate">
+            <Grid Height="50">
+                <Image Height="40" Width="40" Margin="5,5,0,0"  HorizontalAlignment="Left" VerticalAlignment="Top" OpacityMask="Black" Source="{Binding role.associatedRateIcon, FallbackValue={StaticResource NoImageFound}}"/>
+                <TextBlock Margin="50,9,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="Wrap" Text="{Binding Path=role.name, FallbackValue='Position Name'}" FontWeight="DemiBold"/>
+                <TextBlock Margin="50,25,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="Wrap" Text="{Binding Path=filledByPointer.profile.fullName, FallbackValue='[UNASSIGNED]'}" />
+                <fa:ImageAwesome x:Name="Icon_Unfilled" Grid.Row="0" Icon="Warning"  Margin="0,12,10,0" HorizontalAlignment="Right" VerticalAlignment="Top" Height="25" Width="25" ToolTip="Unfilled Position" Foreground="Red"/>
+            </Grid>
+
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Path=isFilled}" Value="False">
+                    <Setter TargetName="Icon_Unfilled" Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=isFilled}" Value="True">
+                    <Setter TargetName="Icon_Unfilled" Property="Visibility" Value="Hidden"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=critical}" Value="True">
+                    <Setter TargetName="Icon_Unfilled" Property="Foreground" Value="Red"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=critical}" Value="False">
+                    <Setter TargetName="Icon_Unfilled" Property="Foreground" Value="Black"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type OOB:NamedShip}">
@@ -28,36 +58,29 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="5"/>
                 </Grid.RowDefinitions>
+                <Border BorderThickness="1" BorderBrush="Black" Grid.RowSpan="3"/>
 
                 <Image x:Name="Image_Silhouette" Grid.Row="0" HorizontalAlignment="Left" Margin="10,10,0,0" Height="50" Width="100" VerticalAlignment="Top" OpacityMask="Black" Source="{Binding Path=icon, FallbackValue={StaticResource NoImageFound}}" Stretch="Fill"/>
-                <TextBlock x:Name="Text_ShipName" Grid.Row="0" Margin="120,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="NoWrap" Text="{Binding Path=v.name, FallbackValue='ANS Long Ship Name'}" FontSize="15" FontWeight="DemiBold"/>
+                <TextBlock x:Name="Text_ShipName" Grid.Row="0" Margin="120,5,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding Path=v.name, FallbackValue='ANS Long Ship Name'}" FontSize="15" FontWeight="DemiBold"/>
                 <Border Grid.Row="0" BorderThickness="1" BorderBrush="Black" Margin="120,25,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
                     <TextBlock TextWrapping="Wrap" Text="{Binding v.fullHullNumber, FallbackValue='XXX-##'}" Width="80" FontSize="16" FontWeight="Bold" FontFamily="Segoe UI Black" TextAlignment="Center" Height="23"/>
                 </Border>
                 <fa:ImageAwesome x:Name="Icon_Guide" Visibility="Hidden" Grid.Row="0" Icon="Flag" Margin="210,28,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="20" ToolTip="Flagship"/>
-                <TextBlock x:Name="Text_ShipClass" Grid.Row="0" Margin="120,48,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="NoWrap" Text="{Binding Path=v.hull.nameAndRole, FallbackValue='Ship Class'}" FontSize="12" FontWeight="Regular"/>
+                <TextBlock x:Name="Text_ShipClass" Grid.Row="0" Margin="120,48,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding Path=v.hull.nameAndRole, FallbackValue='Ship Class'}" FontSize="12" FontWeight="Regular"/>
 
-                <!--<StackPanel Name="Stack_Positions" Grid.Row="1" Margin="30,0,0,0"  VerticalAlignment="Top">-->
-                <ListBox Name="List_Positions" Grid.Row="1" Height="Auto" VerticalAlignment="Top" Margin="30,0,0,0" HorizontalContentAlignment="Stretch" SelectionChanged="List_Positions_SelectionChanged">
-                    <ListBoxItem>
-                        <Grid Height="50">
-                            <Rectangle Stroke="Red" StrokeThickness="4" StrokeDashArray="2 2"/>
-                            <Image Height="40" Width="40" Margin="5,5,0,0"  HorizontalAlignment="Left" VerticalAlignment="Top" OpacityMask="Black" Source="{Binding icon, FallbackValue={StaticResource NoImageFound}}"/>
-                            <TextBlock Margin="50,9,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="Wrap" Text="{Binding Path=fullName, FallbackValue='Position Name'}" FontWeight="DemiBold"/>
-                            <TextBlock Margin="50,25,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="Wrap" Text="{Binding Path=fullName, FallbackValue='[UNASSIGNED]'}" />
-                        </Grid>
-                    </ListBoxItem>
-                    <ListBoxItem>
-                        <Grid Height="50">
-                            <Rectangle Stroke="Red" StrokeThickness="4" StrokeDashArray="2 2"/>
-                            <Image Height="40" Width="40" Margin="5,5,0,0"  HorizontalAlignment="Left" VerticalAlignment="Top" OpacityMask="Black" Source="{Binding icon, FallbackValue={StaticResource NoImageFound}}"/>
-                            <TextBlock Margin="50,9,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="Wrap" Text="{Binding Path=fullName, FallbackValue='Position Name'}" FontWeight="DemiBold"/>
-                            <TextBlock Margin="50,25,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="Wrap" Text="{Binding Path=fullName, FallbackValue='[UNASSIGNED]'}" />
-                        </Grid>
-                    </ListBoxItem>
+                <Rectangle Grid.Row="1" Margin="15,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="10"  Fill="#FFB9B9B9" />
+                <ListBox Name="List_Positions" Grid.Row="1" Height="Auto" VerticalAlignment="Top" Margin="30,0,5,0" HorizontalContentAlignment="Stretch" ItemTemplate="{DynamicResource PositionTemplate}" ItemsSource="{Binding positions}" SelectionChanged="List_Positions_SelectionChanged" BorderThickness="0">
+                    <ListBox.Template>
+                        <ControlTemplate>
+                            <ItemsPresenter/>
+                        </ControlTemplate>
+                    </ListBox.Template>
+                    <ListBox.Resources>
+                        <Style TargetType="ListBoxItem">
+                            <EventSetter Event="MouseDoubleClick" Handler="List_Positions_DoubleClick"/>
+                        </Style>
+                    </ListBox.Resources>
                 </ListBox>
-
-                <!--</StackPanel>-->
             </Grid>
             
             <DataTemplate.Triggers>
@@ -65,6 +88,101 @@
                     <Setter TargetName="Icon_Guide" Property="Visibility" Value="Visible"/>
                 </DataTrigger>
             </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <DataTemplate x:Key="WingMemberCrewTemplate">
+            <ContentControl MouseDoubleClick="List_WingCrew_DoubleClick">
+                <Grid Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="15"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Name="Text_Name" Margin="0,0,0,0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"  Text="{Binding Path=filledByPointer.profile.fullName, FallbackValue='[UNASSIGNED]'}"/>
+                    <TextBlock Name="Text_Role" Margin="0,0,0,0" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding Path=role.name, FallbackValue='Role Name'}"/>
+                    <Button x:Name="Button_FighterCrewRemove" Grid.Column="4" Margin="0,1,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource XButton}" IsEnabled="True" Width="10" Height="10" Click="Button_FighterCrewRemove_Click" ToolTip="Remove"/>
+                </Grid>
+            </ContentControl>
+
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding criticalAndUnfilled}" Value="True">
+                    <Setter TargetName="Text_Name" Property="Foreground" Value="Red"/>
+                    <Setter TargetName="Text_Role" Property="Foreground" Value="Red"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding criticalAndUnfilled}" Value="False">
+                    <Setter TargetName="Text_Name" Property="Foreground" Value="Black"/>
+                    <Setter TargetName="Text_Role" Property="Foreground" Value="Black"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <DataTemplate x:Key="WingMemberTemplate">
+            <Grid Height="Auto" Background="White">
+                <Image Name="Image_Silhouette" Height="40" Width="40" Margin="5,5,0,0"  HorizontalAlignment="Left" VerticalAlignment="Top" OpacityMask="Black" Source="{Binding icon, FallbackValue={StaticResource NoImageFound}}"/>
+                <Grid Margin="50,9,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="25"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding Path=type.name, FallbackValue='Fighter Type'}" FontWeight="DemiBold"/>
+                    <fa:ImageAwesome x:Name="Icon_WingCommander" Grid.Column="1" Icon="AngleDoubleUp"  Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="12" Width="12" ToolTip="Wing Commander"/>
+                    <TextBlock Grid.Column="2" TextWrapping="NoWrap" Text="{Binding Path=callsign, FallbackValue='[CallSign]'}" FontWeight="Regular"/>
+                </Grid>
+                <ItemsControl Margin="50,25,45,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" ItemTemplate="{DynamicResource WingMemberCrewTemplate}" ItemsSource="{Binding positions}" HorizontalContentAlignment="Stretch">
+                </ItemsControl>
+                <fa:ImageAwesome x:Name="Icon_Unfilled" Icon="Warning"  Margin="0,12,10,0" HorizontalAlignment="Right" VerticalAlignment="Top" Height="25" Width="25" ToolTip="Unfilled Position" Foreground="Red"/>
+            </Grid>
+
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Path=isWC}" Value="True">
+                    <Setter TargetName="Icon_WingCommander" Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=isWC}" Value="False">
+                    <Setter TargetName="Icon_WingCommander" Property="Visibility" Value="Hidden"/>
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding Path=isFilled}" Value="False">
+                    <Setter TargetName="Icon_Unfilled" Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=isFilled}" Value="True">
+                    <Setter TargetName="Icon_Unfilled" Property="Visibility" Value="Hidden"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=hasUnfilledCritical}" Value="True">
+                    <Setter TargetName="Icon_Unfilled" Property="Foreground" Value="Red"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=hasUnfilledCritical}" Value="False">
+                    <Setter TargetName="Icon_Unfilled" Property="Foreground" Value="Black"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type OOB:Wing}">
+            <Grid Height="Auto" Background="White" VerticalAlignment="Top">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="70"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="5"/>
+                </Grid.RowDefinitions>
+                <Border BorderThickness="1" BorderBrush="Black" Grid.RowSpan="3"/>
+
+                <Image x:Name="Image_TypeIcon" Grid.Row="0" HorizontalAlignment="Left" Margin="10,10,0,0" Height="50" Width="50" VerticalAlignment="Top" OpacityMask="Black" Source="{Binding Path=roleIcon, FallbackValue={StaticResource NoImageFound}}" Stretch="Fill"/>
+                <TextBlock x:Name="Text_WingName" Grid.Row="0" Margin="70,12,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding Path=name, FallbackValue='Wing Name'}" FontSize="15" FontWeight="DemiBold"/>
+                <Border Grid.Row="0" BorderThickness="1" BorderBrush="Black" Margin="70,32,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <TextBlock x:Name="Text_Callsign" TextWrapping="NoWrap" Text="{Binding callsign, FallbackValue='Callsign'}" Width="120" FontSize="16" FontWeight="Bold" FontFamily="Segoe UI Black" TextAlignment="Center" Height="23"/>
+                </Border>
+
+                <Rectangle Grid.Row="1" Margin="15,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="10"  Fill="#FFB9B9B9" />
+                <ListBox Name="List_Fighters" Grid.Row="1" Height="Auto" VerticalAlignment="Top" Margin="30,0,5,0" ItemTemplate="{DynamicResource WingMemberTemplate}" ItemsSource="{Binding members}" HorizontalContentAlignment="Stretch" SelectionChanged="List_Positions_SelectionChanged" BorderThickness="0">
+                    <ListBox.Template>
+                        <ControlTemplate>
+                            <ItemsPresenter/>
+                        </ControlTemplate>
+                    </ListBox.Template>
+                </ListBox>
+            </Grid>
         </DataTemplate>
 
     </Window.Resources>
@@ -108,8 +226,8 @@
                         <ColumnDefinition Width="0.33*"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock x:Name="Text_CurrentNumber" Grid.Column="0" Margin="10,10,10,10" TextWrapping="Wrap" Text="{Binding Path=currentUserNumber, FallbackValue='00'}" TextAlignment="Center" FontWeight="Bold" FontSize="30" ToolTip="Current Participants"/>
-                    <TextBlock x:Name="Text_MinimumNumber" Grid.Column="1" Margin="10,10,10,10" TextWrapping="Wrap" Text="{Binding Path=minUserNumber, FallbackValue='00'}" TextAlignment="Center" FontWeight="Bold" FontSize="30" ToolTip="Minimum Necessary Participants"/>
+                    <TextBlock x:Name="Text_CurrentNumber" Grid.Column="0" Margin="10,10,10,10" TextWrapping="Wrap" Text="{Binding Path=roster.Count, FallbackValue='00'}" TextAlignment="Center" FontWeight="Bold" FontSize="30" ToolTip="Current Participants"/>
+                    <TextBlock x:Name="Text_CriticalNumber" Grid.Column="1" Margin="10,10,10,10" TextWrapping="Wrap" Text="{Binding Path=totalCriticalSlots, FallbackValue='00'}" TextAlignment="Center" FontWeight="Bold" FontSize="30" ToolTip="Minimum Necessary Participants"/>
                     <TextBlock x:Name="Text_TotalSlots" Grid.Column="2" Margin="10,10,10,10" TextWrapping="Wrap" Text="{Binding Path=totalSlots, FallbackValue='00'}" TextAlignment="Center" FontWeight="Bold" FontSize="30" ToolTip="Total Slots Available"/>
 
                 </Grid>
@@ -119,7 +237,7 @@
         </Grid>
 
         <TextBlock Grid.Column="1"  Margin="10,5,10,0" TextWrapping="Wrap" Text="Order of Battle" VerticalAlignment="Top" FontWeight="Bold" Height="20" FontSize="15"/>
-        <ListBox x:Name="List_Fleet" Grid.Column="1" Margin="10,35,10,10" ItemsSource="{Binding Path=fleetComp}" ScrollViewer.VerticalScrollBarVisibility="Visible"  HorizontalContentAlignment="Stretch" SelectionChanged="List_Fleet_SelectionChanged"/>
+        <ListBox x:Name="List_Fleet" Grid.Column="1" Margin="10,35,10,10" ItemsSource="{Binding Path=fleetComp}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" HorizontalContentAlignment="Stretch" SelectionChanged="List_Fleet_SelectionChanged"/>
 
         <Grid Grid.Column="2" Margin="0,0,0,0">
             <Grid.RowDefinitions>
@@ -137,6 +255,13 @@
                 <Button x:Name="Button_ChangeStatus" Grid.Row="0" Content="{Binding Path=statusString, FallbackValue='Status'}" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_ChangeStatus_Click" IsEnabled="{Binding statusButtonEnabled}" Margin="10,0,10,0" Grid.Column="1" ToolTip="{Binding statusButtonTooltip}"/>
             </Grid>
         </Grid>
+
+
+
+
+
+
+
 
     </Grid>
 </local:MailboxWindow>

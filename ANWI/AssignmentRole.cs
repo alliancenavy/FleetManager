@@ -16,6 +16,14 @@ namespace ANWI {
 		// True if the user is considered "Ship's Company"
 		// False for embarked personnel such as Marines/Pilots
 		public bool isCompany { get; set; }
+
+		public string associatedRate { get; set; }
+		#endregion
+
+		#region WPF Helpers
+		public string associatedRateIcon { get {
+				return $"/images/rates/{associatedRate}2.png";
+			} }
 		#endregion
 
 		#region Constructors

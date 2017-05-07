@@ -34,11 +34,12 @@
             <Setter Property="ContentTemplate">
                 <Setter.Value>
                     <DataTemplate>
-                        <fa:ImageAwesome Icon="close" ToolTip="Remove" Foreground="White"/>
+                        <fa:ImageAwesome Icon="close" ToolTip="Remove" Foreground="Black"/>
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
-            <Setter Property="Background" Value="#FF316838"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
         </Style>
 
     </Application.Resources>

@@ -12,10 +12,12 @@ namespace ANWI {
 	public class OpParticipant {
 		public LiteProfile profile { get; set; }
 		public bool isFC { get; set; }
+		public OpPosition position { get; set; }
 
 		public OpParticipant() {
 			profile = null;
 			isFC = false;
+			position = null;
 		}
 	}
 }

@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using ANWI;
+using Client.FleetComp;
 using System.ComponentModel;
 
 namespace Client {
@@ -73,6 +74,7 @@ namespace Client {
 
 		//
 		// Participant Roster
+		private OpParticipant thisUser = null;
 		private ObservableCollection<OpParticipant> _roster 
 			= new ObservableCollection<OpParticipant>();
 		public ObservableCollection<OpParticipant> roster {
@@ -102,7 +104,7 @@ namespace Client {
 		//
 		// Participant Numbers
 		public int currentUserNumber { get { return _roster.Count; } }
-		public int minUserNumber { get; set; }
+		public int totalCriticalSlots { get; set; }
 		public int totalSlots { get; set; }
 		#endregion
 
@@ -120,9 +122,10 @@ namespace Client {
 
 			status = OperationStatus.CONFIGURING;
 
-			roster.Add(new OpParticipant() {
+			thisUser = new OpParticipant() {
 				isFC = true,
 				profile = new LiteProfile() {
+					id = 1,
 					nickname = "Mazer Ludd",
 					rank = new Rank() {
 						name = "Captain",
@@ -135,7 +138,9 @@ namespace Client {
 						rank = 2
 					}
 				}
-			});
+			};
+
+			roster.Add(thisUser);
 
 			roster.Add(new OpParticipant() {
 				isFC = false,
@@ -164,7 +169,33 @@ namespace Client {
 						role = "Frigate"
 					}
 				},
-				isFlagship = true
+				isFlagship = true,
+				positions = new List<OpPosition>() {
+					new OpPosition() {
+						critical = true,
+						filledById = -1,
+						role = new AssignmentRole() {
+							name = "Skipper",
+							associatedRate = "SK"
+						}
+					},
+					new OpPosition() {
+						critical = true,
+						filledById = -1,
+						role = new AssignmentRole() {
+							name = "Helmsman",
+							associatedRate = "QM"
+						}
+					},
+					new OpPosition() {
+						critical = false,
+						filledById = -1,
+						role = new AssignmentRole() {
+							name = "Gunner",
+							associatedRate = "GM"
+						}
+					}
+				}
 			});
 
 			fleetComp.Add(new FleetComp.NamedShip() {
@@ -175,10 +206,84 @@ namespace Client {
 						name = "Polaris",
 						symbol = "K",
 						role = "Corvette"
-					}
+					},
 				},
-				isFlagship = false
+				isFlagship = false,
+				positions = new List<OpPosition>() {
+					new OpPosition() {
+						critical = true,
+						filledById = -1,
+						role = new AssignmentRole() {
+							name = "Skipper",
+							associatedRate = "SK"
+						}
+					},
+					new OpPosition() {
+						critical = false,
+						filledById = -1,
+						role = new AssignmentRole() {
+							name = "Helmsman",
+							associatedRate = "QM"
+						}
+					}
+				}
 			});
+
+			fleetComp.Add(new FleetComp.Wing() {
+				name = "Fighter CAP",
+				callsign = "Dickthunder",
+				primaryRole = FleetComp.Wing.Role.CAP,
+				members = new List<FleetComp.WingMember>() {
+					{ new FleetComp.WingMember() {
+						callsign = "Dickthunder Leader",
+						isWC = true,
+						positions = new List<OpPosition>() {
+							new OpPosition() {
+								critical = true,
+								role = new AssignmentRole() {
+									name = "Pilot"
+								},
+								filledById = -1
+							},
+							new OpPosition() {
+								critical = false,
+								role = new AssignmentRole() {
+									name = "Co-Pilot"
+								},
+								filledById = -1
+							}
+						},
+						type = new Hull() {
+							name = "F-7C Hornet"
+						}
+					} },
+					{ new FleetComp.WingMember() {
+						callsign = "Dickthunder 2",
+						isWC = false,
+						positions = new List<OpPosition>() {
+							new OpPosition() {
+								critical = true,
+								role = new AssignmentRole() {
+									name = "Pilot"
+								},
+								filledById = -1
+							},
+							new OpPosition() {
+								critical = false,
+								role = new AssignmentRole() {
+									name = "Co-Pilot"
+								},
+								filledById = -1
+							}
+						},
+						type = new Hull() {
+							name = "F-7C Hornet"
+						}
+					} }
+				}
+			});
+
+			RecountSlots();
 
 			/*RosterEntry re = new RosterEntry();
 			re.name = "Mazer Ludd";
@@ -199,6 +304,60 @@ namespace Client {
 
 		}
 
+		#region Helpers
+		
+		private void RecountSlots() {
+			int total = 0;
+			int critical = 0;
+
+			foreach(FleetCompElement element in _fleetComp) {
+				if(element is NamedShip) {
+					NamedShip ship = element as NamedShip;
+					total += ship.positions.Count;
+					critical += CountCriticalPositions(ship.positions);
+				} else if(element is Wing) {
+					Wing wing = element as Wing;
+					foreach(WingMember member in wing.members) {
+						total += member.positions.Count;
+						critical += CountCriticalPositions(member.positions);
+					}
+				}
+			}
+
+			totalCriticalSlots = critical;
+			totalSlots = total;
+
+			NotifyPropertyChanged("totalCriticalSlots");
+			NotifyPropertyChanged("totalSlots");
+		}
+
+		private int CountCriticalPositions(List<OpPosition> positions) {
+			int critical = 0;
+			foreach (OpPosition p in positions) {
+				if (p.critical)
+					critical += 1;
+			}
+			return critical;
+		}
+
+		private void Assign(OpParticipant member, OpPosition job) {
+			UnAssign(member);
+
+			member.position = job;
+			job.filledById = member.profile.id;
+			job.filledByPointer = member;
+		}
+
+		private void UnAssign(OpParticipant member) {
+			if(member.position != null) {
+				member.position.filledByPointer = null;
+				member.position.filledById = -1;
+				member.position = null;
+			}
+		}
+
+		#endregion
+
 		#region Window Event Handlers
 		private void MailboxWindow_MouseDown(object sender, MouseButtonEventArgs e) {
 			Grid_Root.Focus();
@@ -206,17 +365,6 @@ namespace Client {
 
 		private void Button_ChangeStatus_Click(object sender, RoutedEventArgs e) {
 			status = status.Next();
-		}
-		#endregion
-
-		/// <summary>
-		/// Notifies the UI when a bound property changes
-		/// </summary>
-		/// <param name="name"></param>
-		public void NotifyPropertyChanged(string name) {
-			if (PropertyChanged != null) {
-				PropertyChanged(this, new PropertyChangedEventArgs(name));
-			}
 		}
 
 		private void Button_Remove_Click(object sender, RoutedEventArgs e) {
@@ -227,8 +375,24 @@ namespace Client {
 
 		}
 
+		private void
+		List_Positions_DoubleClick(object sender, RoutedEventArgs e) {
+			Assign(thisUser, (sender as ListBoxItem).DataContext as OpPosition);
+		}
+
+		private void
+		List_WingCrew_DoubleClick(object sender, RoutedEventArgs e) {
+			Assign(thisUser, 
+				(sender as ContentControl).DataContext as OpPosition);
+		}
+
 		private void 
-		List_Fleet_SelectionChanged(object sender, 
+		Button_FighterCrewRemove_Click(object sender, RoutedEventArgs e) {
+
+		}
+
+		private void
+		List_Fleet_SelectionChanged(object sender,
 			SelectionChangedEventArgs e) {
 
 			if (e.AddedItems.Count > 0) {
@@ -254,7 +418,7 @@ namespace Client {
 			}
 		}
 
-		private void List_Positions_SelectionChanged(object sender, 
+		private void List_Positions_SelectionChanged(object sender,
 			SelectionChangedEventArgs e) {
 
 			if (e.AddedItems.Count > 0) {
@@ -277,6 +441,17 @@ namespace Client {
 					activePositionList.SelectedItem = null;
 				}
 				activePositionList = positions;
+			}
+		}
+		#endregion
+
+		/// <summary>
+		/// Notifies the UI when a bound property changes
+		/// </summary>
+		/// <param name="name"></param>
+		public void NotifyPropertyChanged(string name) {
+			if (PropertyChanged != null) {
+				PropertyChanged(this, new PropertyChangedEventArgs(name));
 			}
 		}
 	}
