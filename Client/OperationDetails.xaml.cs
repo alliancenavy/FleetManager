@@ -111,6 +111,7 @@ namespace Client {
 		#region Instance Members
 		private FleetComp.FleetCompElement selectedShip = null;
 		private ListBox activePositionList = null;
+		private ListBoxItem draggedItem = null;
 		#endregion
 
 		/// <summary>
@@ -442,6 +443,48 @@ namespace Client {
 				}
 				activePositionList = positions;
 			}
+		}
+
+		private void List_Roster_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+			if (draggedItem != null)
+				return;
+
+			UIElement element = List_Roster.InputHitTest(
+				e.GetPosition(List_Roster)) as UIElement;
+
+			while(element != null) {
+				if(element is ListBoxItem) {
+					draggedItem = element as ListBoxItem;
+					break;
+				}
+
+				element = VisualTreeHelper.GetParent(element) as UIElement;
+			}
+		}
+
+		private void MailboxWindow_MouseMove(object sender, MouseEventArgs e) {
+			if (draggedItem == null)
+				return;
+
+			if(e.LeftButton == MouseButtonState.Released) {
+				draggedItem = null;
+				return;
+			}
+
+			//DataObject obj 
+				//= new DataObject(DataFormats.Text, draggedItem.ToString());
+			DragDrop.DoDragDrop(draggedItem, draggedItem, DragDropEffects.All);
+		}
+
+		private void PositionGrid_Drop(object sender, DragEventArgs e) {
+			Grid grid = sender as Grid;
+			OpPosition pos = grid.DataContext as OpPosition;
+
+			// If there's already someone in this slot unassign them
+			if (pos.filledByPointer != null)
+				UnAssign(pos.filledByPointer);
+
+			Assign(draggedItem.DataContext as OpParticipant, pos);
 		}
 		#endregion
 

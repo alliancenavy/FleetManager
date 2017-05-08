@@ -8,6 +8,7 @@
         xmlns:OOB="clr-namespace:Client.FleetComp"
         mc:Ignorable="d"
         MouseDown="MailboxWindow_MouseDown"
+        MouseMove="MailboxWindow_MouseMove"
         Title="Operation Details" Height="667" Width="1100" MinHeight="667" MinWidth="1100" ResizeMode="CanResizeWithGrip" Icon="images/afos_logo_VCP_icon.ico">
     <Window.Resources>
 
@@ -28,7 +29,7 @@
         </DataTemplate>
 
         <DataTemplate x:Key="PositionTemplate">
-            <Grid Height="50">
+            <Grid Name="PositionGrid" Height="50" AllowDrop="True" Drop="PositionGrid_Drop">
                 <Image Height="40" Width="40" Margin="5,5,0,0"  HorizontalAlignment="Left" VerticalAlignment="Top" OpacityMask="Black" Source="{Binding role.associatedRateIcon, FallbackValue={StaticResource NoImageFound}}"/>
                 <TextBlock Margin="50,9,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="Wrap" Text="{Binding Path=role.name, FallbackValue='Position Name'}" FontWeight="DemiBold"/>
                 <TextBlock Margin="50,25,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="Wrap" Text="{Binding Path=filledByPointer.profile.fullName, FallbackValue='[UNASSIGNED]'}" />
@@ -233,7 +234,7 @@
                 </Grid>
             </Grid>
 
-            <ListBox x:Name="listBox" Margin="10" Grid.Row="1" ItemTemplate="{DynamicResource RosterTemplate}" ItemsSource="{Binding Path=roster}" ScrollViewer.VerticalScrollBarVisibility="Visible" HorizontalContentAlignment="Stretch"/>
+            <ListBox x:Name="List_Roster" Margin="10" Grid.Row="1" ItemTemplate="{DynamicResource RosterTemplate}" ItemsSource="{Binding Path=roster}" ScrollViewer.VerticalScrollBarVisibility="Visible" HorizontalContentAlignment="Stretch" PreviewMouseLeftButtonDown="List_Roster_PreviewMouseLeftButtonDown"/>
         </Grid>
 
         <TextBlock Grid.Column="1"  Margin="10,5,10,0" TextWrapping="Wrap" Text="Order of Battle" VerticalAlignment="Top" FontWeight="Bold" Height="20" FontSize="15"/>
