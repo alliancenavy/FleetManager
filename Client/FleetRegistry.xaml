@@ -4,12 +4,16 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
+        xmlns:conv="clr-namespace:Client.Converters"
         xmlns:helpers="clr-namespace:Client.VesselRegHelpers"
         xmlns:fa="http://schemas.fontawesome.io/icons/" x:Class="Client.FleetRegistry"
         mc:Ignorable="d"
         Title="Fleet Registry" Height="735" Width="808" MinHeight="735" MinWidth="808" ResizeMode="CanResizeWithGrip" Icon="images/afos_logo_VCP_icon.ico">
 
     <Window.Resources>
+
+        <conv:BoolToVisibility x:Key="Conv_BoolToVisibility"/>
+        <conv:VesselStatusToColor x:Key="Conv_VesselStatusColor"/>
 
         <DataTemplate DataType="{x:Type helpers:CategoryDivider}">
             <Canvas x:Name="Base" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="360" Background="#FFD4D4D4">
@@ -18,7 +22,7 @@
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type helpers:NamedVessel}">
-            <Canvas x:Name="Base" Height="90" VerticalAlignment="Top" Background="#FFFFFFFF">
+            <Canvas x:Name="Base" Height="90" VerticalAlignment="Top" Background="{Binding Path=status, Converter={StaticResource Conv_VesselStatusColor}}">
                 <Grid Height="54" Width="245" Canvas.Top="31" Canvas.Left="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -47,31 +51,10 @@
                     <TextBlock Text="{Binding Path=owner}" Grid.Column="1" Grid.Row="2"/>
                 </Grid>
                 <TextBlock Canvas.Left="10" TextWrapping="Wrap" Text="{Binding Path=name}" Canvas.Top="10" Canvas.Right="10" FontSize="14" FontWeight="Bold"/>
-                <fa:ImageAwesome x:Name="LTIIcon" Icon="Medkit" Height="19" Canvas.Right="10" Width="22" Canvas.Top="10" ToolTip="LTI"/>
+                <fa:ImageAwesome x:Name="LTIIcon" Icon="Medkit" Height="19" Canvas.Right="10" Width="22" Canvas.Top="10" ToolTip="LTI" Visibility="{Binding Path=isLTI, Converter={StaticResource Conv_BoolToVisibility}}"/>
                 <TextBlock Canvas.Left="260" TextWrapping="Wrap" Text="{Binding fullHullNumber}" Canvas.Top="48" Width="90" FontSize="24" FontWeight="Bold" FontFamily="Segoe UI Black" TextAlignment="Right"/>
             </Canvas>
 
-            <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding Path=status}" Value="ACTIVE">
-                    <Setter TargetName="Base" Property="Background" Value="#FF8CF699"/>
-                </DataTrigger>
-
-                <DataTrigger Binding="{Binding Path=status}" Value="DESTROYED">
-                    <Setter TargetName="Base" Property="Background" Value="#FFFFADAD"/>
-                </DataTrigger>
-
-                <DataTrigger Binding="{Binding Path=status}" Value="DESTROYED_WAITING_REPLACEMENT">
-                    <Setter TargetName="Base" Property="Background" Value="#FFFFADAD"/>
-                </DataTrigger>
-
-                <DataTrigger Binding="{Binding Path=status}" Value="DRYDOCKED">
-                    <Setter TargetName="Base" Property="Background" Value="#FFFFD5AD"/>
-                </DataTrigger>
-
-                <DataTrigger Binding="{Binding Path=isLTI}" Value="false">
-                    <Setter TargetName="LTIIcon" Property="Visibility" Value="Hidden"/>
-                </DataTrigger>
-            </DataTemplate.Triggers>
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type helpers:UnnamedVessel}">

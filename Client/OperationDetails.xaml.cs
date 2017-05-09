@@ -357,6 +357,18 @@ namespace Client {
 			}
 		}
 
+		/*private ListBoxItem FindPosition(OpPosition pos) {
+			foreach(FleetCompElement element in List_Fleet.Items) {
+				if(element is NamedShip) {
+					ListBoxItem elemContainer = List_Fleet.ItemContainerGenerator.ContainerFromItem(element) as ListBoxItem;
+					elemContainer
+				} else if(element is Wing) {
+
+				}
+			}
+
+			return null;
+		}*/
 		#endregion
 
 		#region Window Event Handlers
@@ -368,8 +380,10 @@ namespace Client {
 			status = status.Next();
 		}
 
-		private void Button_Remove_Click(object sender, RoutedEventArgs e) {
-
+		private void Button_RosterRemove_Click(object sender, RoutedEventArgs e) {
+			Button b = sender as Button;
+			OpParticipant p = b.DataContext as OpParticipant;
+			UnAssign(p);
 		}
 
 		private void Button_JoinOp_Click(object sender, RoutedEventArgs e) {
@@ -486,6 +500,15 @@ namespace Client {
 
 			Assign(draggedItem.DataContext as OpParticipant, pos);
 		}
+
+		private void List_Roster_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+			/*if(e.AddedItems.Count > 0) {
+				OpParticipant p = e.AddedItems[0] as OpParticipant;
+				if(p.position != null) {
+				}
+				FindPosition(null);
+			}*/
+		}
 		#endregion
 
 		/// <summary>
@@ -497,5 +520,6 @@ namespace Client {
 				PropertyChanged(this, new PropertyChangedEventArgs(name));
 			}
 		}
+		
 	}
 }

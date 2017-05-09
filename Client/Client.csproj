@@ -150,6 +150,9 @@
     <Compile Include="Confirm.xaml.cs">
       <DependentUpon>Confirm.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\BoolToVisibility.cs" />
+    <Compile Include="Converters\InverseBoolToVisibility.cs" />
+    <Compile Include="Converters\VesselStatusToColor.cs" />
     <Compile Include="FleetCompElement.cs" />
     <Compile Include="FleetRegistry.xaml.cs">
       <DependentUpon>FleetRegistry.xaml</DependentUpon>
@@ -163,6 +166,12 @@
     </Compile>
     <Compile Include="OperationDetails.xaml.cs">
       <DependentUpon>OperationDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="OperationDetailsContext.xaml.cs">
+      <DependentUpon>OperationDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Operations\AddFleetShip.xaml.cs">
+      <DependentUpon>AddFleetShip.xaml</DependentUpon>
     </Compile>
     <Compile Include="SimpleDropdownSelect.xaml.cs">
       <DependentUpon>SimpleDropdownSelect.xaml</DependentUpon>
@@ -217,6 +226,10 @@
     <Page Include="OperationDetails.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Operations\AddFleetShip.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SimpleDropdownSelect.xaml">
       <SubType>Designer</SubType>

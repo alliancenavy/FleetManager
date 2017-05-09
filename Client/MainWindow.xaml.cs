@@ -72,8 +72,8 @@ namespace Client {
 			AppDomain.CurrentDomain.UnhandledException 
 				+= new UnhandledExceptionEventHandler(UEHandler);
 
-			OperationDetails op = new OperationDetails();
-			op.ShowDialog();
+			//OperationDetails op = new OperationDetails();
+			//op.ShowDialog();
 
 			// Open a modal login window
 			// When the window closes the authclient member will be either null

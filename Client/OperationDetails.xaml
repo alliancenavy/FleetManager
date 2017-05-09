@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
+        xmlns:conv="clr-namespace:Client.Converters"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:OOB="clr-namespace:Client.FleetComp"
         mc:Ignorable="d"
@@ -12,37 +13,39 @@
         Title="Operation Details" Height="667" Width="1100" MinHeight="667" MinWidth="1100" ResizeMode="CanResizeWithGrip" Icon="images/afos_logo_VCP_icon.ico">
     <Window.Resources>
 
+        <conv:BoolToVisibility x:Key="Conv_BoolToVisibility"/>
+        <conv:InverseBoolToVisibility x:Key="Conv_InverseBoolToVisibility"/>
+
         <DataTemplate x:Key="RosterTemplate">
             <Canvas Height="60" Background="White">
                 <Image x:Name="Image_Rank" HorizontalAlignment="Left" Margin="10,10,0,0" Height="40" Width="40" VerticalAlignment="Top" OpacityMask="Black" Source="{Binding profile.rank.icon}"/>
                 <Image x:Name="Image_PrimaryRate" HorizontalAlignment="Left" Margin="55,10,0,0" Height="40" VerticalAlignment="Top" Width="40" OpacityMask="Black" Source="{Binding Path=profile.primaryRate.icon, FallbackValue={StaticResource NoImageFound}}"/>
                 <TextBlock x:Name="Text_Name" TextWrapping="Wrap" Margin="100,10,0,0" Text="{Binding Path=profile.fullName, FallbackValue='Name'}" VerticalAlignment="Top" Height="16" FontWeight="DemiBold"/>
-                <fa:ImageAwesome x:Name="Icon_FC" Icon="Star" Margin="100,30,0,0" Height="15" Width="15" ToolTip="Fleet Command" Visibility="Hidden"/>
-                <Button x:Name="Button_Remove" Style="{StaticResource XButton}" IsEnabled="True" Width="20" Height="20" Click="Button_Remove_Click" ToolTip="Remove" Canvas.Right="10" Canvas.Top="18"/>
+                <fa:ImageAwesome x:Name="Icon_FC" Icon="Star" Margin="100,30,0,0" Height="15" Width="15" ToolTip="Fleet Command" Visibility="{Binding Path=isFC, Converter={StaticResource Conv_BoolToVisibility}}"/>
+                <Button x:Name="Button_RosterRemove" Style="{StaticResource XButton}" IsEnabled="True" Width="20" Height="20" Click="Button_RosterRemove_Click" ToolTip="Remove from assignment" Canvas.Right="10" Canvas.Top="18"/>
             </Canvas>
-
-            <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding isFC}" Value="True">
-                    <Setter TargetName="Icon_FC" Property="Visibility" Value="Visible"/>
-                </DataTrigger>
-            </DataTemplate.Triggers>
         </DataTemplate>
 
         <DataTemplate x:Key="PositionTemplate">
-            <Grid Name="PositionGrid" Height="50" AllowDrop="True" Drop="PositionGrid_Drop">
+            <Grid Name="PositionGrid" Height="50" AllowDrop="True" Drop="PositionGrid_Drop" Background="White">
                 <Image Height="40" Width="40" Margin="5,5,0,0"  HorizontalAlignment="Left" VerticalAlignment="Top" OpacityMask="Black" Source="{Binding role.associatedRateIcon, FallbackValue={StaticResource NoImageFound}}"/>
                 <TextBlock Margin="50,9,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="Wrap" Text="{Binding Path=role.name, FallbackValue='Position Name'}" FontWeight="DemiBold"/>
                 <TextBlock Margin="50,25,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="Wrap" Text="{Binding Path=filledByPointer.profile.fullName, FallbackValue='[UNASSIGNED]'}" />
-                <fa:ImageAwesome x:Name="Icon_Unfilled" Grid.Row="0" Icon="Warning"  Margin="0,12,10,0" HorizontalAlignment="Right" VerticalAlignment="Top" Height="25" Width="25" ToolTip="Unfilled Position" Foreground="Red"/>
+                <fa:ImageAwesome x:Name="Icon_Unfilled" Grid.Row="0" Icon="Warning"  Margin="0,12,10,0" HorizontalAlignment="Right" VerticalAlignment="Top" Height="25" Width="25" ToolTip="Unfilled Position" Foreground="Red" Visibility="{Binding Path=isFilled, Converter={StaticResource Conv_InverseBoolToVisibility}}"/>
+
+                <Grid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Assign Self" Click="Context_AssignSelfShip"/>
+                        <MenuItem Header="Unassign" Click="Context_UnassignShip"/>
+                        <Separator/>
+                        <MenuItem Header="Critical" IsCheckable="True" Checked="Context_CriticalShip"/>
+                        <Separator/>
+                        <MenuItem Header="Delete" Click="Context_DeleteShipPosition"/>
+                    </ContextMenu>
+                </Grid.ContextMenu>
             </Grid>
 
             <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding Path=isFilled}" Value="False">
-                    <Setter TargetName="Icon_Unfilled" Property="Visibility" Value="Visible"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding Path=isFilled}" Value="True">
-                    <Setter TargetName="Icon_Unfilled" Property="Visibility" Value="Hidden"/>
-                </DataTrigger>
                 <DataTrigger Binding="{Binding Path=critical}" Value="True">
                     <Setter TargetName="Icon_Unfilled" Property="Foreground" Value="Red"/>
                 </DataTrigger>
@@ -82,8 +85,23 @@
                         </Style>
                     </ListBox.Resources>
                 </ListBox>
+
+                <Grid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="New Fleet Ship" Click="Context_NewFleetShip"/>
+                        <MenuItem Header="New Custom Ship" Click="Context_NewCustomShip"/>
+                        <MenuItem Header="New Wing" Click="Context_NewWing"/>
+                        <Separator/>
+                        <MenuItem Header="Set As Flagship" Click="Context_SetAsFlagship"/>
+                        <Separator/>
+                        <MenuItem Header="Add Position" Click="Context_AddShipPosition"/>
+                        <MenuItem Header="Unassign All" Click="Context_UnassignAllShip"/>
+                        <Separator/>
+                        <MenuItem Header="Delete Ship"/>
+                    </ContextMenu>
+                </Grid.ContextMenu>
             </Grid>
-            
+
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding Path=isFlagship}" Value="True">
                     <Setter TargetName="Icon_Guide" Property="Visibility" Value="Visible"/>
@@ -93,17 +111,28 @@
 
         <DataTemplate x:Key="WingMemberCrewTemplate">
             <ContentControl MouseDoubleClick="List_WingCrew_DoubleClick">
-                <Grid Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                <Grid Name="SmallPositionGrid" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="White" AllowDrop="True" Drop="PositionGrid_Drop">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="5"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="{Binding ElementName=Text_Role, Path=Width}"/>
+                        <ColumnDefinition Width="10"/>
                         <ColumnDefinition Width="15"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Name="Text_Name" Margin="0,0,0,0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"  Text="{Binding Path=filledByPointer.profile.fullName, FallbackValue='[UNASSIGNED]'}"/>
                     <TextBlock Name="Text_Role" Margin="0,0,0,0" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding Path=role.name, FallbackValue='Role Name'}"/>
                     <Button x:Name="Button_FighterCrewRemove" Grid.Column="4" Margin="0,1,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource XButton}" IsEnabled="True" Width="10" Height="10" Click="Button_FighterCrewRemove_Click" ToolTip="Remove"/>
+
+                    <Grid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Assign Self" Click="Context_AssignSelfWing"/>
+                            <MenuItem Header="Unassign" Click="Context_UnassignWing"/>
+                            <Separator/>
+                            <MenuItem Header="Critical" IsCheckable="True" Checked="Context_CriticalWing"/>
+                            <Separator/>
+                            <MenuItem Header="Delete" Click="Context_DeleteWingPosition"/>
+                        </ContextMenu>
+                    </Grid.ContextMenu>
                 </Grid>
             </ContentControl>
 
@@ -129,28 +158,16 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding Path=type.name, FallbackValue='Fighter Type'}" FontWeight="DemiBold"/>
-                    <fa:ImageAwesome x:Name="Icon_WingCommander" Grid.Column="1" Icon="AngleDoubleUp"  Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="12" Width="12" ToolTip="Wing Commander"/>
+                    <fa:ImageAwesome x:Name="Icon_WingCommander" Grid.Column="1" Icon="AngleDoubleUp"  Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Height="12" Width="12" ToolTip="Wing Commander" Visibility="{Binding Path=isWC, Converter={StaticResource Conv_BoolToVisibility}}"/>
                     <TextBlock Grid.Column="2" TextWrapping="NoWrap" Text="{Binding Path=callsign, FallbackValue='[CallSign]'}" FontWeight="Regular"/>
                 </Grid>
                 <ItemsControl Margin="50,25,45,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" ItemTemplate="{DynamicResource WingMemberCrewTemplate}" ItemsSource="{Binding positions}" HorizontalContentAlignment="Stretch">
                 </ItemsControl>
-                <fa:ImageAwesome x:Name="Icon_Unfilled" Icon="Warning"  Margin="0,12,10,0" HorizontalAlignment="Right" VerticalAlignment="Top" Height="25" Width="25" ToolTip="Unfilled Position" Foreground="Red"/>
+                <fa:ImageAwesome x:Name="Icon_Unfilled" Icon="Warning"  Margin="0,12,10,0" HorizontalAlignment="Right" VerticalAlignment="Top" Height="25" Width="25" ToolTip="Unfilled Position" Foreground="Red" Visibility="{Binding Path=isFilled, Converter={StaticResource Conv_BoolToVisibility}}"/>
             </Grid>
 
             <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding Path=isWC}" Value="True">
-                    <Setter TargetName="Icon_WingCommander" Property="Visibility" Value="Visible"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding Path=isWC}" Value="False">
-                    <Setter TargetName="Icon_WingCommander" Property="Visibility" Value="Hidden"/>
-                </DataTrigger>
 
-                <DataTrigger Binding="{Binding Path=isFilled}" Value="False">
-                    <Setter TargetName="Icon_Unfilled" Property="Visibility" Value="Visible"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding Path=isFilled}" Value="True">
-                    <Setter TargetName="Icon_Unfilled" Property="Visibility" Value="Hidden"/>
-                </DataTrigger>
                 <DataTrigger Binding="{Binding Path=hasUnfilledCritical}" Value="True">
                     <Setter TargetName="Icon_Unfilled" Property="Foreground" Value="Red"/>
                 </DataTrigger>
@@ -183,6 +200,19 @@
                         </ControlTemplate>
                     </ListBox.Template>
                 </ListBox>
+
+                <Grid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="New Fleet Ship" Click="Context_NewFleetShip"/>
+                        <MenuItem Header="New Custom Ship" Click="Context_NewCustomShip"/>
+                        <MenuItem Header="New Wing" Click="Context_NewWing"/>
+                        <Separator/>
+                        <MenuItem Header="Add Wing Member" Click="Context_AddWingMember"/>
+                        <MenuItem Header="Change Callsign" Click="Context_ChangeCallsign"/>
+                        <Separator/>
+                        <MenuItem Header="Delete Wing" Click="Context_DeleteWing"/>
+                    </ContextMenu>
+                </Grid.ContextMenu>
             </Grid>
         </DataTemplate>
 
@@ -193,6 +223,14 @@
             <ColumnDefinition/>
             <ColumnDefinition Width="336.667"/>
         </Grid.ColumnDefinitions>
+
+        <!--
+        -
+        -
+        Left Column
+        -
+        -
+        -->
 
         <Grid Grid.Column="0" Margin="0,0,0,0">
             <Grid.RowDefinitions>
@@ -234,29 +272,124 @@
                 </Grid>
             </Grid>
 
-            <ListBox x:Name="List_Roster" Margin="10" Grid.Row="1" ItemTemplate="{DynamicResource RosterTemplate}" ItemsSource="{Binding Path=roster}" ScrollViewer.VerticalScrollBarVisibility="Visible" HorizontalContentAlignment="Stretch" PreviewMouseLeftButtonDown="List_Roster_PreviewMouseLeftButtonDown"/>
+            <ListBox x:Name="List_Roster" Margin="10" Grid.Row="1" ItemTemplate="{DynamicResource RosterTemplate}" ItemsSource="{Binding Path=roster}" ScrollViewer.VerticalScrollBarVisibility="Visible" HorizontalContentAlignment="Stretch" PreviewMouseLeftButtonDown="List_Roster_PreviewMouseLeftButtonDown" SelectionChanged="List_Roster_SelectionChanged"/>
         </Grid>
+        
+        <!--
+        -
+        -
+        Center Column
+        -
+        -
+        -->
+
+        <Border Grid.Column="1" BorderBrush="Gray" BorderThickness="1 0 1 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,10,0,10"/>
 
         <TextBlock Grid.Column="1"  Margin="10,5,10,0" TextWrapping="Wrap" Text="Order of Battle" VerticalAlignment="Top" FontWeight="Bold" Height="20" FontSize="15"/>
-        <ListBox x:Name="List_Fleet" Grid.Column="1" Margin="10,35,10,10" ItemsSource="{Binding Path=fleetComp}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" HorizontalContentAlignment="Stretch" SelectionChanged="List_Fleet_SelectionChanged"/>
+        <ListBox x:Name="List_Fleet" Grid.Column="1" Margin="10,35,10,10" ItemsSource="{Binding Path=fleetComp}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" HorizontalContentAlignment="Stretch" SelectionChanged="List_Fleet_SelectionChanged">
+            <ListBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="New Fleet Ship" Click="Context_NewFleetShip"/>
+                    <MenuItem Header="New Custom Ship" Click="Context_NewCustomShip"/>
+                    <MenuItem Header="New Wing" Click="Context_NewWing"/>
+                </ContextMenu>
+            </ListBox.ContextMenu>
+        </ListBox>
 
+        <!--
+        -
+        -
+        Right Column
+        -
+        -
+        -->
+        
         <Grid Grid.Column="2" Margin="0,0,0,0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="45.333"/>
-                <RowDefinition Height="35*"/>
-                <RowDefinition Height="412*"/>
+                <RowDefinition Height="100"/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
-            <TextBox x:Name="Text_OpName" Height="30" Margin="10,10,9.667,0" TextWrapping="NoWrap" Text="{Binding Path=operationName, Mode=TwoWay, UpdateSourceTrigger=LostFocus, FallbackValue='Op Name'}" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" AcceptsReturn="False"/>
-            <Grid Margin="0,0,0,0" Grid.Row="1">
+            
+            <!-- Top: General OP Settings -->
+            <Grid Margin="0,0,0,0" Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="45"/>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="20"/>
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.5*"/>
                     <ColumnDefinition Width="0.5*"/>
                 </Grid.ColumnDefinitions>
-                <ComboBox x:Name="Combobox_Type" Grid.Column="0" Margin="10,4,10,0" VerticalAlignment="Top" />
-                <Button x:Name="Button_ChangeStatus" Grid.Row="0" Content="{Binding Path=statusString, FallbackValue='Status'}" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_ChangeStatus_Click" IsEnabled="{Binding statusButtonEnabled}" Margin="10,0,10,0" Grid.Column="1" ToolTip="{Binding statusButtonTooltip}"/>
+                <TextBox x:Name="Text_OpName" Grid.ColumnSpan="2" Grid.Row="0" Height="30" Margin="10,10,9.667,0" TextWrapping="NoWrap" Text="{Binding Path=operationName, Mode=TwoWay, UpdateSourceTrigger=LostFocus, FallbackValue='Op Name'}" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" AcceptsReturn="False"/>
+                
+                <ComboBox x:Name="Combobox_Type" Grid.Column="0" Grid.Row="1" Margin="10,5,10,0" VerticalAlignment="Top" />
+                <Button x:Name="Button_ChangeStatus" Grid.Column="1" Grid.Row="1" Content="{Binding Path=statusString, FallbackValue='Status'}" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_ChangeStatus_Click" IsEnabled="{Binding statusButtonEnabled}" Margin="10,0,9.667,0" ToolTip="{Binding statusButtonTooltip}"/>
+                <CheckBox Name="Checkbox_FreeMove" Grid.Row="2" Grid.Column="0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Content="Free Move" ToolTip="Free Move allows members to choose their own role instead of being assigned by the FC."/>
+            </Grid>
+            
+            <!-- Fleet Composition -->
+            <Grid Grid.Row="1" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.33*"/>
+                    <ColumnDefinition Width="0.33*"/>
+                    <ColumnDefinition Width="0.33*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="35"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.ColumnSpan="3" BorderThickness="0 1 0 0" BorderBrush="Gray" HorizontalAlignment="Stretch" Margin="5,0,5,0"/>
+
+                <TextBlock Text="Fleet Composition" Margin="5,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="DemiBold"/>
+
+                <Button x:Name="Button_AddFleetShip" Grid.Row="1" Grid.Column="0" Margin="5,5,5,5" Content="Add Fleet Ship" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
+                <Button x:Name="Button_AddOtherShip" Grid.Row="1" Grid.Column="1" Margin="5,5,5,5" Content="Add Other Ship" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
+                <Button x:Name="Button_SetFlagship" Grid.Row="1" Grid.Column="2" Margin="5,5,5,5" Content="Set Flagship" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
+
+                <Button x:Name="Button_AddWing" Grid.Row="2" Grid.Column="0" Margin="5,5,5,5" Content="Add Wing" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
+                <Button x:Name="Button_AddToWing" Grid.Row="2" Grid.Column="1" Margin="5,5,5,5" Content="Add To Wing" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
+                <Button x:Name="Button_SetWingCommander" Grid.Row="2" Grid.Column="2" Margin="5,5,5,5" Content="Set Wing Cmdr" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
+
+                <Button x:Name="Button_DeleteShipWing" Grid.Row="3" Grid.ColumnSpan="2" Margin="5,5,5,5" Content="Delete Selected" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
+            </Grid>
+
+            <!-- Positions -->
+            <Grid Grid.Row="2" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.33*"/>
+                    <ColumnDefinition Width="0.33*"/>
+                    <ColumnDefinition Width="0.33*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="35"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.ColumnSpan="3" BorderThickness="0 1 0 0" BorderBrush="Gray" HorizontalAlignment="Stretch" Margin="5,0,5,0"/>
+
+                <TextBlock Text="" Margin="5,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="DemiBold"/>
+
+                <!--<Button x:Name="Button_AddFleetShip" Grid.Row="1" Grid.Column="0" Margin="5,5,5,5" Content="Add Fleet Ship" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
+                <Button x:Name="Button_AddOtherShip" Grid.Row="1" Grid.Column="1" Margin="5,5,5,5" Content="Add Other Ship" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
+                <Button x:Name="Button_SetFlagship" Grid.Row="1" Grid.Column="2" Margin="5,5,5,5" Content="Set Flagship" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
+
+                <Button x:Name="Button_AddWing" Grid.Row="2" Grid.Column="0" Margin="5,5,5,5" Content="Add Wing" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
+                <Button x:Name="Button_AddToWing" Grid.Row="2" Grid.Column="1" Margin="5,5,5,5" Content="Add To Wing" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
+                <Button x:Name="Button_SetWingCommander" Grid.Row="2" Grid.Column="2" Margin="5,5,5,5" Content="Set Wing Cmdr" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
+
+                <Button x:Name="Button_DeleteShipWing" Grid.Row="3" Grid.ColumnSpan="2" Margin="5,5,5,5" Content="Delete Selected" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>-->
             </Grid>
         </Grid>
-
 
 
 
