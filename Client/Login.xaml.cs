@@ -14,10 +14,7 @@ namespace Client {
 	/// <summary>
 	/// Interaction logic for Login.xaml
 	/// </summary>
-	public partial class Login : Window {
-
-		// Socket for talking to auth service
-		private WebSocket ws;
+	public partial class Login : MailboxWindow {
 
 		// Subscribe to receive the user login result
 		public event Action<AuthenticatedAccount> returnuser;
@@ -45,11 +42,12 @@ namespace Client {
 			Text_RegisterResult.Visibility = Visibility.Hidden;
 			Spinner_Register.Visibility = Visibility.Hidden;
 
-			// Set websocket callbacks
-			ws = new WebSocket($"{CommonData.serverAddress}/auth");
-			ws.OnMessage += OnMessage;
-			ws.OnError += SocketError;
+			this.AddProcessor(typeof(ANWI.Messaging.LoginResponse),
+				Login_Response);
+			this.AddProcessor(typeof(ANWI.Messaging.RegisterResponse),
+				Register_Response);
 
+			
 			// Load credentials
 			if (Appdata.CheckFileExists(credentialsFile)) {
 				try {
@@ -69,29 +67,7 @@ namespace Client {
 				}
 			}
 		}
-
-		/// <summary>
-		/// Called when a message is received from the websocket.
-		/// If this login failed it tells the user and ends
-		/// A successful login will return the user information to the main 
-		/// window and close the login window.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void OnMessage(object sender, MessageEventArgs e) {
-			ANWI.Messaging.Message msg 
-				= ANWI.Messaging.Message.Receive(e.RawData);
-
-			if (msg.payload is ANWI.Messaging.LoginResponse) {
-				Login_Response(msg.payload as ANWI.Messaging.LoginResponse);
-			} else if (msg.payload is ANWI.Messaging.RegisterResponse) {
-				Register_Response(
-					msg.payload as ANWI.Messaging.RegisterResponse);
-			} else {
-				Login_EndWorkingFailed("Login Failed: Invalid Message Format");
-			}
-		}
-
+		
 		/// <summary>
 		/// Called when there is a socket error.  Assumed some kind of 
 		/// login failure.
@@ -133,14 +109,14 @@ namespace Client {
 		private void SendLogin(string uname, string pass, bool remember) {
 			// Make sure fields have text
 			if (uname != "" && pass != "") {
-				ws.Connect();
+				MessageRouter.Instance.ConnectAuth();
 
 				// Send message to login server
-				ANWI.Messaging.Message.Send(
-					ws,
-					ANWI.Messaging.Message.Routing.NoReturn,
+				MessageRouter.Instance.SendAuth(
 					new ANWI.Messaging.LoginRequest(
-						version, uname, pass));
+						version, uname, pass),
+					this
+					);
 
 				// Save credentials
 				if(remember) {
@@ -164,10 +140,13 @@ namespace Client {
 		/// If login failed it keeps the window opened
 		/// </summary>
 		/// <param name="resp"></param>
-		private void Login_Response(ANWI.Messaging.LoginResponse resp) {
+		private void Login_Response(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.LoginResponse resp 
+				= p as ANWI.Messaging.LoginResponse;
+
 			if (resp.code == ANWI.Messaging.LoginResponse.Code.OK) {
 				Login_EndWorkingSucceeded();
-				ws.Close();
+				MessageRouter.Instance.DisconnectAuth();
 				returnuser(resp.account);
 				this.Dispatcher.Invoke(Close);
 			} else {
@@ -298,24 +277,27 @@ namespace Client {
 				return;
 			}
 
-			ws.Connect();
+			MessageRouter.Instance.ConnectAuth();
 
 			// Send message to server
-			ANWI.Messaging.Message.Send(
-				ws,
-				ANWI.Messaging.Message.Routing.NoReturn,
+			MessageRouter.Instance.SendAuth(
 				new ANWI.Messaging.RegisterRequest(
 					version,
 					Textbox_RegisterEmail.Text,
 					Textbox_RegisterNickname.Text,
-					Textbox_RegisterPassword.Password));
+					Textbox_RegisterPassword.Password),
+				this
+				);
 		}
 
 		/// <summary>
 		/// Fills in appropriate text based on code
 		/// </summary>
 		/// <param name="resp"></param>
-		private void Register_Response(ANWI.Messaging.RegisterResponse resp) {
+		private void Register_Response(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.RegisterResponse resp
+				= p as ANWI.Messaging.RegisterResponse;
+
 			if (resp.code == ANWI.Messaging.RegisterResponse.Code.OK) {
 				Register_EndWorkingSucceeded();
 			} else {

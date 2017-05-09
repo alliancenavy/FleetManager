@@ -75,14 +75,14 @@ namespace FleetManager.Services {
 			ANWI.Messaging.Message msg 
 				= ANWI.Messaging.Message.Receive(e.RawData);
 			
-			logger.Info($"Message received from {GetLogIdentifier()}. " +
+			logger.Info($"Message received #{msg.sequence} from {GetLogIdentifier()}. " +
 				$"{msg.payload.ToString()}");
 
 			ANWI.Messaging.IMessagePayload p = 
 				msgProcessors[msg.payload.GetType()](msg.payload);
 
 			ANWI.Messaging.Message response 
-				= new ANWI.Messaging.Message(msg.address, p);
+				= new ANWI.Messaging.Message(msg.sequence, p);
 
 			if (response != null) {
 				using (MemoryStream stream = new MemoryStream()) {

@@ -1,4 +1,4 @@
-﻿<Window x:Class="Client.NewAssignment"
+﻿<local:MailboxWindow x:Class="Client.NewAssignment"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -25,4 +25,4 @@
         <TextBlock HorizontalAlignment="Left" Margin="10,53,0,0" TextWrapping="Wrap" Text="Unassigned Personnel" VerticalAlignment="Top" FontWeight="Bold" Width="200"/>
         <fa:ImageAwesome x:Name="Spinner_Roster" Icon="Cog" Spin="True" SpinDuration="10" Margin="37,139,44.667,120" Foreground="#FF316838" Grid.Column="0" Visibility="Hidden"/>
     </Grid>
-</Window>
+</local:MailboxWindow>

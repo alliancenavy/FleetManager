@@ -157,7 +157,9 @@
     <Compile Include="FleetRegistry.xaml.cs">
       <DependentUpon>FleetRegistry.xaml</DependentUpon>
     </Compile>
+    <Compile Include="IMailbox.cs" />
     <Compile Include="MailboxWindow.cs" />
+    <Compile Include="MessageRouter.cs" />
     <Compile Include="NewAssignment.xaml.cs">
       <DependentUpon>NewAssignment.xaml</DependentUpon>
     </Compile>

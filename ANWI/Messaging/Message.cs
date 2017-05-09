@@ -9,61 +9,8 @@ namespace ANWI.Messaging {
 	/// </summary>
 	public class Message {
 
-		/// <summary>
-		/// Defines where the message is supposed to go when returning
-		/// to the client
-		/// NOT used on the server
-		/// </summary>
-		public struct Routing {
+		public int sequence { get; private set; }
 
-			/// <summary>
-			/// Destination on the client side
-			/// </summary>
-			public enum Target {
-				Unknown,
-				Main,
-				FleetReg,
-				OpDetail
-			}
-
-			public Target dest;
-			public int id;
-
-			/// <summary>
-			/// Pre-made envelope
-			/// This message does not need to be returned.
-			/// </summary>
-			public static readonly Routing NoReturn = new Routing() {
-				dest = Target.Unknown,
-				id = 0
-			};
-
-			/// <summary>
-			/// Pre-made envelope
-			/// Return to the main window
-			/// </summary>
-			public static readonly Routing Main = new Routing() {
-				dest = Target.Main,
-				id = 0
-			};
-
-			/// <summary>
-			/// Pre-made envelope
-			/// Return to the Fleet window
-			/// </summary>
-			public static readonly Routing FleetReg = new Routing() {
-				dest = Target.FleetReg,
-				id = 0
-			};
-
-			public Routing(Target t, int id) {
-				dest = t;
-				this.id = id;
-			}
-		}
-
-		public Routing address;
-	
 		/// <summary>
 		/// Polymorphic payload
 		/// </summary>
@@ -90,14 +37,8 @@ namespace ANWI.Messaging {
 			payload = null;
 		}
 
-		public Message(Routing addr, IMessagePayload data) {
-			address = addr;
-			payload = data;
-		}
-
-		public Message(Routing.Target returnTo, int id, IMessagePayload data) {
-			address.dest = returnTo;
-			address.id = id;
+		public Message(int seq, IMessagePayload data) {
+			sequence = seq;
 			payload = data;
 		}
 
@@ -118,9 +59,9 @@ namespace ANWI.Messaging {
 		/// <param name="sock"></param>
 		/// <param name="returnTo"></param>
 		/// <param name="data"></param>
-		public static void Send(WebSocket sock, Routing returnTo, 
+		public static void Send(WebSocket sock, int sequence, 
 			IMessagePayload data) {
-			Send(sock, new Message(returnTo, data));
+			Send(sock, new Message(sequence, data));
 		}
 
 		/// <summary>

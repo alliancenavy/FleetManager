@@ -12,11 +12,10 @@ namespace Client {
 	/// Main application window
 	/// Shows personnel jackets, full roster, and active operations
 	/// </summary>
-	public partial class MainWindow : Window, INotifyPropertyChanged {
+	public partial class MainWindow : Window, INotifyPropertyChanged, IMailbox {
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		private readonly WebSocket socket;
 		private AuthenticatedAccount account = null;
 		private Profile currentProfile = null;
 		private List<LiteProfile> originalRoster = null;
@@ -97,19 +96,7 @@ namespace Client {
 			wpfProfile = account.profile;
 
 			// Open connection to the main service
-			socket = new WebSocket($"{CommonData.serverAddress}/main");
-			socket.OnMessage += OnMessage;
-			socket.OnError += SocketError;
-			socket.SetCookie(
-				new WebSocketSharp.Net.Cookie("name", account.profile.nickname)
-				);
-			socket.SetCookie(
-				new WebSocketSharp.Net.Cookie("authtoken", account.authToken)
-				);
-			socket.SetCookie(
-				new WebSocketSharp.Net.Cookie("auth0id", account.auth0_id)
-				);
-			socket.Connect();
+			MessageRouter.Instance.ConnectMain(account);
 
 			// Note: blocking
 			FetchCommonData();
@@ -247,11 +234,11 @@ namespace Client {
 		private void Button_ViewJacket_Click(object sender, RoutedEventArgs e) {
 			if(List_Roster.SelectedItem != null) {
 				LiteProfile p = List_Roster.SelectedItem as LiteProfile;
-				ANWI.Messaging.Message.Send(
-					socket,
-					ANWI.Messaging.Message.Routing.Main,
+				MessageRouter.Instance.SendMain(
 					new ANWI.Messaging.Request(
-						ANWI.Messaging.Request.Type.GetProfile, p.id));
+						ANWI.Messaging.Request.Type.GetProfile, p.id),
+					this
+					);
 			}
 		}
 
@@ -263,7 +250,7 @@ namespace Client {
 		private void Button_OpenFleetReg_Click(object sender, 
 			RoutedEventArgs e) {
 			if (fleetReg == null) {
-				fleetReg = new FleetRegistry(socket, account.profile);
+				fleetReg = new FleetRegistry(account.profile);
 				fleetReg.OnClose += (t) => { fleetReg = null; };
 				fleetReg.Show();
 			}
@@ -322,36 +309,12 @@ namespace Client {
 
 		#endregion
 
-		#region Sockets and Messaging
-		/// <summary>
-		/// Handles routing for received messages
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void OnMessage(object sender, MessageEventArgs e) {
-			ANWI.Messaging.Message msg 
-				= ANWI.Messaging.Message.Receive(e.RawData);
-
-			switch(msg.address.dest) {
-				case ANWI.Messaging.Message.Routing.Target.Main:
-					ProcessMessage(msg);
-					break;
-
-				case ANWI.Messaging.Message.Routing.Target.FleetReg:
-					if (fleetReg != null)
-						fleetReg.DeliverMessage(msg);
-					break;
-
-				default:
-					break;
-			}
-		}
-
+		#region Messaging
 		/// <summary>
 		/// Processes messages meant to be delivered to the main window
 		/// </summary>
 		/// <param name="m">Incomming message</param>
-		private void ProcessMessage(ANWI.Messaging.Message m) {
+		public void DeliverMessage(ANWI.Messaging.Message m) {
 			if (m.payload is ANWI.Messaging.FullRoster) {
 				LoadRoster(m.payload as ANWI.Messaging.FullRoster);
 			} else if (m.payload is ANWI.Messaging.FullOperationsList) {
@@ -368,16 +331,6 @@ namespace Client {
 				wpfProfile = fp.profile;
 			}
 		}
-
-		/// <summary>
-		/// Handles socket errors
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void SocketError(object sender, 
-			WebSocketSharp.ErrorEventArgs e) {
-			// TODO
-		}
 		#endregion
 
 		#region Request Senders
@@ -388,11 +341,11 @@ namespace Client {
 		/// move forward without the data.
 		/// </summary>
 		private void FetchCommonData() {
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.Main,
+			MessageRouter.Instance.SendMain(
 				new ANWI.Messaging.Request(
-					ANWI.Messaging.Request.Type.GetCommonData));
+					ANWI.Messaging.Request.Type.GetCommonData),
+				this
+				);
 
 			while (!CommonData.loaded) {
 				Thread.Sleep(10);
@@ -410,11 +363,11 @@ namespace Client {
 			});
 
 			// Send a request to the server
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.Main,
+			MessageRouter.Instance.SendMain(
 				new ANWI.Messaging.Request(
-					ANWI.Messaging.Request.Type.GetRoster));
+					ANWI.Messaging.Request.Type.GetRoster),
+				this
+				);
 		}
 
 		/// <summary>
@@ -428,11 +381,11 @@ namespace Client {
 			});
 
 			// Send a request to the server
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.Main,
+			MessageRouter.Instance.SendMain(
 				new ANWI.Messaging.Request(
-					ANWI.Messaging.Request.Type.GetOperations));
+					ANWI.Messaging.Request.Type.GetOperations),
+				this
+				);
 		}
 
 		/// <summary>
@@ -440,11 +393,11 @@ namespace Client {
 		/// </summary>
 		/// <param name="userId"></param>
 		private void FetchProfile(int userId) {
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.Main,
+			MessageRouter.Instance.SendMain(
 				new ANWI.Messaging.Request(
-					ANWI.Messaging.Request.Type.GetProfile, userId));
+					ANWI.Messaging.Request.Type.GetProfile, userId),
+				this
+				);
 		}
 		#endregion
 
@@ -513,10 +466,10 @@ namespace Client {
 		/// <param name="rateId"></param>
 		/// <param name="rank"></param>
 		private void AddRate(int userId, int rateId, int rank) {
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.Main,
-				new ANWI.Messaging.AddRate(userId, rateId, rank));
+			MessageRouter.Instance.SendMain(
+				new ANWI.Messaging.AddRate(userId, rateId, rank),
+				this
+				);
 		}
 
 		/// <summary>
@@ -525,12 +478,12 @@ namespace Client {
 		/// <param name="userId"></param>
 		/// <param name="rateId"></param>
 		private void DeleteRate(int userId, int rateId) {
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.Main,
+			MessageRouter.Instance.SendMain(
 				new ANWI.Messaging.Request(
 					ANWI.Messaging.Request.Type.DeleteRate,
-					new ANWI.Messaging.ReqExp.TwoIDs(userId, rateId)));
+					new ANWI.Messaging.ReqExp.TwoIDs(userId, rateId)),
+				this
+				);
 		}
 
 		/// <summary>
@@ -539,12 +492,12 @@ namespace Client {
 		/// <param name="userId"></param>
 		/// <param name="rateId"></param>
 		private void SetPrimaryRate(int userId, int rateId) {
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.Main,
+			MessageRouter.Instance.SendMain(
 				new ANWI.Messaging.Request(
 					ANWI.Messaging.Request.Type.SetPrimaryRate,
-					new ANWI.Messaging.ReqExp.TwoIDs(userId, rateId)));
+					new ANWI.Messaging.ReqExp.TwoIDs(userId, rateId)),
+				this
+				);
 		}
 
 		/// <summary>
@@ -553,12 +506,12 @@ namespace Client {
 		/// <param name="userId"></param>
 		/// <param name="rankId"></param>
 		private void ChangeRank(int userId, int rankId) {
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.Main,
+			MessageRouter.Instance.SendMain(
 				new ANWI.Messaging.Request(
 					ANWI.Messaging.Request.Type.ChangeRank,
-					new ANWI.Messaging.ReqExp.TwoIDs(userId, rankId)));
+					new ANWI.Messaging.ReqExp.TwoIDs(userId, rankId)),
+				this
+				);
 		}
 
 		/// <summary>
@@ -567,12 +520,12 @@ namespace Client {
 		/// <param name="userId"></param>
 		/// <param name="name"></param>
 		private void ChangeNickname(int userId, string name) {
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.Main,
+			MessageRouter.Instance.SendMain(
 				new ANWI.Messaging.Request(
 					ANWI.Messaging.Request.Type.ChangeName,
-					new ANWI.Messaging.ReqExp.IdString(userId, name)));
+					new ANWI.Messaging.ReqExp.IdString(userId, name)),
+				this
+				);
 		}
 		#endregion
 

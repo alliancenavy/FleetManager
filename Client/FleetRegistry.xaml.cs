@@ -16,8 +16,7 @@ namespace Client {
 
 		#region Instance Members
 		public event PropertyChangedEventHandler PropertyChanged;
-
-		private WebSocket socket = null;
+		
 		private Profile user = null;
 
 		// List of registered vessels
@@ -25,11 +24,6 @@ namespace Client {
 			= new ObservableCollection<VesselRecord>();
 		public ObservableCollection<VesselRecord> vesselList {
 			get { return _vesselList; } }
-
-		// The window for adding assignments
-		// Must be recorded even though it is modal because it needs to wait
-		// for the list of unassigned personnel
-		private NewAssignment newAssignmentWindow = null;
 
 		// The currently selected vessel
 		// Automatically updates the window when changed via notifications
@@ -62,10 +56,9 @@ namespace Client {
 		#endregion
 
 		#region Constructors
-		public FleetRegistry(WebSocket ws, Profile user) {
+		public FleetRegistry(Profile user) {
 			this.DataContext = this;
 			InitializeComponent();
-			socket = ws;
 			this.user = user;
 
 			base.AddProcessor(
@@ -74,8 +67,6 @@ namespace Client {
 				typeof(ANWI.Messaging.FullVessel), LoadVesselDetail);
 			base.AddProcessor(
 				typeof(ANWI.Messaging.ConfirmUpdate), ProcessConfirmUpdate);
-			base.AddProcessor(
-				typeof(ANWI.Messaging.FullRoster), ProcessUnassignedRoster);
 
 			FetchVesselList();
 		}
@@ -91,11 +82,11 @@ namespace Client {
 				Spinner_List.Visibility = Visibility.Visible;
 			});
 
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.FleetReg,
+			MessageRouter.Instance.SendMain(
 				new ANWI.Messaging.Request(
-					ANWI.Messaging.Request.Type.GetFleet));
+					ANWI.Messaging.Request.Type.GetFleet),
+				this
+				);
 		}
 
 		/// <summary>
@@ -108,11 +99,11 @@ namespace Client {
 				Button_ViewShip.IsEnabled = false;
 			});
 
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.FleetReg,
+			MessageRouter.Instance.SendMain(
 				new ANWI.Messaging.Request(
-					ANWI.Messaging.Request.Type.GetVesselDetail, id));
+					ANWI.Messaging.Request.Type.GetVesselDetail, id),
+				this
+				);
 		}
 
 		/// <summary>
@@ -121,11 +112,11 @@ namespace Client {
 		/// <param name="userId"></param>
 		/// <param name="roleId"></param>
 		private void AddNewAssignment(int userId, int roleId) {
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.FleetReg,
+			MessageRouter.Instance.SendMain(
 				new ANWI.Messaging.NewAssignment(
-					userId, currentVessel.id, roleId));
+					userId, currentVessel.id, roleId),
+				this
+				);
 		}
 
 		/// <summary>
@@ -134,10 +125,10 @@ namespace Client {
 		/// <param name="id"></param>
 		/// <param name="status"></param>
 		private void UpdateShipStatus(int id, VesselStatus status) {
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.FleetReg,
-				new ANWI.Messaging.ChangeShipStatus(id, status));
+			MessageRouter.Instance.SendMain(
+				new ANWI.Messaging.ChangeShipStatus(id, status),
+				this
+				);
 		}
 
 		/// <summary>
@@ -145,11 +136,11 @@ namespace Client {
 		/// </summary>
 		/// <param name="p"></param>
 		private void AddNewShip(NewShip.Parameters p) {
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.FleetReg,
+			MessageRouter.Instance.SendMain(
 				new ANWI.Messaging.NewShip(
-					p.hullId, p.name, p.isLTI, p.fleetOwned ? 0 : user.id));
+					p.hullId, p.name, p.isLTI, p.fleetOwned ? 0 : user.id),
+				this
+				);
 		}
 
 		/// <summary>
@@ -158,10 +149,10 @@ namespace Client {
 		/// <param name="userId"></param>
 		/// <param name="assignmentId"></param>
 		private void RemoveAssignment(int userId, int assignmentId, int ship) {
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.FleetReg,
-				new ANWI.Messaging.EndAssignment(userId, assignmentId, ship));
+			MessageRouter.Instance.SendMain(
+				new ANWI.Messaging.EndAssignment(userId, assignmentId, ship),
+				this
+				);
 		}
 
 		/// <summary>
@@ -171,15 +162,15 @@ namespace Client {
 		/// <param name="hullIndex">Index of the hull in the smallHulls
 		/// array.  Not the ID in the database.</param>
 		private void AddEquipment(int shipId, int hullIndex) {
-			ANWI.Messaging.Message.Send(
-					socket,
-					ANWI.Messaging.Message.Routing.FleetReg,
+			MessageRouter.Instance.SendMain(
 					new ANWI.Messaging.Request(
 						ANWI.Messaging.Request.Type.AddEquipment,
 						new ANWI.Messaging.ReqExp.TwoIDs(
 								shipId,
 								CommonData.smallHulls[hullIndex].id
-							)));
+							)),
+					this
+					);
 		}
 
 		/// <summary>
@@ -188,12 +179,12 @@ namespace Client {
 		/// <param name="shipId"></param>
 		/// <param name="hullId"></param>
 		private void RemoveEquipment(int shipId, int hullId) {
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.FleetReg,
+			MessageRouter.Instance.SendMain(
 				new ANWI.Messaging.Request(
 					ANWI.Messaging.Request.Type.RemoveEquipment,
-					new ANWI.Messaging.ReqExp.TwoIDs(shipId, hullId)));
+					new ANWI.Messaging.ReqExp.TwoIDs(shipId, hullId)),
+				this
+				);
 		}
 		#endregion
 
@@ -256,17 +247,6 @@ namespace Client {
 			if(cu.success) {
 				FetchVesselDetail(cu.updatedId);
 			}
-		}
-
-		/// <summary>
-		/// The NewAssignment window needs a list of unassigned personnel
-		/// This passes the list to the window if it is open
-		/// </summary>
-		/// <param name="m"></param>
-		private void ProcessUnassignedRoster(ANWI.Messaging.IMessagePayload m) {
-			ANWI.Messaging.FullRoster fr = m as ANWI.Messaging.FullRoster;
-			if (newAssignmentWindow != null)
-				newAssignmentWindow.SetUnassignedPersonnel(fr.members);
 		}
 		#endregion
 
@@ -363,10 +343,10 @@ namespace Client {
 			if (Tabs_Embarked.SelectedIndex != 0)
 				return;
 
-			newAssignmentWindow = new NewAssignment(socket);
-			newAssignmentWindow.returnNewAssignment += AddNewAssignment;
-			newAssignmentWindow.ShowDialog();
-			newAssignmentWindow = null;
+			NewAssignment naw = new NewAssignment();
+			naw.returnNewAssignment += AddNewAssignment;
+			naw.ShowDialog();
+			naw = null;
 		}
 
 		/// <summary>

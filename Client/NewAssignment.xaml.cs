@@ -10,7 +10,7 @@ namespace Client {
 	/// <summary>
 	/// Window for assigning a user to a ship
 	/// </summary>
-	public partial class NewAssignment : Window, INotifyPropertyChanged {
+	public partial class NewAssignment : MailboxWindow, INotifyPropertyChanged {
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		// List of all roles
@@ -25,18 +25,17 @@ namespace Client {
 			get { return _unassignedPersonnel; }
 		}
 
-		private WebSocket socket;
-
 		public event Action<int, int> returnNewAssignment;
 
-		public NewAssignment(WebSocket socket) {
+		public NewAssignment() {
 			_roleList = new ObservableCollection<AssignmentRole>(
 				CommonData.assignmentRoles);
 
 			this.DataContext = this;
 			InitializeComponent();
 
-			this.socket = socket;
+			this.AddProcessor(typeof(ANWI.Messaging.FullRoster), ProcessRoster);
+
 			FetchUnassignedRoster();
 		}
 
@@ -48,21 +47,22 @@ namespace Client {
 				Spinner_Roster.Visibility = Visibility.Visible;
 			});
 
-			ANWI.Messaging.Message.Send(
-				socket,
-				ANWI.Messaging.Message.Routing.FleetReg,
+			MessageRouter.Instance.SendMain(
 				new ANWI.Messaging.Request(
-					ANWI.Messaging.Request.Type.GetUnassignedRoster));
+					ANWI.Messaging.Request.Type.GetUnassignedRoster),
+				this
+				);
 		}
-
+		
 		/// <summary>
-		/// When the Fleet window receives the roster response it passes the
-		/// list to this window using this function.
+		/// Fills the list of available personnel
 		/// </summary>
-		/// <param name="roster"></param>
-		public void SetUnassignedPersonnel(List<LiteProfile> roster) {
+		/// <param name="p"></param>
+		public void ProcessRoster(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.FullRoster roster = p as ANWI.Messaging.FullRoster;
+
 			_unassignedPersonnel 
-				= new ObservableCollection<LiteProfile>(roster);
+				= new ObservableCollection<LiteProfile>(roster.members);
 
 			NotifyPropertyChanged("unassignedPersonnel");
 

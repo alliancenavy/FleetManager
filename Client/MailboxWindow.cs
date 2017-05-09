@@ -8,7 +8,7 @@ namespace Client {
 	/// An extended version of a WPF Window which supports delivery of ANWI
 	/// messages to the proper message handlers.
 	/// </summary>
-	public class MailboxWindow : Window {
+	public class MailboxWindow : Window, IMailbox {
 
 		// Event for when the window closes
 		// Allows parent window to remove the record of this window's pointer
