@@ -10,7 +10,7 @@
         mc:Ignorable="d"
         MouseDown="MailboxWindow_MouseDown"
         MouseMove="MailboxWindow_MouseMove"
-        Title="Operation Details" Height="667" Width="1100" MinHeight="667" MinWidth="1100" ResizeMode="CanResizeWithGrip" Icon="images/afos_logo_VCP_icon.ico">
+        Title="Operation Details" Height="667" Width="1150" MinHeight="667" MinWidth="1150" ResizeMode="CanResizeWithGrip" Icon="images/afos_logo_VCP_icon.ico">
     <Window.Resources>
 
         <conv:BoolToVisibility x:Key="Conv_BoolToVisibility"/>
@@ -217,11 +217,11 @@
         </DataTemplate>
 
     </Window.Resources>
-    <Grid Name="Grid_Root" Focusable="True">
+    <Grid Name="Grid_Root" Focusable="True" IsEnabled="{Binding Path=controlEnabled}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="350"/>
             <ColumnDefinition/>
-            <ColumnDefinition Width="336.667"/>
+            <ColumnDefinition Width="350"/>
         </Grid.ColumnDefinitions>
 
         <!--
@@ -283,6 +283,8 @@
         -
         -->
 
+   
+
         <Border Grid.Column="1" BorderBrush="Gray" BorderThickness="1 0 1 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,10,0,10"/>
 
         <TextBlock Grid.Column="1"  Margin="10,5,10,0" TextWrapping="Wrap" Text="Order of Battle" VerticalAlignment="Top" FontWeight="Bold" Height="20" FontSize="15"/>
@@ -296,6 +298,8 @@
             </ListBox.ContextMenu>
         </ListBox>
 
+        <fa:ImageAwesome x:Name="Spinner" Icon="Cog" Spin="True" Width="200" SpinDuration="10" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FF316838" Grid.Column="1" Visibility="{Binding Path=working, Converter={StaticResource Conv_InverseBoolToVisibility}, FallbackValue=Hidden}"/>
+        
         <!--
         -
         -
@@ -330,65 +334,7 @@
                 <CheckBox Name="Checkbox_FreeMove" Grid.Row="2" Grid.Column="0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Content="Free Move" ToolTip="Free Move allows members to choose their own role instead of being assigned by the FC."/>
             </Grid>
             
-            <!-- Fleet Composition -->
-            <Grid Grid.Row="1" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Top">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.33*"/>
-                    <ColumnDefinition Width="0.33*"/>
-                    <ColumnDefinition Width="0.33*"/>
-                </Grid.ColumnDefinitions>
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="20"/>
-                    <RowDefinition Height="35"/>
-                    <RowDefinition Height="35"/>
-                    <RowDefinition Height="35"/>
-                </Grid.RowDefinitions>
-
-                <Border Grid.ColumnSpan="3" BorderThickness="0 1 0 0" BorderBrush="Gray" HorizontalAlignment="Stretch" Margin="5,0,5,0"/>
-
-                <TextBlock Text="Fleet Composition" Margin="5,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="DemiBold"/>
-
-                <Button x:Name="Button_AddFleetShip" Grid.Row="1" Grid.Column="0" Margin="5,5,5,5" Content="Add Fleet Ship" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
-                <Button x:Name="Button_AddOtherShip" Grid.Row="1" Grid.Column="1" Margin="5,5,5,5" Content="Add Other Ship" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
-                <Button x:Name="Button_SetFlagship" Grid.Row="1" Grid.Column="2" Margin="5,5,5,5" Content="Set Flagship" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
-
-                <Button x:Name="Button_AddWing" Grid.Row="2" Grid.Column="0" Margin="5,5,5,5" Content="Add Wing" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
-                <Button x:Name="Button_AddToWing" Grid.Row="2" Grid.Column="1" Margin="5,5,5,5" Content="Add To Wing" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
-                <Button x:Name="Button_SetWingCommander" Grid.Row="2" Grid.Column="2" Margin="5,5,5,5" Content="Set Wing Cmdr" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
-
-                <Button x:Name="Button_DeleteShipWing" Grid.Row="3" Grid.ColumnSpan="2" Margin="5,5,5,5" Content="Delete Selected" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
-            </Grid>
-
-            <!-- Positions -->
-            <Grid Grid.Row="2" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Top">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.33*"/>
-                    <ColumnDefinition Width="0.33*"/>
-                    <ColumnDefinition Width="0.33*"/>
-                </Grid.ColumnDefinitions>
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="20"/>
-                    <RowDefinition Height="35"/>
-                    <RowDefinition Height="35"/>
-                    <RowDefinition Height="35"/>
-                </Grid.RowDefinitions>
-
-                <Border Grid.ColumnSpan="3" BorderThickness="0 1 0 0" BorderBrush="Gray" HorizontalAlignment="Stretch" Margin="5,0,5,0"/>
-
-                <TextBlock Text="" Margin="5,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="DemiBold"/>
-
-                <!--<Button x:Name="Button_AddFleetShip" Grid.Row="1" Grid.Column="0" Margin="5,5,5,5" Content="Add Fleet Ship" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
-                <Button x:Name="Button_AddOtherShip" Grid.Row="1" Grid.Column="1" Margin="5,5,5,5" Content="Add Other Ship" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
-                <Button x:Name="Button_SetFlagship" Grid.Row="1" Grid.Column="2" Margin="5,5,5,5" Content="Set Flagship" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
-
-                <Button x:Name="Button_AddWing" Grid.Row="2" Grid.Column="0" Margin="5,5,5,5" Content="Add Wing" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
-                <Button x:Name="Button_AddToWing" Grid.Row="2" Grid.Column="1" Margin="5,5,5,5" Content="Add To Wing" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
-                <Button x:Name="Button_SetWingCommander" Grid.Row="2" Grid.Column="2" Margin="5,5,5,5" Content="Set Wing Cmdr" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>
-
-                <Button x:Name="Button_DeleteShipWing" Grid.Row="3" Grid.ColumnSpan="2" Margin="5,5,5,5" Content="Delete Selected" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF316838" Foreground="White"/>-->
-            </Grid>
+            
         </Grid>
 
 

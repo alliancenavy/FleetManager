@@ -112,6 +112,11 @@ namespace Client {
 		private FleetComp.FleetCompElement selectedShip = null;
 		private ListBox activePositionList = null;
 		private ListBoxItem draggedItem = null;
+
+		private int lastWingNumber = 1;
+
+		public bool working { get; set; } = true;
+		public bool controlEnabled { get { return !working; } }
 		#endregion
 
 		/// <summary>
@@ -120,181 +125,8 @@ namespace Client {
 		public OperationDetails() {
 			this.DataContext = this;
 			InitializeComponent();
+			
 
-			status = OperationStatus.CONFIGURING;
-
-			thisUser = new OpParticipant() {
-				isFC = true,
-				profile = new LiteProfile() {
-					id = 1,
-					nickname = "Mazer Ludd",
-					rank = new Rank() {
-						name = "Captain",
-						abbrev = "CAPT",
-						ordering = 5
-					},
-					primaryRate = new Rate() {
-						name = "Skipper",
-						abbrev = "SK",
-						rank = 2
-					}
-				}
-			};
-
-			roster.Add(thisUser);
-
-			roster.Add(new OpParticipant() {
-				isFC = false,
-				profile = new LiteProfile() {
-					nickname = "Spaceman Timmy",
-					rank = new Rank() {
-						name = "Spacer",
-						abbrev = "S",
-						ordering = 1
-					},
-					primaryRate = new Rate() {
-						name = "Quartermaster",
-						abbrev = "QM",
-						rank = 2
-					}
-				}
-			});
-
-			fleetComp.Add(new FleetComp.NamedShip() {
-				v = new LiteVessel() {
-					name = "ANS Legend of Dave",
-					hullNumber = 10,
-					hull = new Hull() {
-						name = "Idris-P",
-						symbol = "FF",
-						role = "Frigate"
-					}
-				},
-				isFlagship = true,
-				positions = new List<OpPosition>() {
-					new OpPosition() {
-						critical = true,
-						filledById = -1,
-						role = new AssignmentRole() {
-							name = "Skipper",
-							associatedRate = "SK"
-						}
-					},
-					new OpPosition() {
-						critical = true,
-						filledById = -1,
-						role = new AssignmentRole() {
-							name = "Helmsman",
-							associatedRate = "QM"
-						}
-					},
-					new OpPosition() {
-						critical = false,
-						filledById = -1,
-						role = new AssignmentRole() {
-							name = "Gunner",
-							associatedRate = "GM"
-						}
-					}
-				}
-			});
-
-			fleetComp.Add(new FleetComp.NamedShip() {
-				v = new LiteVessel() {
-					name = "ANS Everlasting Snowmew",
-					hullNumber = 1,
-					hull = new Hull() {
-						name = "Polaris",
-						symbol = "K",
-						role = "Corvette"
-					},
-				},
-				isFlagship = false,
-				positions = new List<OpPosition>() {
-					new OpPosition() {
-						critical = true,
-						filledById = -1,
-						role = new AssignmentRole() {
-							name = "Skipper",
-							associatedRate = "SK"
-						}
-					},
-					new OpPosition() {
-						critical = false,
-						filledById = -1,
-						role = new AssignmentRole() {
-							name = "Helmsman",
-							associatedRate = "QM"
-						}
-					}
-				}
-			});
-
-			fleetComp.Add(new FleetComp.Wing() {
-				name = "Fighter CAP",
-				callsign = "Dickthunder",
-				primaryRole = FleetComp.Wing.Role.CAP,
-				members = new List<FleetComp.WingMember>() {
-					{ new FleetComp.WingMember() {
-						callsign = "Dickthunder Leader",
-						isWC = true,
-						positions = new List<OpPosition>() {
-							new OpPosition() {
-								critical = true,
-								role = new AssignmentRole() {
-									name = "Pilot"
-								},
-								filledById = -1
-							},
-							new OpPosition() {
-								critical = false,
-								role = new AssignmentRole() {
-									name = "Co-Pilot"
-								},
-								filledById = -1
-							}
-						},
-						type = new Hull() {
-							name = "F-7C Hornet"
-						}
-					} },
-					{ new FleetComp.WingMember() {
-						callsign = "Dickthunder 2",
-						isWC = false,
-						positions = new List<OpPosition>() {
-							new OpPosition() {
-								critical = true,
-								role = new AssignmentRole() {
-									name = "Pilot"
-								},
-								filledById = -1
-							},
-							new OpPosition() {
-								critical = false,
-								role = new AssignmentRole() {
-									name = "Co-Pilot"
-								},
-								filledById = -1
-							}
-						},
-						type = new Hull() {
-							name = "F-7C Hornet"
-						}
-					} }
-				}
-			});
-
-			RecountSlots();
-
-			/*RosterEntry re = new RosterEntry();
-			re.name = "Mazer Ludd";
-			re.rank = new Rank();
-			re.rank.abbrev = "CAPT";
-			re.rank.ordering = 5;
-			re.primaryRate = new Rate();
-			re.primaryRate.abbrev = "SK";
-			re.primaryRate.rank = 2;
-			roster.Add(re);*/
 		}
 
 		/// <summary>
@@ -356,6 +188,24 @@ namespace Client {
 				member.position = null;
 			}
 		}
+
+		private void AddNewShip(LiteVessel vessel) {
+			fleetComp.Add(new FleetComp.NamedShip() {
+				v = vessel,
+				isFlagship = false,
+				positions = new List<OpPosition>()
+			});
+		}
+
+		private void AddNewWing() {
+			fleetComp.Add(new FleetComp.Wing() {
+				name = $"New Wing {lastWingNumber}",
+				callsign = "No Callsign",
+				primaryRole = FleetComp.Wing.Role.CAP,
+				members = new List<FleetComp.WingMember>()
+			});
+		}
+
 
 		/*private ListBoxItem FindPosition(OpPosition pos) {
 			foreach(FleetCompElement element in List_Fleet.Items) {

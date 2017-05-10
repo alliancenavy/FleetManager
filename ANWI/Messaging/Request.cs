@@ -20,6 +20,7 @@ namespace ANWI.Messaging {
 			GetCommonData,
 			GetProfile,
 			GetFleet,
+			GetAvailableFleet,
 			GetOperations,
 			GetRoster,
 			GetVesselDetail,

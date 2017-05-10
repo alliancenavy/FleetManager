@@ -1,18 +1,20 @@
-﻿<Window x:Class="Client.Operations.AddFleetShip"
+﻿<client:MailboxWindow x:Class="Client.Operations.AddFleetShip"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
+        xmlns:client="clr-namespace:Client"
         xmlns:local="clr-namespace:Client.Operations"
         xmlns:conv="clr-namespace:Client.Converters"
         mc:Ignorable="d"
         Title="Add Fleet Ship" Height="151" Width="423.333">
     <Window.Resources>
         <conv:BoolToVisibility x:Key="Conv_BoolToVisibility"/>
+        <conv:VesselStatusToColor x:Key="Conv_VesselStatusColor"/>
 
         <DataTemplate x:Key="ShipTemplate">
-            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="White" Height="35">
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="{Binding Path=status, Converter={StaticResource Conv_VesselStatusColor}}" Height="35">
                 <Border Grid.Row="0" BorderThickness="1" BorderBrush="Black" Margin="5,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
                     <TextBlock TextWrapping="Wrap" Text="{Binding fullHullNumber, FallbackValue='XXX-##'}" Width="80" FontSize="16" FontWeight="Bold" FontFamily="Segoe UI Black" TextAlignment="Center" Height="23"/>
                 </Border>
@@ -23,7 +25,7 @@
         </DataTemplate>
     </Window.Resources>
     <Grid>
-        <ComboBox Margin="10,10,10,0"  HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="36" ItemsSource="{Binding availableShips}" ItemTemplate="{DynamicResource ShipTemplate}"/>
+        <ComboBox Name="Combobox_Ships"  Margin="10,10,10,0"  HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="40" ItemsSource="{Binding vesselList, UpdateSourceTrigger=PropertyChanged}" ItemTemplate="{DynamicResource ShipTemplate}" HorizontalContentAlignment="Stretch"/>
         <Grid Margin="30,70,30,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="30">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -34,4 +36,4 @@
             <Button x:Name="Button_Cancel" Grid.Row="0" Grid.Column="2" Content="Cancel" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_Cancel_Click" HorizontalAlignment="Left" Width="100"/>
         </Grid>
     </Grid>
-</Window>
+</client:MailboxWindow>

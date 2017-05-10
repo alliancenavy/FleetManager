@@ -14,6 +14,7 @@ namespace Client {
 
 		private IMailbox loginWindow = null;
 		private WebSocket authSocket = null;
+
 		private WebSocket mainSocket = null;
 
 		private int sequence = 0;
@@ -46,7 +47,8 @@ namespace Client {
 		#endregion
 
 		#region Interface
-		public void ConnectAuth() {
+		public void ConnectAuth(Login lWin) {
+			loginWindow = lWin;
 			authSocket.Connect();
 		}
 
@@ -71,8 +73,7 @@ namespace Client {
 			mainSocket.Close();
 		}
 
-		public void SendAuth(IMessagePayload payload, IMailbox returnTo) {
-			loginWindow = returnTo;
+		public void SendAuth(IMessagePayload payload) {
 			Message.Send(authSocket, 0, payload);
 		}
 

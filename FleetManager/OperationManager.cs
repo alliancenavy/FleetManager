@@ -9,7 +9,7 @@ namespace FleetManager {
 	/// <summary>
 	/// Keeps track of all running operations.
 	/// </summary>
-	public class OperationManager : Mailbox {
+	public class OperationManager {
 		private static NLog.Logger logger
 			= LogManager.GetLogger("Operation Manager");
 

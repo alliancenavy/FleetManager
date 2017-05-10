@@ -169,6 +169,25 @@ namespace ANWI.Database.Model {
 		}
 
 		/// <summary>
+		/// Gets the list of all ships which are active or drydocked.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public static bool FetchAvailable(ref List<UserShip> output) {
+			output = new List<UserShip>();
+
+			SQLiteDataReader reader = DBI.DoQuery(
+				$@"SELECT * FROM UserShip
+				WHERE status = 0 OR status = 3;");
+			while (reader != null && reader.Read()) {
+				UserShip us = UserShip.Factory(reader);
+				output.Add(us);
+			}
+
+			return true;
+		}
+
+		/// <summary>
 		/// Updates a ship
 		/// </summary>
 		/// <param name="input"></param>

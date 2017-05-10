@@ -109,13 +109,11 @@ namespace Client {
 		private void SendLogin(string uname, string pass, bool remember) {
 			// Make sure fields have text
 			if (uname != "" && pass != "") {
-				MessageRouter.Instance.ConnectAuth();
+				MessageRouter.Instance.ConnectAuth(this);
 
 				// Send message to login server
 				MessageRouter.Instance.SendAuth(
-					new ANWI.Messaging.LoginRequest(
-						version, uname, pass),
-					this
+					new ANWI.Messaging.LoginRequest(version, uname, pass)
 					);
 
 				// Save credentials
@@ -277,7 +275,7 @@ namespace Client {
 				return;
 			}
 
-			MessageRouter.Instance.ConnectAuth();
+			MessageRouter.Instance.ConnectAuth(this);
 
 			// Send message to server
 			MessageRouter.Instance.SendAuth(
@@ -285,8 +283,7 @@ namespace Client {
 					version,
 					Textbox_RegisterEmail.Text,
 					Textbox_RegisterNickname.Text,
-					Textbox_RegisterPassword.Password),
-				this
+					Textbox_RegisterPassword.Password)
 				);
 		}
 

@@ -102,6 +102,19 @@ namespace ANWI {
 				return null;
 			}
 		}
+
+		/// <summary>
+		/// Returns only ships which are destroyed or drydocked
+		/// </summary>
+		/// <returns></returns>
+		public static List<LiteVessel> FetchAvailable() {
+			List<Datamodel.UserShip> s = null;
+			if (Datamodel.UserShip.FetchAvailable(ref s)) {
+				return s.ConvertAll<LiteVessel>((a) => { return new LiteVessel(a); });
+			} else {
+				return null;
+			}
+		}
 		#endregion
 	}
 }

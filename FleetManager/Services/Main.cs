@@ -9,45 +9,32 @@ using System.IO;
 using MsgPack.Serialization;
 
 namespace FleetManager.Services {
-	public class Main : WebSocketBehavior {
-		private static NLog.Logger logger 
-			= LogManager.GetLogger("Main Service");
+	public class Main : BaseService {
 
-		private Dictionary<Type, Func<ANWI.Messaging.IMessagePayload, 
-			ANWI.Messaging.IMessagePayload>> msgProcessors = null;
-
-		private Dictionary<string, ConnectedUser> connectedUsers
-			= new Dictionary<string, ConnectedUser>();
-
-		OperationManager opManager = new OperationManager();
-
-		public Main() {
+		public Main() : base("Main Service", false) {
 			logger.Info("Started");
 
 			// Build the message processor dictionary
-			msgProcessors = new Dictionary<Type, Func<
-				ANWI.Messaging.IMessagePayload, 
-				ANWI.Messaging.IMessagePayload>>() {
-				{ typeof(ANWI.Messaging.Request),
-					ProcessRequestMessage },
-				{ typeof(ANWI.Messaging.AddRate),
-					ProcessAddRate },
-				{ typeof(ANWI.Messaging.NewAssignment),
-					ProcessNewAssignment },
-				{ typeof(ANWI.Messaging.EndAssignment),
-					ProcessEndAssignment },
-				{ typeof(ANWI.Messaging.ChangeShipStatus),
-					ProcessChangeShipStatus },
-				{ typeof(ANWI.Messaging.NewShip),
-					ProcessNewShip }
-			};
+
+			AddProcessor(typeof(ANWI.Messaging.AddRate), 
+				ProcessAddRate);
+			AddProcessor(typeof(ANWI.Messaging.Request), 
+				ProcessRequestMessage);
+			AddProcessor(typeof(ANWI.Messaging.NewAssignment), 
+				ProcessNewAssignment);
+			AddProcessor(typeof(ANWI.Messaging.EndAssignment), 
+				ProcessEndAssignment);
+			AddProcessor(typeof(ANWI.Messaging.ChangeShipStatus), 
+				ProcessChangeShipStatus);
+			AddProcessor(typeof(ANWI.Messaging.NewShip), 
+				ProcessNewShip);
 		}
 
 		/// <summary>
 		/// Helper to get auth token from a context
 		/// </summary>
 		/// <returns></returns>
-		private string GetTokenCookie() {
+		protected override string GetTokenCookie() {
 			return this.Context.CookieCollection["authtoken"].Value;
 		}
 
@@ -55,7 +42,7 @@ namespace FleetManager.Services {
 		/// Helper to get username from a context
 		/// </summary>
 		/// <returns></returns>
-		private string GetNameCookie() {
+		protected override string GetNameCookie() {
 			return this.Context.CookieCollection["name"].Value;
 		}
 
@@ -63,74 +50,9 @@ namespace FleetManager.Services {
 		/// Combines cookies for easy identification in the log
 		/// </summary>
 		/// <returns></returns>
-		private string GetLogIdentifier() {
+		protected override string GetLogIdentifier() {
 			return $"[{GetNameCookie()} ({GetTokenCookie()})]";
 		}
-
-		/// <summary>
-		/// Message router.  Sends messages to correct processor function
-		/// </summary>
-		/// <param name="e"></param>
-		protected override void OnMessage(MessageEventArgs e) {
-			ANWI.Messaging.Message msg 
-				= ANWI.Messaging.Message.Receive(e.RawData);
-			
-			logger.Info($"Message received #{msg.sequence} from {GetLogIdentifier()}. " +
-				$"{msg.payload.ToString()}");
-
-			ANWI.Messaging.IMessagePayload p = 
-				msgProcessors[msg.payload.GetType()](msg.payload);
-
-			ANWI.Messaging.Message response 
-				= new ANWI.Messaging.Message(msg.sequence, p);
-
-			if (response != null) {
-				using (MemoryStream stream = new MemoryStream()) {
-					MessagePackSerializer.Get<ANWI.Messaging.Message>().Pack(
-						stream, response);
-					Send(stream.ToArray());
-				}
-			}
-		}
-
-		/// <summary>
-		/// New connection starting point
-		/// </summary>
-		protected override void OnOpen() {
-			base.OnOpen();
-			logger.Info($"Connection received from {GetLogIdentifier()}");
-
-			// Add this user to the connected list
-			connectedUsers.Add(
-				GetTokenCookie(),
-				new ConnectedUser(Context)
-				);
-
-			logger.Info("Connected user count now " + connectedUsers.Count);
-		}
-
-		/// <summary>
-		/// Connection ending point
-		/// </summary>
-		/// <param name="e"></param>
-		protected override void OnClose(CloseEventArgs e) {
-			base.OnClose(e);
-			logger.Info($"Connection from {GetLogIdentifier()} closed");
-
-			// Remove user from the dictionary
-			connectedUsers.Remove(GetTokenCookie());
-
-			logger.Info("Conneccted user count now " + connectedUsers.Count);
-		}
-
-		/// <summary>
-		/// Socket error handler
-		/// </summary>
-		/// <param name="e"></param>
-		protected override void OnError(WebSocketSharp.ErrorEventArgs e) {
-			base.OnError(e);
-		}
-
 
 		#region Message Processors
 		/// <summary>
@@ -164,8 +86,14 @@ namespace FleetManager.Services {
 						return new ANWI.Messaging.FullVesselReg(registry);
 					}
 
+				case ANWI.Messaging.Request.Type.GetAvailableFleet: {
+						List<LiteVessel> avail = LiteVessel.FetchAvailable();
+						return new ANWI.Messaging.FullVesselReg(avail);
+					}
+
 				case ANWI.Messaging.Request.Type.GetOperations: {
-						List<LiteOperation> ops = opManager.GetAllOperations();
+						// TODO
+						List<LiteOperation> ops = new List<LiteOperation>();
 						return new ANWI.Messaging.FullOperationsList(ops);
 					}
 					
@@ -455,6 +383,12 @@ namespace FleetManager.Services {
 			return new ANWI.Messaging.ConfirmUpdate(success, uid);
 		}
 
+		/// <summary>
+		/// Adds embarked equipment to a ship
+		/// </summary>
+		/// <param name="shipId"></param>
+		/// <param name="hullId"></param>
+		/// <returns></returns>
 		private ANWI.Messaging.IMessagePayload 
 		AddEquipment(int shipId, int hullId) {
 			Datamodel.ShipEquipment e = null;
@@ -469,6 +403,12 @@ namespace FleetManager.Services {
 			return new ANWI.Messaging.ConfirmUpdate(success, shipId);
 		}
 
+		/// <summary>
+		/// Removes embarked equipment from a ship
+		/// </summary>
+		/// <param name="shipId"></param>
+		/// <param name="hullId"></param>
+		/// <returns></returns>
 		private ANWI.Messaging.IMessagePayload 
 		RemoveEquipment(int shipId, int hullId) {
 

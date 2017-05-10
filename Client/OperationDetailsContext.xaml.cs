@@ -8,7 +8,11 @@ namespace Client {
 	public partial class OperationDetails : MailboxWindow {
 		#region Composition
 		private void Context_NewFleetShip(object sender, RoutedEventArgs e) {
-
+			Operations.AddFleetShip afs = new Operations.AddFleetShip();
+			afs.returnNewShip += (v) => {
+				AddNewShip(v);
+			};
+			afs.ShowDialog();
 		}
 
 		private void Context_NewCustomShip(object sender, RoutedEventArgs e) {
@@ -16,7 +20,7 @@ namespace Client {
 		}
 
 		private void Context_NewWing(object sender, RoutedEventArgs e) {
-
+			AddNewWing();
 		}
 		#endregion
 
