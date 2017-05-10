@@ -64,6 +64,7 @@ $@"
 			// Set up services
 			wssv.AddWebSocketService<Auth>("/auth");
 			wssv.AddWebSocketService<Main>("/main");
+			wssv.AddWebSocketService<Ops>("/ops");
 
 			// Start the web socket
 			wssv.Start();

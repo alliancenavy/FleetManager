@@ -17,6 +17,8 @@ namespace Client {
 
 		private WebSocket mainSocket = null;
 
+		private WebSocket opsSocket = null;
+
 		private int sequence = 0;
 		private Dictionary<int, IMailbox> pendingResponses
 			= new Dictionary<int, IMailbox>();
@@ -41,8 +43,12 @@ namespace Client {
 			authSocket.OnError += OnAuthError;
 
 			mainSocket = new WebSocket($"{CommonData.serverAddress}/main");
-			mainSocket.OnMessage += OnMainMessage;
-			mainSocket.OnError += OnMainError; 
+			mainSocket.OnMessage += OnMessage;
+			mainSocket.OnError += OnError;
+
+			opsSocket = new WebSocket($"{CommonData.serverAddress}/ops");
+			opsSocket.OnMessage += OnMessage;
+			opsSocket.OnError += OnError;
 		}
 		#endregion
 
@@ -69,8 +75,21 @@ namespace Client {
 			mainSocket.Connect();
 		}
 
-		public void DisconnectMain() {
-			mainSocket.Close();
+		public void ConnectOps(ANWI.AuthenticatedAccount account) {
+			opsSocket.SetCookie(
+				new WebSocketSharp.Net.Cookie("name", account.profile.nickname)
+				);
+			opsSocket.SetCookie(
+				new WebSocketSharp.Net.Cookie("authtoken", account.authToken)
+				);
+			opsSocket.SetCookie(
+				new WebSocketSharp.Net.Cookie("auth0id", account.auth0_id)
+				);
+			opsSocket.Connect();
+		}
+
+		public void DisconnectOps() {
+			opsSocket.Close();
 		}
 
 		public void SendAuth(IMessagePayload payload) {
@@ -85,6 +104,16 @@ namespace Client {
 
 			sequence++;
 		}
+
+		public void SendOps(IMessagePayload payload, IMailbox returnTo) {
+			Message.Send(opsSocket, sequence, payload);
+			if (returnTo != null) {
+				pendingResponses.Add(sequence, returnTo);
+			}
+
+			sequence++;
+		}
+
 		#endregion
 
 		#region Socket Functions
@@ -98,7 +127,7 @@ namespace Client {
 			// TODO
 		}
 
-		private void OnMainMessage(object sender, MessageEventArgs e) {
+		private void OnMessage(object sender, MessageEventArgs e) {
 			Message msg = Message.Receive(e.RawData);
 
 			IMailbox returnTo = pendingResponses[msg.sequence];
@@ -108,7 +137,7 @@ namespace Client {
 			}
 		}
 
-		private void OnMainError(object sender, ErrorEventArgs e) {
+		private void OnError(object sender, ErrorEventArgs e) {
 			// TODO
 		}
 		#endregion

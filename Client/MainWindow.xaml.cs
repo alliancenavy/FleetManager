@@ -97,6 +97,7 @@ namespace Client {
 
 			// Open connection to the main service
 			MessageRouter.Instance.ConnectMain(account);
+			MessageRouter.Instance.ConnectOps(account);
 
 			// Note: blocking
 			FetchCommonData();
@@ -381,7 +382,7 @@ namespace Client {
 			});
 
 			// Send a request to the server
-			MessageRouter.Instance.SendMain(
+			MessageRouter.Instance.SendOps(
 				new ANWI.Messaging.Request(
 					ANWI.Messaging.Request.Type.GetOperations),
 				this
