@@ -17,6 +17,7 @@ namespace Client {
 
 		private WebSocket mainSocket = null;
 
+		private IMailbox opsPushTarget = null;
 		private WebSocket opsSocket = null;
 
 		private int sequence = 0;
@@ -43,11 +44,11 @@ namespace Client {
 			authSocket.OnError += OnAuthError;
 
 			mainSocket = new WebSocket($"{CommonData.serverAddress}/main");
-			mainSocket.OnMessage += OnMessage;
+			mainSocket.OnMessage += OnMainMessage;
 			mainSocket.OnError += OnError;
 
 			opsSocket = new WebSocket($"{CommonData.serverAddress}/ops");
-			opsSocket.OnMessage += OnMessage;
+			opsSocket.OnMessage += OnOpsMessage;
 			opsSocket.OnError += OnError;
 		}
 		#endregion
@@ -114,6 +115,10 @@ namespace Client {
 			sequence++;
 		}
 
+		public void SetOpsPushTarget(IMailbox target) {
+			opsPushTarget = target;
+		}
+
 		#endregion
 
 		#region Socket Functions
@@ -127,7 +132,7 @@ namespace Client {
 			// TODO
 		}
 
-		private void OnMessage(object sender, MessageEventArgs e) {
+		private void OnMainMessage(object sender, MessageEventArgs e) {
 			Message msg = Message.Receive(e.RawData);
 
 			IMailbox returnTo = pendingResponses[msg.sequence];
@@ -137,9 +142,30 @@ namespace Client {
 			}
 		}
 
+		private void OnOpsMessage(object sender, MessageEventArgs e) {
+			Message msg = Message.Receive(e.RawData);
+
+			if (msg.sequence >= 0) {
+				IMailbox returnTo = pendingResponses[msg.sequence];
+				if (returnTo != null) {
+					pendingResponses.Remove(msg.sequence);
+					returnTo.DeliverMessage(msg);
+				}
+			} else {
+				if (opsPushTarget != null)
+					opsPushTarget.DeliverMessage(msg);
+			}
+		}
+
 		private void OnError(object sender, ErrorEventArgs e) {
 			// TODO
 		}
 		#endregion
+
+		private void IncrementSequence() {
+			sequence++;
+			if (sequence >= 1000000)
+				sequence = 0;
+		}
 	}
 }

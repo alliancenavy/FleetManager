@@ -1,10 +1,7 @@
-﻿using ANWI;
-using System.Windows.Controls;
-using System.Windows;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace Client {
+namespace ANWI {
 
 	namespace FleetComp {
 
@@ -14,7 +11,11 @@ namespace Client {
 		public class FleetCompElement : INotifyPropertyChanged {
 			public event PropertyChangedEventHandler PropertyChanged;
 
-			OpParticipant assigned { get; set; } = null;
+			public string uuid;
+
+			public FleetCompElement() {
+				// Empty
+			}
 
 			/// <summary>
 			/// Notifies the UI when a bound property changes
@@ -35,6 +36,12 @@ namespace Client {
 			public bool isFlagship { get; set; }
 			
 			public List<OpPosition> positions { get; set; }
+
+			public NamedShip() {
+				v = null;
+				isFlagship = false;
+				positions = new List<OpPosition>();
+			}
 		}
 
 		/// <summary>
@@ -67,6 +74,13 @@ namespace Client {
 							return "";
 					}
 				} }
+
+			public Wing() {
+				name = "";
+				members = new List<WingMember>();
+				primaryRole = Role.INTERCEPTOR;
+				callsign = "";
+			}
 		}
 
 		public class WingMember : FleetCompElement {
@@ -93,6 +107,13 @@ namespace Client {
 					}
 					return false;
 				}
+			}
+
+			public WingMember() {
+				type = null;
+				callsign = "";
+				isWC = false;
+				positions = new List<OpPosition>();
 			}
 		}
 	}

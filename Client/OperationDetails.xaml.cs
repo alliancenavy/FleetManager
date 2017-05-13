@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using ANWI;
-using Client.FleetComp;
+using ANWI.FleetComp;
 using System.ComponentModel;
 
 namespace Client {
@@ -24,7 +24,27 @@ namespace Client {
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
+		private string opUUID;
+		private int userId;
+
 		#region Double-Bound WPF Variables
+
+		private bool _freeMove = false;
+		public bool freeMove {
+			get { return _freeMove; }
+			set {
+				if(_freeMove != value) {
+					_freeMove = value;
+					NotifyPropertyChanged("freeMove");
+				}
+			}
+		}
+
+		#endregion
+
+		#region Single-Bound WPF Variables
+		public bool isFC { get; set; }
+
 		//
 		// Name of the Operation
 		public string _operationName = "Operation Name";
@@ -40,11 +60,22 @@ namespace Client {
 			}
 		}
 
-
-		#endregion
-
-		#region Single-Bound WPF Variables
-		public bool isFC { get; set; }
+		//
+		// Operation Type
+		private OperationType _type = OperationType.PATROL;
+		public OperationType type {
+			get { return _type; }
+			set {
+				if (_type != value) {
+					_type = value;
+					NotifyPropertyChanged("type");
+					NotifyPropertyChanged("typeString");
+				}
+			}
+		}
+		public string typeString {
+			get { return type.ToFriendlyString(); }
+		}
 
 		//
 		// Stage in lifecycle
@@ -89,9 +120,9 @@ namespace Client {
 
 		//
 		// Fleet Composition Table
-		private ObservableCollection<FleetComp.FleetCompElement> _fleetComp
-			= new ObservableCollection<FleetComp.FleetCompElement>();
-		public ObservableCollection<FleetComp.FleetCompElement> fleetComp {
+		private ObservableCollection<FleetCompElement> _fleetComp
+			= new ObservableCollection<FleetCompElement>();
+		public ObservableCollection<FleetCompElement> fleetComp {
 			get { return _fleetComp; }
 			set {
 				if(_fleetComp != value) {
@@ -106,39 +137,68 @@ namespace Client {
 		public int currentUserNumber { get { return _roster.Count; } }
 		public int totalCriticalSlots { get; set; }
 		public int totalSlots { get; set; }
+
+		//
+		// Working/Busy
+		private bool _working = true;
+		public bool working {
+			get { return _working; }
+			set {
+				if (_working != value) {
+					_working = value;
+					NotifyPropertyChanged("working");
+					NotifyPropertyChanged("controlEnabled");
+				}
+			}
+		}
+		public bool controlEnabled { get { return !working; } }
 		#endregion
 
 		#region Instance Members
-		private FleetComp.FleetCompElement selectedShip = null;
+		private FleetCompElement selectedShip = null;
 		private ListBox activePositionList = null;
 		private ListBoxItem draggedItem = null;
 
 		private int lastWingNumber = 1;
 
-		public bool working { get; set; } = true;
-		public bool controlEnabled { get { return !working; } }
 		#endregion
 
 		/// <summary>
-		/// Opening the window as the FC
-		/// </summary>
-		public OperationDetails() {
-			this.DataContext = this;
-			InitializeComponent();
-			
-
-		}
-
-		/// <summary>
-		/// Opening window as a member
+		/// Opening window and request the operation from the server
+		/// identified by the UUID
 		/// </summary>
 		/// <param name="uuid"></param>
-		public OperationDetails(string uuid) {
+		public OperationDetails(int userId, string uuid) {
+			this.DataContext = this;
+			InitializeComponent();
 
+			opUUID = uuid;
+			this.userId = userId;
+			working = true;
+
+			MessageRouter.Instance.SetOpsPushTarget(this);
+
+			AddProcessor(typeof(ANWI.Messaging.Ops.FullOperationSnapshot),
+				ProcessOpSnapshot);
+			AddProcessor(typeof(ANWI.Messaging.Ops.UpdateStatus),
+				ProcessUpdateStatus);
+			AddProcessor(typeof(ANWI.Messaging.Ops.UpdateOOBShips),
+				ProcessUpdateOOBShips);
+			AddProcessor(typeof(ANWI.Messaging.Ops.UpdateOOBWings),
+				ProcessUpdateOOBWings);
+			AddProcessor(typeof(ANWI.Messaging.Ops.UpdateAssignments),
+				ProcessUpdateAssignments);
+
+			MessageRouter.Instance.SendOps(
+				new ANWI.Messaging.Request(
+					ANWI.Messaging.Request.Type.GetOperation,
+					new ANWI.Messaging.ReqExp.IdString(0, uuid)),
+				this
+				);
 		}
 
 		#region Helpers
-		
+
 		private void RecountSlots() {
 			int total = 0;
 			int critical = 0;
@@ -173,37 +233,41 @@ namespace Client {
 			return critical;
 		}
 
-		private void Assign(OpParticipant member, OpPosition job) {
-			UnAssign(member);
+		private void AddOOBElement(FleetCompElement ship) {
+			foreach(FleetCompElement elem in fleetComp) {
+				if (elem.uuid == ship.uuid)
+					return;
+			}
 
-			member.position = job;
-			job.filledById = member.profile.id;
-			job.filledByPointer = member;
+			this.Dispatcher.Invoke(() => { fleetComp.Add(ship); });
 		}
 
-		private void UnAssign(OpParticipant member) {
-			if(member.position != null) {
-				member.position.filledByPointer = null;
-				member.position.filledById = -1;
-				member.position = null;
+		private void DeleteOOBElement(string uuid) {
+			foreach (FleetCompElement elem in fleetComp) {
+				if(elem.uuid == uuid) {
+					this.Dispatcher.Invoke(() => { fleetComp.Remove(elem); });
+					break;
+				}
 			}
 		}
 
-		private void AddNewShip(LiteVessel vessel) {
-			fleetComp.Add(new FleetComp.NamedShip() {
-				v = vessel,
-				isFlagship = false,
-				positions = new List<OpPosition>()
-			});
-		}
+		private void AddParticipants(List<OpParticipant> add) {
+			foreach(OpParticipant p in add) {
+				// First make sure they aren't already in the list
+				bool alreadyExists = false;
+				foreach(OpParticipant existing in roster) {
+					if(p.profile.id == existing.profile.id) {
+						alreadyExists = true;
+						break;
+					}
+				}
 
-		private void AddNewWing() {
-			fleetComp.Add(new FleetComp.Wing() {
-				name = $"New Wing {lastWingNumber}",
-				callsign = "No Callsign",
-				primaryRole = FleetComp.Wing.Role.CAP,
-				members = new List<FleetComp.WingMember>()
-			});
+				if(!alreadyExists) {
+					if (p.profile.id == userId)
+						thisUser = p;
+					this.Dispatcher.Invoke(() => { roster.Add(p); });
+				}
+			}
 		}
 
 
@@ -227,13 +291,18 @@ namespace Client {
 		}
 
 		private void Button_ChangeStatus_Click(object sender, RoutedEventArgs e) {
-			status = status.Next();
+			MessageRouter.Instance.SendOps(
+				new ANWI.Messaging.Request(
+					ANWI.Messaging.Request.Type.AdvanceOpLifecycle,
+						new ANWI.Messaging.ReqExp.IdString(0, opUUID)),
+				null
+				);
 		}
 
 		private void Button_RosterRemove_Click(object sender, RoutedEventArgs e) {
 			Button b = sender as Button;
 			OpParticipant p = b.DataContext as OpParticipant;
-			UnAssign(p);
+			OpPosition.UnassignPosition(p.position);
 		}
 
 		private void Button_JoinOp_Click(object sender, RoutedEventArgs e) {
@@ -242,13 +311,16 @@ namespace Client {
 
 		private void
 		List_Positions_DoubleClick(object sender, RoutedEventArgs e) {
-			Assign(thisUser, (sender as ListBoxItem).DataContext as OpPosition);
+			OpPosition.AssignPosition( 
+				(sender as ListBoxItem).DataContext as OpPosition,
+				thisUser);
 		}
 
 		private void
 		List_WingCrew_DoubleClick(object sender, RoutedEventArgs e) {
-			Assign(thisUser, 
-				(sender as ContentControl).DataContext as OpPosition);
+			OpPosition.AssignPosition( 
+				(sender as ContentControl).DataContext as OpPosition,
+				thisUser);
 		}
 
 		private void 
@@ -262,8 +334,7 @@ namespace Client {
 
 			if (e.AddedItems.Count > 0) {
 				// Newly selected element
-				FleetComp.FleetCompElement elem
-					= e.AddedItems[0] as FleetComp.FleetCompElement;
+				FleetCompElement elem = e.AddedItems[0] as FleetCompElement;
 
 				// If this element is set as the active outer list item then
 				// this change was caused by List_Positions_SelectionChanged.
@@ -298,7 +369,7 @@ namespace Client {
 				// be used to set the currently selected item in the main OOB list
 				List_Fleet.SelectedItem = namedShip.DataContext;
 				selectedShip
-					= namedShip.DataContext as FleetComp.FleetCompElement;
+					= namedShip.DataContext as FleetCompElement;
 
 				// Clear the selection from the previous listbox so it doesn't
 				// get stuck
@@ -344,11 +415,14 @@ namespace Client {
 			Grid grid = sender as Grid;
 			OpPosition pos = grid.DataContext as OpPosition;
 
-			// If there's already someone in this slot unassign them
-			if (pos.filledByPointer != null)
-				UnAssign(pos.filledByPointer);
-
-			Assign(draggedItem.DataContext as OpParticipant, pos);
+			MessageRouter.Instance.SendOps(
+				new ANWI.Messaging.Ops.AssignUser() {
+					opUUID = opUUID,
+					elemUUID = pos.elemUUID,
+					positionUUID = pos.uuid,
+					userId = (draggedItem.DataContext as OpParticipant).profile.id
+				}, 
+				null);
 		}
 
 		private void List_Roster_SelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -358,6 +432,78 @@ namespace Client {
 				}
 				FindPosition(null);
 			}*/
+		}
+
+		protected override void OnClosed(EventArgs e) {
+			base.OnClosed(e);
+
+			MessageRouter.Instance.SendOps(
+				new ANWI.Messaging.Request(
+					ANWI.Messaging.Request.Type.CloseOperation,
+						new ANWI.Messaging.ReqExp.IdString(0, opUUID)),
+					null
+					);
+		}
+		#endregion
+
+		#region Message Processors
+
+		private void ProcessOpSnapshot(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.Ops.FullOperationSnapshot snap
+				= p as ANWI.Messaging.Ops.FullOperationSnapshot;
+
+			operationName = snap.op.name;
+			type = snap.op.type;
+			status = snap.op.status;
+			freeMove = snap.op.freeMove;
+
+			AddParticipants(snap.op.roster);
+
+			working = false;
+		}
+
+		private void ProcessUpdateStatus(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.Ops.UpdateStatus us 
+				= p as ANWI.Messaging.Ops.UpdateStatus;
+			status = us.status;
+		}
+
+		private void ProcessUpdateOOBShips(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.Ops.UpdateOOBShips us
+				= p as ANWI.Messaging.Ops.UpdateOOBShips;
+
+			if (us.addedShips != null) {
+				foreach (NamedShip s in us.addedShips) {
+					AddOOBElement(s);
+				}
+			}
+
+			if (us.removedShips != null) {
+				foreach (string s in us.removedShips) {
+					DeleteOOBElement(s);
+				}
+			}
+		}
+
+		private void ProcessUpdateOOBWings(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.Ops.UpdateOOBWings uw
+				= p as ANWI.Messaging.Ops.UpdateOOBWings;
+
+			if (uw.addedWings != null) {
+				foreach (Wing w in uw.addedWings) {
+					AddOOBElement(w);
+				}
+			}
+
+			if (uw.removedWings != null) {
+				foreach (string w in uw.removedWings) {
+					DeleteOOBElement(w);
+				}
+			}
+		}
+
+		private void ProcessUpdateAssignments(ANWI.Messaging.IMessagePayload p) {
+			
 		}
 		#endregion
 

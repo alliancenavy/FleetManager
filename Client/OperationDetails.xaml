@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Client"
         xmlns:conv="clr-namespace:Client.Converters"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
-        xmlns:OOB="clr-namespace:Client.FleetComp"
+        xmlns:OOB="clr-namespace:ANWI.FleetComp;assembly=ANWI"
         mc:Ignorable="d"
         MouseDown="MailboxWindow_MouseDown"
         MouseMove="MailboxWindow_MouseMove"
@@ -97,7 +97,7 @@
                         <MenuItem Header="Add Position" Click="Context_AddShipPosition"/>
                         <MenuItem Header="Unassign All" Click="Context_UnassignAllShip"/>
                         <Separator/>
-                        <MenuItem Header="Delete Ship"/>
+                        <MenuItem Header="Delete Ship" Click="Context_DeleteShipWing"/>
                     </ContextMenu>
                 </Grid.ContextMenu>
             </Grid>
@@ -210,7 +210,7 @@
                         <MenuItem Header="Add Wing Member" Click="Context_AddWingMember"/>
                         <MenuItem Header="Change Callsign" Click="Context_ChangeCallsign"/>
                         <Separator/>
-                        <MenuItem Header="Delete Wing" Click="Context_DeleteWing"/>
+                        <MenuItem Header="Delete Wing" Click="Context_DeleteShipWing"/>
                     </ContextMenu>
                 </Grid.ContextMenu>
             </Grid>
@@ -298,7 +298,7 @@
             </ListBox.ContextMenu>
         </ListBox>
 
-        <fa:ImageAwesome x:Name="Spinner" Icon="Cog" Spin="True" Width="200" SpinDuration="10" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FF316838" Grid.Column="1" Visibility="{Binding Path=working, Converter={StaticResource Conv_InverseBoolToVisibility}, FallbackValue=Hidden}"/>
+        <fa:ImageAwesome x:Name="Spinner" Icon="Cog" Spin="True" Width="200" SpinDuration="10" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#FF316838" Grid.Column="1" Visibility="{Binding Path=working, Converter={StaticResource Conv_BoolToVisibility}, FallbackValue=Hidden}"/>
         
         <!--
         -
@@ -319,7 +319,7 @@
             <!-- Top: General OP Settings -->
             <Grid Margin="0,0,0,0" Grid.Row="0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="45"/>
+                    <RowDefinition Height="35"/>
                     <RowDefinition Height="35"/>
                     <RowDefinition Height="20"/>
                 </Grid.RowDefinitions>
@@ -327,11 +327,15 @@
                     <ColumnDefinition Width="0.5*"/>
                     <ColumnDefinition Width="0.5*"/>
                 </Grid.ColumnDefinitions>
-                <TextBox x:Name="Text_OpName" Grid.ColumnSpan="2" Grid.Row="0" Height="30" Margin="10,10,9.667,0" TextWrapping="NoWrap" Text="{Binding Path=operationName, Mode=TwoWay, UpdateSourceTrigger=LostFocus, FallbackValue='Op Name'}" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" AcceptsReturn="False"/>
                 
-                <ComboBox x:Name="Combobox_Type" Grid.Column="0" Grid.Row="1" Margin="10,5,10,0" VerticalAlignment="Top" />
-                <Button x:Name="Button_ChangeStatus" Grid.Column="1" Grid.Row="1" Content="{Binding Path=statusString, FallbackValue='Status'}" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_ChangeStatus_Click" IsEnabled="{Binding statusButtonEnabled}" Margin="10,0,9.667,0" ToolTip="{Binding statusButtonTooltip}"/>
-                <CheckBox Name="Checkbox_FreeMove" Grid.Row="2" Grid.Column="0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Content="Free Move" ToolTip="Free Move allows members to choose their own role instead of being assigned by the FC."/>
+                <TextBlock Grid.ColumnSpan="2" Grid.Row="0" Height="30" Margin="10,10,9.667,0" TextWrapping="NoWrap" Text="{Binding Path=operationName, FallbackValue='Op Name'}" VerticalAlignment="Top" FontSize="18" FontWeight="Bold"/>
+                
+                <!--<ComboBox x:Name="Combobox_Type" Grid.Column="0" Grid.Row="1" Margin="10,5,10,0" VerticalAlignment="Top" />-->
+                <Image Grid.Column="0" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5,0,0,0" Source="{Binding Path=typeImage, FallbackValue={StaticResource NoImageFound}}"/>
+                <TextBlock Grid.Column="0" Grid.Row="1" Margin="45,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Stretch" Text="{Binding Path=typeString, FallbackValue='Op Type'}" />
+
+                <Button x:Name="Button_ChangeStatus" Grid.Column="1" Grid.Row="1" Content="{Binding Path=statusString, FallbackValue='Status'}" VerticalAlignment="Center" Height="29" Background="#FF316838" Foreground="White" Click="Button_ChangeStatus_Click" IsEnabled="{Binding statusButtonEnabled}" Margin="10,0,9.667,0" ToolTip="{Binding statusButtonTooltip}"/>
+                <CheckBox Name="Checkbox_FreeMove" Grid.Row="2" Grid.Column="0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="{Binding Path=freeMove, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="Free Move" ToolTip="Free Move allows members to choose their own role instead of being assigned by the FC."/>
             </Grid>
             
             

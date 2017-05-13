@@ -1,0 +1,39 @@
+﻿<Window x:Class="Client.Operations.NewOperation"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Client.Operations"
+        mc:Ignorable="d"
+        Title="New Operation" Height="196" Width="378.333" ResizeMode="NoResize">
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Operation Name" VerticalAlignment="Top" Margin="10,10,0,0" FontWeight="Demibold"/>
+        <TextBox Name="Text_OpName" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,30,10,0" Height="22"/>
+
+        <TextBlock Grid.Row="1" Text="Operation Type" VerticalAlignment="Top" Margin="10,0,0,0" FontWeight="Demibold"/>
+        <ComboBox Name="Combobox_Type"  Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,20,10,0">
+            <ComboBoxItem IsSelected="True">Patrol</ComboBoxItem>
+            <ComboBoxItem>Assault</ComboBoxItem>
+            <ComboBoxItem>Defense</ComboBoxItem>
+            <ComboBoxItem>Mining</ComboBoxItem>
+            <ComboBoxItem>Logistics</ComboBoxItem>
+        </ComboBox>
+
+        <Grid Grid.Row="2" Margin="30,10,30,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="30">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="Button_OK" Grid.Row="0" Grid.Column="0" Content="OK" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_OK_Click" HorizontalAlignment="Right" Width="100"/>
+            <Button x:Name="Button_Cancel" Grid.Row="0" Grid.Column="2" Content="Cancel" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_Cancel_Click" HorizontalAlignment="Left" Width="100"/>
+        </Grid>
+    </Grid>
+</Window>

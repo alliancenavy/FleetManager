@@ -50,6 +50,15 @@ namespace FleetManager.Services {
 		}
 
 		/// <summary>
+		/// Returns the connected user for a given token
+		/// </summary>
+		/// <param name="token"></param>
+		/// <returns></returns>
+		protected ConnectedUser GetUser(string token) {
+			return connectedUsers[token];
+		}
+
+		/// <summary>
 		/// New connection starting point
 		/// </summary>
 		protected override void OnOpen() {

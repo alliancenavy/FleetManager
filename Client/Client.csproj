@@ -153,7 +153,6 @@
     <Compile Include="Converters\BoolToVisibility.cs" />
     <Compile Include="Converters\InverseBoolToVisibility.cs" />
     <Compile Include="Converters\VesselStatusToColor.cs" />
-    <Compile Include="FleetCompElement.cs" />
     <Compile Include="FleetRegistry.xaml.cs">
       <DependentUpon>FleetRegistry.xaml</DependentUpon>
     </Compile>
@@ -174,6 +173,9 @@
     </Compile>
     <Compile Include="Operations\AddFleetShip.xaml.cs">
       <DependentUpon>AddFleetShip.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Operations\NewOperation.xaml.cs">
+      <DependentUpon>NewOperation.xaml</DependentUpon>
     </Compile>
     <Compile Include="SimpleDropdownSelect.xaml.cs">
       <DependentUpon>SimpleDropdownSelect.xaml</DependentUpon>
@@ -230,6 +232,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Operations\AddFleetShip.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Operations\NewOperation.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

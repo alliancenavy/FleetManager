@@ -100,6 +100,7 @@
     <Compile Include="Database\Model\User.cs" />
     <Compile Include="Database\Model\UserPrivs.cs" />
     <Compile Include="Database\Model\UserShip.cs" />
+    <Compile Include="FleetCompElement.cs" />
     <Compile Include="Hull.cs" />
     <Compile Include="LiteOperation.cs" />
     <Compile Include="LiteProfile.cs" />
@@ -119,6 +120,18 @@
     <Compile Include="Messaging\Message.cs" />
     <Compile Include="Messaging\NewAssignment.cs" />
     <Compile Include="Messaging\NewShip.cs" />
+    <Compile Include="Messaging\Ops\AddOOBElement.cs" />
+    <Compile Include="Messaging\Ops\AssignUser.cs" />
+    <Compile Include="Messaging\Ops\ModifyShip.cs" />
+    <Compile Include="Messaging\Ops\UpdateAssignments.cs" />
+    <Compile Include="Messaging\Ops\UpdateOOBWings.cs" />
+    <Compile Include="Messaging\Ops\CreateNewOp.cs" />
+    <Compile Include="Messaging\Ops\DeleteOOBElement.cs" />
+    <Compile Include="Messaging\Ops\FullOperationSnapshot.cs" />
+    <Compile Include="Messaging\Ops\NewOpCreated.cs" />
+    <Compile Include="Messaging\Ops\UpdateOOBShips.cs" />
+    <Compile Include="Messaging\Ops\UpdateRoster.cs" />
+    <Compile Include="Messaging\Ops\UpdateStatus.cs" />
     <Compile Include="Messaging\RegisterRequest.cs" />
     <Compile Include="Messaging\RegisterResponse.cs" />
     <Compile Include="Messaging\RemoveAssignment.cs" />
@@ -126,6 +139,7 @@
     <Compile Include="Messaging\ReqExp\IRequestDetail.cs" />
     <Compile Include="Messaging\ReqExp\UserIdPlus.cs" />
     <Compile Include="Messaging\Request.cs" />
+    <Compile Include="Operation.cs" />
     <Compile Include="OpParticipant.cs" />
     <Compile Include="OpPosition.cs" />
     <Compile Include="Privs.cs" />
@@ -136,6 +150,7 @@
     <Compile Include="SharedEnums.cs" />
     <Compile Include="ShipEquipment.cs" />
     <Compile Include="Utility\DumpWriter.cs" />
+    <Compile Include="Utility\UUID.cs" />
     <Compile Include="Vessel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -143,9 +158,7 @@
     <Content Include="Database\InitialData.sql" />
     <Content Include="Database\TestData.sql" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Messaging\Ops\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />

@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using ANWI.FleetComp;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace Client {
 	/// <summary>
@@ -10,7 +12,13 @@ namespace Client {
 		private void Context_NewFleetShip(object sender, RoutedEventArgs e) {
 			Operations.AddFleetShip afs = new Operations.AddFleetShip();
 			afs.returnNewShip += (v) => {
-				AddNewShip(v);
+				MessageRouter.Instance.SendOps(
+					new ANWI.Messaging.Ops.AddOOBElement() {
+						opUUID = opUUID,
+						type = ANWI.Messaging.Ops.AddOOBElement.Type.FleetShip,
+						shipId = v
+					},
+					null);
 			};
 			afs.ShowDialog();
 		}
@@ -20,7 +28,22 @@ namespace Client {
 		}
 
 		private void Context_NewWing(object sender, RoutedEventArgs e) {
-			AddNewWing();
+			MessageRouter.Instance.SendOps(
+				new ANWI.Messaging.Ops.AddOOBElement() {
+					opUUID = opUUID,
+					type = ANWI.Messaging.Ops.AddOOBElement.Type.Wing
+				},
+				null);
+		}
+
+		private void Context_DeleteShipWing(object sender, RoutedEventArgs e) {
+			FleetCompElement elem = (sender as MenuItem).DataContext 
+				as FleetCompElement;
+			if(elem != null) {
+				MessageRouter.Instance.SendOps(
+					new ANWI.Messaging.Ops.DeleteOOBElement(opUUID, elem.uuid),
+					null);
+			}
 		}
 		#endregion
 
@@ -63,11 +86,7 @@ namespace Client {
 		private void Context_ChangeCallsign(object sender, RoutedEventArgs e) {
 
 		}
-
-		private void Context_DeleteWing(object sender, RoutedEventArgs e) {
-
-		}
-
+		
 		private void Context_AssignSelfWing(object sender, RoutedEventArgs e) {
 
 		}

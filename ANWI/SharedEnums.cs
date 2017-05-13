@@ -15,8 +15,7 @@
 	/// Describes the primary purpose of an operation
 	/// </summary>
 	public enum OperationType {
-		UNSELECTED,
-		PATROL,
+		PATROL = 0,
 		ASSAULT,
 		DEFENSE,
 		MINING,
@@ -59,8 +58,6 @@
 
 		public static string ToFriendlyString(this OperationType type) {
 			switch (type) {
-				case OperationType.UNSELECTED:
-					return "Unselected";
 				case OperationType.PATROL:
 					return "Patrol";
 				case OperationType.ASSAULT:

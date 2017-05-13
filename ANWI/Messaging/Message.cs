@@ -31,6 +31,16 @@ namespace ANWI.Messaging {
 		[MessagePackKnownType("newa", typeof(NewAssignment))]
 		[MessagePackKnownType("css", typeof(ChangeShipStatus))]
 		[MessagePackKnownType("ns", typeof(NewShip))]
+		[MessagePackKnownType("op_cn", typeof(Ops.CreateNewOp))]
+		[MessagePackKnownType("op_ctd", typeof(Ops.NewOpCreated))]
+		[MessagePackKnownType("op_snap", typeof(Ops.FullOperationSnapshot))]
+		[MessagePackKnownType("op_us", typeof(Ops.UpdateStatus))]
+		[MessagePackKnownType("op_addoobe", typeof(Ops.AddOOBElement))]
+		[MessagePackKnownType("op_upoobs", typeof(Ops.UpdateOOBShips))]
+		[MessagePackKnownType("op_upoobw", typeof(Ops.UpdateOOBWings))]
+		[MessagePackKnownType("op_deloobe", typeof(Ops.DeleteOOBElement))]
+		[MessagePackKnownType("op_assus", typeof(Ops.AssignUser))]
+		[MessagePackKnownType("op_upass", typeof(Ops.UpdateAssignments))]
 		public IMessagePayload payload;
 
 		public Message() {

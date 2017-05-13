@@ -33,7 +33,13 @@ namespace ANWI.Messaging {
 			SetPrimaryRate,			// Detail: TwoIDs
 			ChangeName,				// Detail: IdString
 			AddEquipment,			// Detail: TwoIDs
-			RemoveEquipment			// Detail: TwoIDs
+			RemoveEquipment,		// Detail: TwoIDs
+
+			//
+			// Operation requests
+			GetOperation,			// Detail: IdString
+			CloseOperation,
+			AdvanceOpLifecycle
 		}
 
 		public Type type { get; set; }

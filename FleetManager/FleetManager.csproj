@@ -183,7 +183,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Operation.cs" />
+    <Compile Include="ActiveOperation.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="ConnectedUser.cs" />
     <Compile Include="Program.cs" />

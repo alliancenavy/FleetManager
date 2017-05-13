@@ -29,7 +29,7 @@ namespace Client.Operations {
 			get { return _vesselList; }
 		}
 
-		public event Action<LiteVessel> returnNewShip;
+		public event Action<int> returnNewShip;
 
 		public AddFleetShip() {
 			this.DataContext = this;
@@ -56,7 +56,7 @@ namespace Client.Operations {
 		private void Button_OK_Click(object sender, RoutedEventArgs e) {
 			if(returnNewShip != null && Combobox_Ships.SelectedItem != null) {
 				LiteVessel v = Combobox_Ships.SelectedItem as LiteVessel;
-				returnNewShip(v);
+				returnNewShip(v.id);
 				this.Close();
 			}
 		}

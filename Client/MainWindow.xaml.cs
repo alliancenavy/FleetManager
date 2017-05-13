@@ -12,7 +12,7 @@ namespace Client {
 	/// Main application window
 	/// Shows personnel jackets, full roster, and active operations
 	/// </summary>
-	public partial class MainWindow : Window, INotifyPropertyChanged, IMailbox {
+	public partial class MainWindow : MailboxWindow, INotifyPropertyChanged {
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
@@ -71,8 +71,19 @@ namespace Client {
 			AppDomain.CurrentDomain.UnhandledException 
 				+= new UnhandledExceptionEventHandler(UEHandler);
 
-			//OperationDetails op = new OperationDetails();
-			//op.ShowDialog();
+			AddProcessor(typeof(ANWI.Messaging.FullRoster), 
+				ProcessRoster);
+			AddProcessor(typeof(ANWI.Messaging.FullOperationsList), 
+				ProcessOpsList);
+			AddProcessor(typeof(ANWI.Messaging.AllCommonData), 
+				ProcessCommonData);
+			AddProcessor(typeof(ANWI.Messaging.ConfirmUpdate), 
+				ProcessConfirmUpdate);
+			AddProcessor(typeof(ANWI.Messaging.FullProfile), 
+				ProcessFullProfile);
+			AddProcessor(typeof(ANWI.Messaging.Ops.NewOpCreated),
+				ProcessNewOpCreated);
+
 
 			// Open a modal login window
 			// When the window closes the authclient member will be either null
@@ -145,8 +156,17 @@ namespace Client {
 		/// <param name="e"></param>
 		private void Button_NewOp_Click(object sender, RoutedEventArgs e) {
 			if (opDet == null) {
-				opDet = new OperationDetails();
-				opDet.Show();
+				Button_NewOp.IsEnabled = false;
+
+				Operations.NewOperation newOp = new Operations.NewOperation();
+				newOp.returnNewOp += (name, type) => {
+					MessageRouter.Instance.SendOps(
+						new ANWI.Messaging.Ops.CreateNewOp(name, type,
+						account.profile.id),
+						this
+						);
+				};
+				newOp.ShowDialog();
 			}
 		}
 
@@ -307,33 +327,8 @@ namespace Client {
 
 			Application.Current.Shutdown();
 		}
-
 		#endregion
-
-		#region Messaging
-		/// <summary>
-		/// Processes messages meant to be delivered to the main window
-		/// </summary>
-		/// <param name="m">Incomming message</param>
-		public void DeliverMessage(ANWI.Messaging.Message m) {
-			if (m.payload is ANWI.Messaging.FullRoster) {
-				LoadRoster(m.payload as ANWI.Messaging.FullRoster);
-			} else if (m.payload is ANWI.Messaging.FullOperationsList) {
-				LoadOps(m.payload as ANWI.Messaging.FullOperationsList);
-			} else if (m.payload is ANWI.Messaging.AllCommonData) {
-				CommonData.LoadAll(m.payload as ANWI.Messaging.AllCommonData);
-			} else if (m.payload is ANWI.Messaging.ConfirmUpdate) {
-				ANWI.Messaging.ConfirmUpdate cpu 
-					= m.payload as ANWI.Messaging.ConfirmUpdate;
-				FetchProfile(cpu.updatedId);
-			} else if (m.payload is ANWI.Messaging.FullProfile) {
-				ANWI.Messaging.FullProfile fp
-					= m.payload as ANWI.Messaging.FullProfile;
-				wpfProfile = fp.profile;
-			}
-		}
-		#endregion
-
+		
 		#region Request Senders
 		/// <summary>
 		/// Gets commonly used data like the list of ranks and rates from 
@@ -408,8 +403,10 @@ namespace Client {
 		/// Response handler for the full roster request.
 		/// Populates the global roster list
 		/// </summary>
-		/// <param name="fr"></param>
-		private void LoadRoster(ANWI.Messaging.FullRoster fr) {
+		/// <param name="p"></param>
+		private void ProcessRoster(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.FullRoster fr = p as ANWI.Messaging.FullRoster;
+
 			this.Dispatcher.Invoke(() => {
 				rosterList.Clear();
 				Spinner_Roster.Visibility = Visibility.Hidden;
@@ -427,11 +424,11 @@ namespace Client {
 			originalRoster = fr.members;
 
 			// Load all the records in
-			foreach (LiteProfile p in fr.members) {
+			foreach (LiteProfile pf in fr.members) {
 				this.Dispatcher.Invoke(() => {
-					if (p.id == account.profile.id)
-						p.isMe = true;
-					rosterList.Add(p);
+					if (pf.id == account.profile.id)
+						pf.isMe = true;
+					rosterList.Add(pf);
 				});
 			}
 		}
@@ -439,8 +436,11 @@ namespace Client {
 		/// <summary>
 		/// Loads the list of operations
 		/// </summary>
-		/// <param name="fol"></param>
-		private void LoadOps(ANWI.Messaging.FullOperationsList fol) {
+		/// <param name="p"></param>
+		private void ProcessOpsList(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.FullOperationsList fol
+				= p as ANWI.Messaging.FullOperationsList;
+
 			this.Dispatcher.Invoke(() => {
 				operationList.Clear();
 				Spinner_Ops.Visibility = Visibility.Hidden;
@@ -457,6 +457,49 @@ namespace Client {
 			}
 		}
 
+		/// <summary>
+		/// Loads the common data into the static class
+		/// </summary>
+		/// <param name="p"></param>
+		private void ProcessCommonData(ANWI.Messaging.IMessagePayload p) {
+			CommonData.LoadAll(p as ANWI.Messaging.AllCommonData);
+		}
+
+		/// <summary>
+		/// When an update confirmation is received for a profile, reload
+		/// that profile to reflect the changes
+		/// </summary>
+		/// <param name="p"></param>
+		private void ProcessConfirmUpdate(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.ConfirmUpdate cpu
+					= p as ANWI.Messaging.ConfirmUpdate;
+			FetchProfile(cpu.updatedId);
+		}
+
+		/// <summary>
+		/// Load the received profile into the left pane
+		/// </summary>
+		/// <param name="p"></param>
+		private void ProcessFullProfile(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.FullProfile fp = p as ANWI.Messaging.FullProfile;
+			wpfProfile = fp.profile;
+		}
+
+		/// <summary>
+		/// Opens the ops window with the new operation
+		/// </summary>
+		/// <param name="p"></param>
+		private void ProcessNewOpCreated(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.Ops.NewOpCreated noc
+				= p as ANWI.Messaging.Ops.NewOpCreated;
+
+			this.Dispatcher.Invoke(() => {
+				opDet = new OperationDetails(account.profile.id, noc.uuid);
+				opDet.Show();
+
+				Button_NewOp.IsEnabled = true;
+			});
+		}
 		#endregion
 
 		#region Callbacks
