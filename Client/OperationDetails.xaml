@@ -7,6 +7,7 @@
         xmlns:conv="clr-namespace:Client.Converters"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:OOB="clr-namespace:ANWI.FleetComp;assembly=ANWI"
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         mc:Ignorable="d"
         MouseDown="MailboxWindow_MouseDown"
         MouseMove="MailboxWindow_MouseMove"
@@ -16,13 +17,18 @@
         <conv:BoolToVisibility x:Key="Conv_BoolToVisibility"/>
         <conv:InverseBoolToVisibility x:Key="Conv_InverseBoolToVisibility"/>
 
+        <CollectionViewSource x:Key="SortedRoster" Source="{Binding roster}">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="profile.nickname"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+
         <DataTemplate x:Key="RosterTemplate">
             <Canvas Height="60" Background="White">
                 <Image x:Name="Image_Rank" HorizontalAlignment="Left" Margin="10,10,0,0" Height="40" Width="40" VerticalAlignment="Top" OpacityMask="Black" Source="{Binding profile.rank.icon}"/>
                 <Image x:Name="Image_PrimaryRate" HorizontalAlignment="Left" Margin="55,10,0,0" Height="40" VerticalAlignment="Top" Width="40" OpacityMask="Black" Source="{Binding Path=profile.primaryRate.icon, FallbackValue={StaticResource NoImageFound}}"/>
                 <TextBlock x:Name="Text_Name" TextWrapping="Wrap" Margin="100,10,0,0" Text="{Binding Path=profile.fullName, FallbackValue='Name'}" VerticalAlignment="Top" Height="16" FontWeight="DemiBold"/>
                 <fa:ImageAwesome x:Name="Icon_FC" Icon="Star" Margin="100,30,0,0" Height="15" Width="15" ToolTip="Fleet Command" Visibility="{Binding Path=isFC, Converter={StaticResource Conv_BoolToVisibility}}"/>
-                <Button x:Name="Button_RosterRemove" Style="{StaticResource XButton}" IsEnabled="True" Width="20" Height="20" Click="Button_RosterRemove_Click" ToolTip="Remove from assignment" Canvas.Right="10" Canvas.Top="18"/>
             </Canvas>
         </DataTemplate>
 
@@ -38,7 +44,7 @@
                         <MenuItem Header="Assign Self" Click="Context_AssignSelfShip"/>
                         <MenuItem Header="Unassign" Click="Context_UnassignShip"/>
                         <Separator/>
-                        <MenuItem Header="Critical" IsCheckable="True" Checked="Context_CriticalShip"/>
+                        <MenuItem Header="Critical" Click="Context_CriticalShip" IsChecked="{Binding Path=critical}"/>
                         <Separator/>
                         <MenuItem Header="Delete" Click="Context_DeleteShipPosition"/>
                     </ContextMenu>
@@ -73,7 +79,7 @@
                 <TextBlock x:Name="Text_ShipClass" Grid.Row="0" Margin="120,48,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding Path=v.hull.nameAndRole, FallbackValue='Ship Class'}" FontSize="12" FontWeight="Regular"/>
 
                 <Rectangle Grid.Row="1" Margin="15,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="10"  Fill="#FFB9B9B9" />
-                <ListBox Name="List_Positions" Grid.Row="1" Height="Auto" VerticalAlignment="Top" Margin="30,0,5,0" HorizontalContentAlignment="Stretch" ItemTemplate="{DynamicResource PositionTemplate}" ItemsSource="{Binding positions}" SelectionChanged="List_Positions_SelectionChanged" BorderThickness="0">
+                <ListBox Name="List_Positions" Grid.Row="1" Height="Auto" VerticalAlignment="Top" Margin="30,0,5,0" HorizontalContentAlignment="Stretch" ItemTemplate="{DynamicResource PositionTemplate}" ItemsSource="{Binding positions, UpdateSourceTrigger=PropertyChanged}" SelectionChanged="List_Positions_SelectionChanged" BorderThickness="0">
                     <ListBox.Template>
                         <ControlTemplate>
                             <ItemsPresenter/>
@@ -272,7 +278,7 @@
                 </Grid>
             </Grid>
 
-            <ListBox x:Name="List_Roster" Margin="10" Grid.Row="1" ItemTemplate="{DynamicResource RosterTemplate}" ItemsSource="{Binding Path=roster}" ScrollViewer.VerticalScrollBarVisibility="Visible" HorizontalContentAlignment="Stretch" PreviewMouseLeftButtonDown="List_Roster_PreviewMouseLeftButtonDown" SelectionChanged="List_Roster_SelectionChanged"/>
+            <ListBox x:Name="List_Roster" Margin="10" Grid.Row="1" ItemTemplate="{DynamicResource RosterTemplate}" ItemsSource="{Binding Source={StaticResource SortedRoster}}" ScrollViewer.VerticalScrollBarVisibility="Visible" HorizontalContentAlignment="Stretch" PreviewMouseLeftButtonDown="List_Roster_PreviewMouseLeftButtonDown" SelectionChanged="List_Roster_SelectionChanged"/>
         </Grid>
         
         <!--

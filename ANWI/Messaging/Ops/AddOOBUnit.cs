@@ -4,7 +4,7 @@
 	/// Client -> Server
 	/// Adds a new ship or wing to the order of battle
 	/// </summary>
-	public class AddOOBElement : IMessagePayload {
+	public class AddOOBUnit : IMessagePayload {
 		public enum Type {
 			FleetShip,
 			CustShip,
@@ -17,15 +17,15 @@
 		public int shipId;
 		public string name;
 
-		public AddOOBElement() {
+		public AddOOBUnit() {
 		}
 
-		public AddOOBElement(string uuid) {
+		public AddOOBUnit(string uuid) {
 			opUUID = uuid;
 		}
 
 		public override string ToString() {
-			return $"Type: AddOOBElement. Add: {type}";
+			return $"Type: AddOOBUnit. Add: {type}";
 		}
 	}
 }

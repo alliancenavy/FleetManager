@@ -24,6 +24,18 @@ namespace FleetManager {
 			socket = ctxt.WebSocket;
 		}
 
+		/// <summary>
+		/// FOR TESTING PURPOSES ONLY
+		/// Spoofing connected users for adding to ops
+		/// </summary>
+		/// <param name="token"></param>
+		/// <param name="userID"></param>
+		public ConnectedUser(string token, int userID) {
+			this.token = token;
+			this.profile = LiteProfile.FetchById(userID);
+			socket = null;
+		}
+
 		public void SendMessageTo(ANWI.Messaging.Message m) {
 			ANWI.Messaging.Message.Send(socket, m);
 		}

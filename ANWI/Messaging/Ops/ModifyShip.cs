@@ -2,29 +2,35 @@
 
 	/// <summary>
 	/// Client -> Server
-	/// Changes a ship's properties
+	/// Changes a unit's properties
 	/// </summary>
-	public class ModifyShip : IMessagePayload {
+	public class ModifyUnit : IMessagePayload {
 		public enum ChangeType {
-			Flagship
-
+			SetFlagship,
+			ChangeName,
+			ChangeCallsign,
+			SetPositionCritical,
+			AddPosition,
+			DeletePosition
 		}
 
 		public string opUUID;
-		public string shipUUID;
+		public string unitUUID;
 
 		public ChangeType type;
 		public bool boolean;
-
-		public ModifyShip() {
+		public int integer;
+		public string uuid;
+		
+		public ModifyUnit() {
 		}
 
-		public ModifyShip(string uuid) {
+		public ModifyUnit(string uuid) {
 			opUUID = uuid;
 		}
 
 		public override string ToString() {
-			return $"Type: ModifyShip. Changed: {type}";
+			return $"Type: ModifyUnit. Changed: {type}";
 		}
 	}
 }

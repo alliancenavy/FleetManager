@@ -9,21 +9,18 @@ namespace ANWI.Messaging.Ops {
 	/// Changes assignments on a member in the roster
 	/// </summary>
 	public class UpdateAssignments : IMessagePayload {
-		public class AssignTo {
-			public int userId;
-			public string shipUUID;
-			public string posUUID;
-		}
-
-		public List<AssignTo> added;
-		public List<int> removed;
+		public List<Tuple<int, string>> added;
+		public List<int> removedByUser;
+		public List<string> removedByUUID;
 
 		public UpdateAssignments() {
 		}
 
-		public UpdateAssignments(List<AssignTo> added, List<int> removed) {
+		public UpdateAssignments(List<Tuple<int, string>> added, 
+			List<int> removedUser, List<string> removedUUID) {
 			this.added = added;
-			this.removed = removed;
+			this.removedByUser = removedUser;
+			this.removedByUUID = removedUUID;
 		}
 
 		public override string ToString() {

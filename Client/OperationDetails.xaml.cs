@@ -27,6 +27,8 @@ namespace Client {
 		private string opUUID;
 		private int userId;
 
+		private OrderOfBattle fleet = new OrderOfBattle();
+
 		#region Double-Bound WPF Variables
 
 		private bool _freeMove = false;
@@ -44,6 +46,12 @@ namespace Client {
 
 		#region Single-Bound WPF Variables
 		public bool isFC { get; set; }
+
+		//
+		// Fleet Composition
+		public ReadOnlyCollection<FleetUnit> fleetComp {
+			get { return fleet.Fleet; }
+		}
 
 		//
 		// Name of the Operation
@@ -119,24 +127,12 @@ namespace Client {
 		}
 
 		//
-		// Fleet Composition Table
-		private ObservableCollection<FleetUnit> _fleetComp
-			= new ObservableCollection<FleetUnit>();
-		public ObservableCollection<FleetUnit> fleetComp {
-			get { return _fleetComp; }
-			set {
-				if(_fleetComp != value) {
-					_fleetComp = value;
-					NotifyPropertyChanged("fleetComp");
-				}
-			}
-		}
-
-		//
 		// Participant Numbers
 		public int currentUserNumber { get { return _roster.Count; } }
-		public int totalCriticalSlots { get; set; }
-		public int totalSlots { get; set; }
+		public int totalCriticalSlots {
+			get { return fleet.TotalCriticalPositions; }
+		}
+		public int totalSlots { get { return fleet.TotalPositions; } }
 
 		//
 		// Working/Busy
@@ -159,8 +155,6 @@ namespace Client {
 		private ListBox activePositionList = null;
 		private ListBoxItem draggedItem = null;
 
-		private int lastWingNumber = 1;
-
 		#endregion
 
 		/// <summary>
@@ -180,14 +174,18 @@ namespace Client {
 
 			AddProcessor(typeof(ANWI.Messaging.Ops.FullOperationSnapshot),
 				ProcessOpSnapshot);
+			AddProcessor(typeof(ANWI.Messaging.Ops.UpdateRoster),
+				ProcessUpdateRoster);
 			AddProcessor(typeof(ANWI.Messaging.Ops.UpdateStatus),
 				ProcessUpdateStatus);
-			AddProcessor(typeof(ANWI.Messaging.Ops.UpdateOOBShips),
+			AddProcessor(typeof(ANWI.Messaging.Ops.UpdateUnitsShips),
 				ProcessUpdateOOBShips);
-			AddProcessor(typeof(ANWI.Messaging.Ops.UpdateOOBWings),
+			AddProcessor(typeof(ANWI.Messaging.Ops.UpdateUnitsWings),
 				ProcessUpdateOOBWings);
 			AddProcessor(typeof(ANWI.Messaging.Ops.UpdateAssignments),
 				ProcessUpdateAssignments);
+			AddProcessor(typeof(ANWI.Messaging.Ops.UpdatePositions),
+				ProcessUpdatePositions);
 
 			MessageRouter.Instance.SendOps(
 				new ANWI.Messaging.Request(
@@ -198,91 +196,37 @@ namespace Client {
 		}
 
 		#region Helpers
-
-		private void RecountSlots() {
-			int total = 0;
-			int critical = 0;
-
-			foreach(FleetUnit element in _fleetComp) {
-				if(element is Ship) {
-					Ship ship = element as Ship;
-					total += ship.positions.Count;
-					critical += CountCriticalPositions(ship.positions);
-				} else if(element is Wing) {
-					Wing wing = element as Wing;
-					foreach(Boat member in wing.members) {
-						total += member.positions.Count;
-						critical += CountCriticalPositions(member.positions);
-					}
-				}
-			}
-
-			totalCriticalSlots = critical;
-			totalSlots = total;
-
-			NotifyPropertyChanged("totalCriticalSlots");
-			NotifyPropertyChanged("totalSlots");
-		}
-
-		private int CountCriticalPositions(List<OpPosition> positions) {
-			int critical = 0;
-			foreach (OpPosition p in positions) {
-				if (p.critical)
-					critical += 1;
-			}
-			return critical;
-		}
-
-		private void AddOOBElement(FleetUnit ship) {
-			foreach(FleetUnit elem in fleetComp) {
-				if (elem.uuid == ship.uuid)
-					return;
-			}
-
-			this.Dispatcher.Invoke(() => { fleetComp.Add(ship); });
-		}
-
-		private void DeleteOOBElement(string uuid) {
-			foreach (FleetUnit elem in fleetComp) {
-				if(elem.uuid == uuid) {
-					this.Dispatcher.Invoke(() => { fleetComp.Remove(elem); });
-					break;
-				}
-			}
-		}
-
+		
 		private void AddParticipants(List<OpParticipant> add) {
 			foreach(OpParticipant p in add) {
-				// First make sure they aren't already in the list
-				bool alreadyExists = false;
-				foreach(OpParticipant existing in roster) {
-					if(p.profile.id == existing.profile.id) {
-						alreadyExists = true;
-						break;
-					}
-				}
 
-				if(!alreadyExists) {
+				// Only add them if they don't already exist in the roster
+				if (GetParticipant(p.profile.id) == null) {
 					if (p.profile.id == userId)
 						thisUser = p;
 					this.Dispatcher.Invoke(() => { roster.Add(p); });
 				}
 			}
+
+			NotifyPropertyChanged("currentUserNumber");
 		}
 
-
-		/*private ListBoxItem FindPosition(OpPosition pos) {
-			foreach(FleetCompElement element in List_Fleet.Items) {
-				if(element is NamedShip) {
-					ListBoxItem elemContainer = List_Fleet.ItemContainerGenerator.ContainerFromItem(element) as ListBoxItem;
-					elemContainer
-				} else if(element is Wing) {
-
-				}
+		private OpParticipant GetParticipant(int id) {
+			foreach(OpParticipant p in _roster) {
+				if (p.profile.id == id)
+					return p;
 			}
-
 			return null;
-		}*/
+		}
+
+		private void ChangeAssignment(string posUUID, int userID) {
+			MessageRouter.Instance.SendOps(new ANWI.Messaging.Ops.AssignUser() {
+				opUUID = opUUID,
+				positionUUID = posUUID,
+				userId = userID
+			},
+			null);
+		}
 		#endregion
 
 		#region Window Event Handlers
@@ -299,28 +243,20 @@ namespace Client {
 				);
 		}
 
-		private void Button_RosterRemove_Click(object sender, RoutedEventArgs e) {
-			Button b = sender as Button;
-			OpParticipant p = b.DataContext as OpParticipant;
-			//OpPosition.UnassignPosition(p.position);
-		}
-
 		private void Button_JoinOp_Click(object sender, RoutedEventArgs e) {
 
 		}
 
 		private void
 		List_Positions_DoubleClick(object sender, RoutedEventArgs e) {
-			/*OpPosition.AssignPosition( 
-				(sender as ListBoxItem).DataContext as OpPosition,
-				thisUser);*/
+			OpPosition pos = (sender as ListBoxItem).DataContext as OpPosition;
+			ChangeAssignment(pos.uuid, thisUser.profile.id);
 		}
 
 		private void
 		List_WingCrew_DoubleClick(object sender, RoutedEventArgs e) {
-			/*OpPosition.AssignPosition( 
-				(sender as ContentControl).DataContext as OpPosition,
-				thisUser);*/
+			OpPosition pos = (sender as ContentControl).DataContext as OpPosition;
+			ChangeAssignment(pos.uuid, thisUser.profile.id);
 		}
 
 		private void 
@@ -415,14 +351,8 @@ namespace Client {
 			Grid grid = sender as Grid;
 			OpPosition pos = grid.DataContext as OpPosition;
 
-			MessageRouter.Instance.SendOps(
-				new ANWI.Messaging.Ops.AssignUser() {
-					opUUID = opUUID,
-					elemUUID = pos.unitUUID,
-					positionUUID = pos.uuid,
-					userId = (draggedItem.DataContext as OpParticipant).profile.id
-				}, 
-				null);
+			ChangeAssignment(pos.uuid,
+				(draggedItem.DataContext as OpParticipant).profile.id);
 		}
 
 		private void List_Roster_SelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -462,6 +392,19 @@ namespace Client {
 			working = false;
 		}
 
+		private void ProcessUpdateRoster(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.Ops.UpdateRoster up 
+				= p as ANWI.Messaging.Ops.UpdateRoster;
+
+			if(up.addedUsers != null) {
+				AddParticipants(up.addedUsers);
+			}
+
+			if(up.removedUsers != null) {
+				// TODO
+			}
+		}
+
 		private void ProcessUpdateStatus(ANWI.Messaging.IMessagePayload p) {
 			ANWI.Messaging.Ops.UpdateStatus us 
 				= p as ANWI.Messaging.Ops.UpdateStatus;
@@ -469,41 +412,96 @@ namespace Client {
 		}
 
 		private void ProcessUpdateOOBShips(ANWI.Messaging.IMessagePayload p) {
-			ANWI.Messaging.Ops.UpdateOOBShips us
-				= p as ANWI.Messaging.Ops.UpdateOOBShips;
+			ANWI.Messaging.Ops.UpdateUnitsShips us
+				= p as ANWI.Messaging.Ops.UpdateUnitsShips;
 
 			if (us.addedShips != null) {
 				foreach (Ship s in us.addedShips) {
-					AddOOBElement(s);
+					fleet.AddUnit(s);
 				}
 			}
 
 			if (us.removedShips != null) {
 				foreach (string s in us.removedShips) {
-					DeleteOOBElement(s);
+					fleet.DeleteUnit(s);
 				}
 			}
+
+			NotifyPropertyChanged("fleetComp");
 		}
 
 		private void ProcessUpdateOOBWings(ANWI.Messaging.IMessagePayload p) {
-			ANWI.Messaging.Ops.UpdateOOBWings uw
-				= p as ANWI.Messaging.Ops.UpdateOOBWings;
+			ANWI.Messaging.Ops.UpdateUnitsWings uw
+				= p as ANWI.Messaging.Ops.UpdateUnitsWings;
 
 			if (uw.addedWings != null) {
 				foreach (Wing w in uw.addedWings) {
-					AddOOBElement(w);
+					fleet.AddUnit(w);
 				}
 			}
 
 			if (uw.removedWings != null) {
 				foreach (string w in uw.removedWings) {
-					DeleteOOBElement(w);
+					fleet.DeleteUnit(w);
+				}
+			}
+
+			NotifyPropertyChanged("fleetComp");
+		}
+
+		private void ProcessUpdateAssignments(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.Ops.UpdateAssignments au
+				= p as ANWI.Messaging.Ops.UpdateAssignments;
+
+			if(au.added != null) {
+				foreach(Tuple<int, string> add in au.added) {
+					OpParticipant member = GetParticipant(add.Item1);
+					if(member != null)
+						fleet.AssignPosition(add.Item2, member);
+				}
+			}
+
+			if(au.removedByUser != null) {
+				foreach(int rem in au.removedByUser) {
+					OpParticipant member = GetParticipant(rem);
+					if (member != null && member.position != null)
+						fleet.ClearPosition(member.position.uuid);
+				}
+			}
+
+			if(au.removedByUUID != null) {
+				foreach(string rem in au.removedByUUID) {
+					fleet.ClearPosition(rem);
 				}
 			}
 		}
 
-		private void ProcessUpdateAssignments(ANWI.Messaging.IMessagePayload p) {
-			
+		private void ProcessUpdatePositions(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.Ops.UpdatePositions up
+				= p as ANWI.Messaging.Ops.UpdatePositions;
+
+			if(up.added != null) {
+				foreach(OpPosition pos in up.added) {
+					fleet.AddPosition(pos);
+				}
+			}
+
+			if(up.changed != null) {
+				foreach(OpPosition pos in up.changed) {
+					OpPosition old = fleet.GetPosition(pos.uuid);
+					if(old != null) {
+						old.critical = pos.critical;
+					}
+				}
+			}
+
+			if(up.removed != null) {
+				foreach(string rem in up.removed) {
+					fleet.DeletePosition(rem);
+				}
+			}
+
+			NotifyPropertyChanged(string.Empty);
 		}
 		#endregion
 

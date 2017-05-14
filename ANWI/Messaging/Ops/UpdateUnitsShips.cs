@@ -7,20 +7,20 @@ namespace ANWI.Messaging.Ops {
 	/// Server -> Client
 	/// Informs clients when the ships in the OOB have changed
 	/// </summary>
-	public class UpdateOOBShips : IMessagePayload {
+	public class UpdateUnitsShips : IMessagePayload {
 		public List<Ship> addedShips = null;
 		public List<string> removedShips = null;
 
-		public UpdateOOBShips() {
+		public UpdateUnitsShips() {
 		}
 
-		public UpdateOOBShips(List<Ship> added, List<string> removed) {
+		public UpdateUnitsShips(List<Ship> added, List<string> removed) {
 			addedShips = added;
 			removedShips = removed;
 		}
 
 		public override string ToString() {
-			return $"Type: UpdateOOBShips. Added: {addedShips.Count} " +
+			return $"Type: UpdateUnitsShips. Added: {addedShips.Count} " +
 				$"Removed: {removedShips.Count}";
 		}
 	}

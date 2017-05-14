@@ -6,9 +6,9 @@
 	/// </summary>
 	public class AssignUser : IMessagePayload {
 
+		// Empty string positionUUID means unassign the given user
+		// -1 as userId means unassign the given position
 		public string opUUID;
-		public string elemUUID;
-		public string wingmemberUUID;
 		public string positionUUID;
 		public int userId;
 

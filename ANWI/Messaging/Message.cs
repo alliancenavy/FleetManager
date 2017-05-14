@@ -35,12 +35,18 @@ namespace ANWI.Messaging {
 		[MessagePackKnownType("op_ctd", typeof(Ops.NewOpCreated))]
 		[MessagePackKnownType("op_snap", typeof(Ops.FullOperationSnapshot))]
 		[MessagePackKnownType("op_us", typeof(Ops.UpdateStatus))]
-		[MessagePackKnownType("op_addoobe", typeof(Ops.AddOOBElement))]
-		[MessagePackKnownType("op_upoobs", typeof(Ops.UpdateOOBShips))]
-		[MessagePackKnownType("op_upoobw", typeof(Ops.UpdateOOBWings))]
-		[MessagePackKnownType("op_deloobe", typeof(Ops.DeleteOOBElement))]
+		[MessagePackKnownType("op_upros", typeof(Ops.UpdateRoster))]
+		[MessagePackKnownType("op_addunit", typeof(Ops.AddOOBUnit))]
+		[MessagePackKnownType("op_upships", typeof(Ops.UpdateUnitsShips))]
+		[MessagePackKnownType("op_upwings", typeof(Ops.UpdateUnitsWings))]
+		[MessagePackKnownType("op_delunit", typeof(Ops.DeleteOOBElement))]
 		[MessagePackKnownType("op_assus", typeof(Ops.AssignUser))]
 		[MessagePackKnownType("op_upass", typeof(Ops.UpdateAssignments))]
+		[MessagePackKnownType("op_modunit", typeof(Ops.ModifyUnit))]
+		[MessagePackKnownType("op_addpos", typeof(Ops.AddPosition))]
+		[MessagePackKnownType("op_delpos", typeof(Ops.DeletePosition))]
+		[MessagePackKnownType("op_uppos", typeof(Ops.UpdatePositions))]
+		[MessagePackKnownType("op_poscrit", typeof(Ops.SetPositionCritical))]
 		public IMessagePayload payload;
 
 		public Message() {

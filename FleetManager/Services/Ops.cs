@@ -26,12 +26,18 @@ namespace FleetManager.Services {
 				ProcessRequestMessage);
 			AddProcessor(typeof(ANWI.Messaging.Ops.CreateNewOp),
 				ProcessCreateOp);
-			AddProcessor(typeof(ANWI.Messaging.Ops.AddOOBElement),
+			AddProcessor(typeof(ANWI.Messaging.Ops.AddOOBUnit),
 				ProcessAddOOBElement);
 			AddProcessor(typeof(ANWI.Messaging.Ops.DeleteOOBElement),
 				ProcessDeleteOOBElement);
 			AddProcessor(typeof(ANWI.Messaging.Ops.AssignUser),
 				ProcessAssignUser);
+			AddProcessor(typeof(ANWI.Messaging.Ops.AddPosition),
+				ProcessAddPosition);
+			AddProcessor(typeof(ANWI.Messaging.Ops.DeletePosition),
+				ProcessDeletePosition);
+			AddProcessor(typeof(ANWI.Messaging.Ops.SetPositionCritical),
+				ProcessSetPositionCritical);
 
 			// Create testing op
 			string uuid = CreateNew("Test Operation", OperationType.PATROL);
@@ -80,15 +86,12 @@ namespace FleetManager.Services {
 						ANWI.Messaging.ReqExp.IdString det
 							= req.detail as ANWI.Messaging.ReqExp.IdString;
 
-						ActiveOperation op = activeOps[det.str];
-						if(op != null) {
+						ActiveOperation op = GetOperation(det.str);
+						if (op != null) {
 							op.SubscribeUser(GetUser(GetTokenCookie()));
 							return new ANWI.Messaging.Ops.FullOperationSnapshot(
 								op.ToSnapshot());
 						} else {
-							logger.Error(
-								$"{GetLogIdentifier()} requested details of " +
-								$"op {det.str} which does not exist.");
 							return null;
 						}
 					}
@@ -97,13 +100,9 @@ namespace FleetManager.Services {
 						ANWI.Messaging.ReqExp.IdString det
 							= req.detail as ANWI.Messaging.ReqExp.IdString;
 
-						ActiveOperation op = activeOps[det.str];
+						ActiveOperation op = GetOperation(det.str);
 						if(op != null) {
 							op.UnsubscribeUser(GetTokenCookie());
-						} else {
-							logger.Error($"{GetLogIdentifier()} requested to " +
-								$"close sub to op {det.str} which does not " +
-								"exist");
 						}
 
 						return null;
@@ -113,7 +112,7 @@ namespace FleetManager.Services {
 						ANWI.Messaging.ReqExp.IdString det
 							= req.detail as ANWI.Messaging.ReqExp.IdString;
 
-						ActiveOperation op = activeOps[det.str];
+						ActiveOperation op = GetOperation(det.str);
 						if (op != null)
 							op.AdvanceLifecycle();
 						return null;
@@ -135,18 +134,15 @@ namespace FleetManager.Services {
 
 		private ANWI.Messaging.IMessagePayload
 		ProcessAddOOBElement(ANWI.Messaging.IMessagePayload p) {
-			ANWI.Messaging.Ops.AddOOBElement add
-				= p as ANWI.Messaging.Ops.AddOOBElement;
+			ANWI.Messaging.Ops.AddOOBUnit add
+				= p as ANWI.Messaging.Ops.AddOOBUnit;
 
-			ActiveOperation op = activeOps[add.opUUID];
+			ActiveOperation op = GetOperation(add.opUUID);
 			if(op != null) {
-				if (add.type == ANWI.Messaging.Ops.AddOOBElement.Type.FleetShip)
+				if (add.type == ANWI.Messaging.Ops.AddOOBUnit.Type.FleetShip)
 					op.AddFleetShip(add.shipId);
-				else if (add.type == ANWI.Messaging.Ops.AddOOBElement.Type.Wing)
+				else if (add.type == ANWI.Messaging.Ops.AddOOBUnit.Type.Wing)
 					op.AddWing();
-			} else {
-				logger.Error($"Attempted to add fleet ship to op {add.opUUID}" +
-					" which does not exist");
 			}
 
 			return null;
@@ -157,12 +153,9 @@ namespace FleetManager.Services {
 			ANWI.Messaging.Ops.DeleteOOBElement del
 				= p as ANWI.Messaging.Ops.DeleteOOBElement;
 
-			ActiveOperation op = activeOps[del.opUUID];
+			ActiveOperation op = GetOperation(del.opUUID);
 			if(op != null) {
-				op.DeleteFleetElement(del.elementUUID);
-			} else {
-				logger.Error($"Attempted to delete elem from op {del.opUUID} " +
-					"which does not exist");
+				op.DeleteFleetUnit(del.elementUUID);
 			}
 
 			return null;
@@ -173,13 +166,61 @@ namespace FleetManager.Services {
 			ANWI.Messaging.Ops.AssignUser au
 				= p as ANWI.Messaging.Ops.AssignUser;
 
-			ActiveOperation op = activeOps[au.opUUID];
+			ActiveOperation op = GetOperation(au.opUUID);
 			if(op != null) {
-				op.ChangeAssignment(au.elemUUID, au.wingmemberUUID, 
-					au.positionUUID, au.userId);
-			} else {
-				logger.Error("Attempted to change assignment in op " +
-					$"{au.opUUID} which does not exist");
+				op.ChangeAssignment(au.positionUUID, au.userId);
+			}
+
+			return null;
+		}
+
+		private ANWI.Messaging.IMessagePayload
+		ProcessModifyShip(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.Ops.ModifyUnit mod
+				= p as ANWI.Messaging.Ops.ModifyUnit;
+
+			ActiveOperation op = GetOperation(mod.opUUID);
+			if(op != null) {
+				op.ModifyUnit(mod);
+			}
+
+			return null;
+		}
+
+		private ANWI.Messaging.IMessagePayload
+		ProcessAddPosition(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.Ops.AddPosition add
+				= p as ANWI.Messaging.Ops.AddPosition;
+
+			ActiveOperation op = GetOperation(add.opUUID);
+			if(op != null) {
+				op.AddPosition(add.unitUUID, add.roleID);
+			}
+
+			return null;
+		}
+
+		private ANWI.Messaging.IMessagePayload
+		ProcessDeletePosition(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.Ops.DeletePosition del
+				= p as ANWI.Messaging.Ops.DeletePosition;
+
+			ActiveOperation op = GetOperation(del.opUUID);
+			if(op != null) {
+				op.DeletePosition(del.posUUID);
+			}
+
+			return null;
+		}
+
+		private ANWI.Messaging.IMessagePayload
+		ProcessSetPositionCritical(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.Ops.SetPositionCritical set
+				= p as ANWI.Messaging.Ops.SetPositionCritical;
+
+			ActiveOperation op = GetOperation(set.opUUID);
+			if(op != null) {
+				op.SetPositionCritical(set.posUUID, set.critical);
 			}
 
 			return null;
@@ -204,6 +245,14 @@ namespace FleetManager.Services {
 
 
 		#region Other Helpers
+		private ActiveOperation GetOperation(string uuid) {
+			ActiveOperation op;
+			if(!activeOps.TryGetValue(uuid, out op)) {
+				logger.Error($"Operation {uuid} does not exist");
+			}
+			return op;
+		}
+
 		/// <summary>
 		/// Returns a summary list of all active operations
 		/// </summary>

@@ -25,8 +25,7 @@ namespace FleetManager {
 		private List<OpParticipant> roster = new List<OpParticipant>();
 		public int rosterCount { get { return roster.Count; } }
 
-		//private List<FleetUnit> fleet = new List<FleetUnit>();
-		//public int fleetCount { get { return fleet.Count; } }
+		private OrderOfBattle fleet = new OrderOfBattle();
 
 		private Dictionary<string, ConnectedUser> subscribed
 			= new Dictionary<string, ConnectedUser>();
@@ -51,7 +50,10 @@ namespace FleetManager {
 				uuid = uuid,
 				name = name,
 				type = type,
-				status = status
+				status = status,
+				currentMembers = rosterCount,
+				neededMembers = fleet.TotalCriticalPositions,
+				totalSlots = fleet.TotalPositions
 			};
 		}
 
@@ -73,23 +75,8 @@ namespace FleetManager {
 				if (p.profile.id == id)
 					return p;
 			}
-			return null;
-		}
 
-		private FleetUnit GetOOBElement(string uuid) {
-			/*foreach(FleetUnit e in fleet) {
-				if (e.uuid == uuid)
-					return e;
-			}
-			return null;*/
-			return null;
-		}
-
-		private OpPosition GetShipPosition(Ship ship, string uuid) {
-			foreach(OpPosition pos in ship.positions) {
-				if (pos.uuid == uuid)
-					return pos;
-			}
+			logger.Error($"User {id} is not in the roster");
 			return null;
 		}
 		#endregion
@@ -100,8 +87,16 @@ namespace FleetManager {
 
 			// Join the first subscribing user to the roster
 			// This will always be the FC
-			if (rosterCount == 0)
+			if (rosterCount == 0) {
 				JoinUser(user.token, false);
+
+				// Add some fake users for testing purposes
+				for(int i = 4; i < 9; ++i) {
+					string token = ANWI.Utility.UUID.GenerateUUID();
+					SubscribeUser(new ConnectedUser(token, i));
+					JoinUser(token);
+				}
+			}
 		}
 
 		public void UnsubscribeUser(string token) {
@@ -157,92 +152,129 @@ namespace FleetManager {
 				critical = true
 			});
 
-			//fleet.Add(ship);
-			PushToAll(new ANWI.Messaging.Ops.UpdateOOBShips(
+			fleet.AddUnit(ship);
+
+			PushToAll(new ANWI.Messaging.Ops.UpdateUnitsShips(
 					new List<Ship>() { ship },
 					null
 				));
 		}
 
 		public void AddWing() {
-			Wing w = new Wing() {
+			Wing wing = new Wing() {
 				uuid = ANWI.Utility.UUID.GenerateUUID(),
 				name = $"New Wing {lastWingNumber}",
 				callsign = "No Callsign",
-				primaryRole = Wing.Role.CAP,
-				members = new List<Boat>()
+				primaryRole = Wing.Role.CAP
 			};
 
-			PushToAll(new ANWI.Messaging.Ops.UpdateOOBWings(
-				new List<Wing>() { w },
+			fleet.AddUnit(wing);
+
+			PushToAll(new ANWI.Messaging.Ops.UpdateUnitsWings(
+				new List<Wing>() { wing },
 				null));
 		}
 
-		public void DeleteFleetElement(string uuid) {
-			/*FleetUnit elem = GetOOBElement(uuid);
+		public void DeleteFleetUnit(string uuid) {
 
-			if (elem != null) {
-				if (elem is Ship) {
-					Ship ship = elem as Ship;
+			// No need to push assingment changes to users because the OOB
+			// class will do it automatically on their end.
+			fleet.DeleteUnit(uuid);
+			
+			PushToAll(new ANWI.Messaging.Ops.UpdateUnitsShips(
+				null,
+				new List<string>() { uuid }));
+		}
 
-					// Unassign all positions
-					List<int> changedPos = new List<int>();
-					foreach (OpPosition pos in ship.positions) {
-						if (pos.filledById != -1) {
-							changedPos.Add(pos.filledById);
-							OpPosition.UnassignPosition(pos);
-						}
-					}
-
-					if (changedPos.Count > 0) {
-						PushToAll(new ANWI.Messaging.Ops.UpdateAssignments(
-							null, changedPos));
-					}
-				}
-
-				fleet.Remove(elem);
-				PushToAll(new ANWI.Messaging.Ops.UpdateOOBShips(
-					null,
-					new List<string>() { elem.uuid }));
-			}*/
+		public void ModifyUnit(ANWI.Messaging.Ops.ModifyUnit mod) {
+			switch (mod.type) {
+				case ANWI.Messaging.Ops.ModifyUnit.ChangeType.SetFlagship:
+					fleet.SetFlagship(mod.unitUUID);
+					break;
+			}
 		}
 		#endregion
 
 		#region Positions
-		public void 
-		ChangeAssignment(string elem, string wingmem, string pos, int user) {
-			/*FleetUnit unit = GetOOBElement(elem);
-			if (unit == null)
-				return;
+		public void AddPosition(string unitUUID, int roleID) {
+			OpPosition pos = new OpPosition() {
+				uuid = ANWI.Utility.UUID.GenerateUUID(),
+				unitUUID = unitUUID,
+				critical = false,
+				filledById = -1,
+				filledByPointer = null,
+				role = AssignmentRole.FetchById(roleID)
+			};
 
-			if(unit is Ship) {
-				OpPosition job = GetShipPosition(unit as Ship, pos);
-				OpParticipant member = GetParticipant(user);
-				if (job == null && member == null)
-					return;
+			fleet.AddPosition(pos);
 
-				ANWI.Messaging.Ops.UpdateAssignments update
-					= new ANWI.Messaging.Ops.UpdateAssignments();
-
-				update.added
-					= new List<ANWI.Messaging.Ops.UpdateAssignments.AssignTo>();
-				update.added.Add(
-					new ANWI.Messaging.Ops.UpdateAssignments.AssignTo() {
-						posUUID = pos,
-						shipUUID = elem,
-						userId = user
-					});
-
-				if (job.filledById != -1) {
-					update.removed = new List<int>() { job.filledById };
-					OpPosition.UnassignPosition(job);
-				}
-
-				OpPosition.AssignPosition(job, member);
-				PushToAll(update);
-			}*/
+			PushToAll(new ANWI.Messaging.Ops.UpdatePositions(
+				new List<OpPosition>() { pos },
+				null,
+				null));
 		}
 
+		public void DeletePosition(string uuid) {
+			fleet.DeletePosition(uuid);
+
+			PushToAll(new ANWI.Messaging.Ops.UpdatePositions(
+				null,
+				null,
+				new List<string>() { uuid }));
+		}
+
+		public void 
+		ChangeAssignment(string posUUID, int userID) {
+			if (posUUID == "" && userID != -1) {
+				OpParticipant user = GetParticipant(userID);
+				if (user == null)
+					return;
+
+				// Unassign this user
+				if (user.position != null) {
+					fleet.ClearPosition(user.position.uuid);
+
+					PushToAll(new ANWI.Messaging.Ops.UpdateAssignments(
+						null,
+						new List<int>() { userID },
+						null));
+				}
+			} else if (userID == -1 && posUUID != "") {
+				// Unassign this position
+				fleet.ClearPosition(posUUID);
+
+				PushToAll(new ANWI.Messaging.Ops.UpdateAssignments(
+					null,
+					null,
+					new List<string>() { posUUID }));
+			} else {
+				OpParticipant user = GetParticipant(userID);
+				if (user == null)
+					return;
+
+				// Assign user to this position
+				fleet.AssignPosition(posUUID, user);
+
+				PushToAll(new ANWI.Messaging.Ops.UpdateAssignments(
+					new List<System.Tuple<int, string>>() {
+						new System.Tuple<int, string>(userID, posUUID),
+					},
+					null, null));
+			}
+		}
+
+		public void SetPositionCritical(string uuid, bool crit) {
+			OpPosition pos = fleet.GetPosition(uuid);
+			if(pos != null) {
+				pos.critical = crit;
+
+				PushToAll(new ANWI.Messaging.Ops.UpdatePositions(
+					null,
+					new List<OpPosition>() { pos },
+					null
+					));
+			}
+		}
 		#endregion
 
 		private void PushToAll(ANWI.Messaging.IMessagePayload p) {
@@ -252,7 +284,8 @@ namespace FleetManager {
 			byte[] array = stream.ToArray();
 
 			foreach (KeyValuePair<string, ConnectedUser> user in subscribed) {
-				user.Value.socket.Send(array);
+				if(user.Value.socket != null)
+					user.Value.socket.Send(array);
 			}
 		}
 	}

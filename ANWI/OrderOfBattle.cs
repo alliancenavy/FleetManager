@@ -1,6 +1,7 @@
 ﻿using ANWI.FleetComp;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -14,9 +15,13 @@ namespace ANWI {
 
 		//
 		// Ships and wings in the fleet
-		private Dictionary<string, FleetUnit> fleet 
+		private List<FleetUnit> fleetList = new List<FleetUnit>();
+		private Dictionary<string, FleetUnit> fleetLookup 
 			= new Dictionary<string, FleetUnit>();
-		public int FleetSize { get { return fleet.Count; } }
+		public ReadOnlyCollection<FleetUnit> Fleet {
+			get { return fleetList.AsReadOnly(); }
+		}
+		public int FleetSize { get { return fleetList.Count; } }
 
 		//
 		// Easy access position map
@@ -45,7 +50,7 @@ namespace ANWI {
 		public FleetUnit GetUnit(string uuid) {
 			// Check for ships and wings with this ID
 			FleetUnit unit;
-			if(!fleet.TryGetValue(uuid, out unit)) {
+			if(!fleetLookup.TryGetValue(uuid, out unit)) {
 				// If none was found check boats
 				Boat boat;
 				boatLookup.TryGetValue(uuid, out boat);
@@ -71,7 +76,8 @@ namespace ANWI {
 				throw new ArgumentException(
 					$"Ship {unit.uuid} already in fleet");
 
-			fleet.Add(unit.uuid, unit);
+			fleetLookup.Add(unit.uuid, unit);
+			fleetList.Add(unit);
 
 			// Add relevant members to lookup dictionaries
 			if(unit is Ship) {
@@ -132,7 +138,8 @@ namespace ANWI {
 				}
 
 				// Remove from the fleet
-				fleet.Remove(uuid);
+				fleetLookup.Remove(uuid);
+				fleetList.Remove(ship);
 
 			} else if(unit is Wing) {
 				// Remove each boat from the lookup
@@ -152,7 +159,8 @@ namespace ANWI {
 				}
 
 				// Remove from the fleet
-				fleet.Remove(uuid);
+				fleetLookup.Remove(uuid);
+				fleetList.Remove(wing);
 
 			} else if(unit is Boat) {
 				Boat boat = unit as Boat;
@@ -259,6 +267,25 @@ namespace ANWI {
 				job.filledByPointer.position = null;
 			job.filledByPointer = null;
 			job.filledById = -1;
+		}
+
+		/// <summary>
+		/// Sets a given ship as the flagship for the fleet
+		/// </summary>
+		/// <param name="uuid"></param>
+		public void SetFlagship(string uuid) {
+			Ship newFlag = GetUnit(uuid) as Ship;
+			if (newFlag == null)
+				return;
+
+			newFlag.isFlagship = true;
+
+			// Find the current flagship if there is one
+			foreach (FleetUnit unit in fleetList) {
+				if(unit is Ship) {
+					(unit as Ship).isFlagship = false;
+				}
+			}	
 		}
 	}
 }
