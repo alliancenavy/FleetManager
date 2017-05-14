@@ -182,10 +182,16 @@ namespace Client {
 				ProcessUpdateOOBShips);
 			AddProcessor(typeof(ANWI.Messaging.Ops.UpdateUnitsWings),
 				ProcessUpdateOOBWings);
+			AddProcessor(typeof(ANWI.Messaging.Ops.UpdateUnitsBoats),
+				ProcessUpdateOOBBoats);
 			AddProcessor(typeof(ANWI.Messaging.Ops.UpdateAssignments),
 				ProcessUpdateAssignments);
 			AddProcessor(typeof(ANWI.Messaging.Ops.UpdatePositions),
 				ProcessUpdatePositions);
+			AddProcessor(typeof(ANWI.Messaging.Ops.UpdateShip),
+				ProcessUpdateShip);
+			AddProcessor(typeof(ANWI.Messaging.Ops.UpdateWing),
+				ProcessUpdateWing);
 
 			MessageRouter.Instance.SendOps(
 				new ANWI.Messaging.Request(
@@ -449,6 +455,23 @@ namespace Client {
 			NotifyPropertyChanged("fleetComp");
 		}
 
+		private void ProcessUpdateOOBBoats(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.Ops.UpdateUnitsBoats ub
+				= p as ANWI.Messaging.Ops.UpdateUnitsBoats;
+
+			if(ub.added != null) {
+				foreach (Boat add in ub.added)
+					fleet.AddUnit(add);
+			}
+
+			if(ub.removed != null) {
+				foreach (string rem in ub.removed)
+					fleet.DeleteUnit(rem);
+			}
+
+			NotifyPropertyChanged(string.Empty);
+		}
+
 		private void ProcessUpdateAssignments(ANWI.Messaging.IMessagePayload p) {
 			ANWI.Messaging.Ops.UpdateAssignments au
 				= p as ANWI.Messaging.Ops.UpdateAssignments;
@@ -474,6 +497,8 @@ namespace Client {
 					fleet.ClearPosition(rem);
 				}
 			}
+
+			NotifyPropertyChanged(string.Empty);
 		}
 
 		private void ProcessUpdatePositions(ANWI.Messaging.IMessagePayload p) {
@@ -499,6 +524,40 @@ namespace Client {
 				foreach(string rem in up.removed) {
 					fleet.DeletePosition(rem);
 				}
+			}
+
+			NotifyPropertyChanged(string.Empty);
+		}
+
+		private void ProcessUpdateShip(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.Ops.UpdateShip ups
+				= p as ANWI.Messaging.Ops.UpdateShip;
+
+			switch(ups.type) {
+				case ANWI.Messaging.Ops.UpdateShip.Type.SetFlagship:
+					fleet.SetFlagship(ups.shipUUID);
+					break;
+			}
+
+			NotifyPropertyChanged(string.Empty);
+		}
+
+		private void ProcessUpdateWing(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.Ops.UpdateWing upw
+				= p as ANWI.Messaging.Ops.UpdateWing;
+
+			switch(upw.type) {
+				case ANWI.Messaging.Ops.UpdateWing.Type.SetName:
+					fleet.SetWingName(upw.wingUUID, upw.str);
+					break;
+
+				case ANWI.Messaging.Ops.UpdateWing.Type.SetCallsign:
+					fleet.SetWingCallsign(upw.wingUUID, upw.str);
+					break;
+
+				case ANWI.Messaging.Ops.UpdateWing.Type.ChangeWingCommander:
+					fleet.SetWingCommander(upw.boatUUID);
+					break;
 			}
 
 			NotifyPropertyChanged(string.Empty);

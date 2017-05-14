@@ -8,14 +8,17 @@
 		public enum Type {
 			FleetShip,
 			CustShip,
-			Wing
+			Wing,
+			Boat
 		}
 
 		public string opUUID;
 
 		public Type type;
 		public int shipId;
+		public string wingUUID;
 		public string name;
+		public int hullId;
 
 		public AddOOBUnit() {
 		}

@@ -34,7 +34,17 @@ namespace ANWI {
 		/// </summary>
 		public class Ship : FleetUnit {
 			public LiteVessel v { get; set; }
-			public bool isFlagship { get; set; }
+
+			private bool _isFlagship;
+			public bool isFlagship {
+				get { return _isFlagship; }
+				set {
+					if(_isFlagship != value) {
+						_isFlagship = value;
+						NotifyPropertyChanged("isFlagship");
+					}
+				}
+			}
 			
 			public List<OpPosition> positions { get; set; }
 
@@ -56,10 +66,45 @@ namespace ANWI {
 				DROPSHIP
 			}
 
-			public string name { get; set; }
+			private string _name;
+			public string name {
+				get { return _name; }
+				set {
+					if (_name != value) {
+						_name = value;
+						NotifyPropertyChanged("name");
+					}
+				}
+			}
+
 			public List<Boat> members { get; set; }
-			public Role primaryRole { get; set; }
-			public string callsign { get; set; }
+
+			private Role _primaryRole;
+			public Role primaryRole {
+				get { return _primaryRole; }
+				set {
+					if(_primaryRole != value) {
+						_primaryRole = value;
+						NotifyPropertyChanged("primaryRole");
+					}
+				}
+			}
+
+			private string _callsign;
+			public string callsign {
+				get { return _callsign; }
+				set {
+					if (_callsign != value) {
+						_callsign = value;
+
+						for(int i = 0; i < members.Count; ++i) {
+							members[i].callsign = $"{callsign} {i + 1}";
+						}
+
+						NotifyPropertyChanged("callsign");
+					}
+				}
+			}
 
 			public string roleIcon { get {
 					switch(primaryRole) {
@@ -87,8 +132,29 @@ namespace ANWI {
 		public class Boat : FleetUnit {
 			public string wingUUID;
 			public Hull type { get; set; }
-			public string callsign { get; set; }
-			public bool isWC { get; set; }
+
+			private string _callsign;
+			public string callsign {
+				get { return _callsign; }
+				set {
+					if(_callsign != value) {
+						_callsign = value;
+						NotifyPropertyChanged("callsign");
+					}
+				}
+			}
+
+			private bool _isWC;
+			public bool isWC {
+				get { return _isWC; }
+				set {
+					if(_isWC != value) {
+						_isWC = value;
+						NotifyPropertyChanged("isWC");
+					}
+				}
+			}
+
 			public List<OpPosition> positions { get; set; }
 
 			public bool isFilled {

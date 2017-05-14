@@ -76,9 +76,6 @@ namespace ANWI {
 				throw new ArgumentException(
 					$"Ship {unit.uuid} already in fleet");
 
-			fleetLookup.Add(unit.uuid, unit);
-			fleetList.Add(unit);
-
 			// Add relevant members to lookup dictionaries
 			if(unit is Ship) {
 				Ship ship = unit as Ship;
@@ -87,6 +84,9 @@ namespace ANWI {
 				foreach(OpPosition p in ship.positions) {
 					positionsLookup.Add(p.uuid, p);
 				}
+
+				fleetLookup.Add(unit.uuid, unit);
+				fleetList.Add(unit);
 			} else if(unit is Wing) {
 				Wing wing = unit as Wing;
 
@@ -99,11 +99,15 @@ namespace ANWI {
 						positionsLookup.Add(p.uuid, p);
 					}
 				}
+
+				fleetLookup.Add(unit.uuid, unit);
+				fleetList.Add(unit);
 			} else if(unit is Boat) {
 				Boat boat = unit as Boat;
 
 				Wing wing = GetUnit(boat.wingUUID) as Wing;
 				wing.members.Add(boat);
+				boat.callsign = $"{wing.callsign} {wing.members.Count}";
 
 				// Add all positions
 				foreach(OpPosition p in boat.positions) {
@@ -278,14 +282,60 @@ namespace ANWI {
 			if (newFlag == null)
 				return;
 
-			newFlag.isFlagship = true;
-
 			// Find the current flagship if there is one
 			foreach (FleetUnit unit in fleetList) {
 				if(unit is Ship) {
 					(unit as Ship).isFlagship = false;
 				}
-			}	
+			}
+
+			newFlag.isFlagship = true;
+		}
+
+		/// <summary>
+		/// Sets a given boat to be the commander of their wing
+		/// </summary>
+		/// <param name="uuid"></param>
+		public void SetWingCommander(string uuid) {
+			Boat newWC = GetUnit(uuid) as Boat;
+			if (newWC == null)
+				return;
+
+			Wing wing = GetUnit(newWC.wingUUID) as Wing;
+
+			// Clear the current WC, if there is one
+			foreach (Boat boat in wing.members) {
+				boat.isWC = false;
+			}
+
+			newWC.isWC = true;
+		}
+
+		/// <summary>
+		/// Changes the name of a Wing
+		/// </summary>
+		/// <param name="uuid"></param>
+		/// <param name="name"></param>
+		public void SetWingName(string uuid, string name) {
+			Wing wing = GetUnit(uuid) as Wing;
+			if (wing == null)
+				return;
+
+			wing.name = name;
+		}
+
+		/// <summary>
+		/// Changes the callsign of a wing, as well as the callsign of
+		/// all boats attached to that wing
+		/// </summary>
+		/// <param name="uuid"></param>
+		/// <param name="callsign"></param>
+		public void SetWingCallsign(string uuid, string callsign) {
+			Wing wing = GetUnit(uuid) as Wing;
+			if (wing == null)
+				return;
+
+			wing.callsign = callsign;
 		}
 	}
 }

@@ -128,6 +128,8 @@
     <Compile Include="Messaging\Ops\SetPositionCritical.cs" />
     <Compile Include="Messaging\Ops\UpdateAssignments.cs" />
     <Compile Include="Messaging\Ops\UpdatePositions.cs" />
+    <Compile Include="Messaging\Ops\UpdateShip.cs" />
+    <Compile Include="Messaging\Ops\UpdateUnitsBoats.cs" />
     <Compile Include="Messaging\Ops\UpdateUnitsWings.cs" />
     <Compile Include="Messaging\Ops\CreateNewOp.cs" />
     <Compile Include="Messaging\Ops\DeleteOOBElement.cs" />
@@ -136,6 +138,7 @@
     <Compile Include="Messaging\Ops\UpdateUnitsShips.cs" />
     <Compile Include="Messaging\Ops\UpdateRoster.cs" />
     <Compile Include="Messaging\Ops\UpdateStatus.cs" />
+    <Compile Include="Messaging\Ops\UpdateWing.cs" />
     <Compile Include="Messaging\RegisterRequest.cs" />
     <Compile Include="Messaging\RegisterResponse.cs" />
     <Compile Include="Messaging\RemoveAssignment.cs" />

@@ -10,6 +10,7 @@ namespace Client {
 	/// menus function.
 	/// </summary>
 	public partial class OperationDetails : MailboxWindow {
+
 		#region Composition
 		private void Context_NewFleetShip(object sender, RoutedEventArgs e) {
 			Operations.AddFleetShip afs = new Operations.AddFleetShip();
@@ -38,7 +39,7 @@ namespace Client {
 				null);
 		}
 
-		private void Context_DeleteShipWing(object sender, RoutedEventArgs e) {
+		private void Context_DeleteUnit(object sender, RoutedEventArgs e) {
 			FleetUnit elem = (sender as MenuItem).DataContext 
 				as FleetUnit;
 			if(elem != null) {
@@ -46,6 +47,40 @@ namespace Client {
 					new ANWI.Messaging.Ops.DeleteOOBElement(opUUID, elem.uuid),
 					null);
 			}
+		}
+		#endregion
+
+		#region Shared
+		private void Context_AssignSelf(object sender, RoutedEventArgs e) {
+			OpPosition pos = (sender as MenuItem).DataContext as OpPosition;
+			ChangeAssignment(pos.uuid, thisUser.profile.id);
+		}
+
+		private void Context_Unassign(object sender, RoutedEventArgs e) {
+			OpPosition pos = (sender as MenuItem).DataContext as OpPosition;
+			ChangeAssignment(pos.uuid, -1);
+		}
+
+		private void Context_CriticalPosition(object sender, RoutedEventArgs e) {
+			MenuItem item = sender as MenuItem;
+			OpPosition pos = (item).DataContext as OpPosition;
+			MessageRouter.Instance.SendOps(
+				new ANWI.Messaging.Ops.SetPositionCritical() {
+					opUUID = opUUID,
+					posUUID = pos.uuid,
+					critical = !item.IsChecked
+				},
+				null);
+		}
+
+		private void Context_DeletePosition(object sender, RoutedEventArgs e) {
+			OpPosition pos = (sender as MenuItem).DataContext as OpPosition;
+			MessageRouter.Instance.SendOps(
+				new ANWI.Messaging.Ops.DeletePosition() {
+					opUUID = opUUID,
+					posUUID = pos.uuid
+				},
+				null);
 		}
 		#endregion
 
@@ -82,63 +117,90 @@ namespace Client {
 
 		}
 
-		private void Context_AssignSelfShip(object sender, RoutedEventArgs e) {
-			OpPosition pos = (sender as MenuItem).DataContext as OpPosition;
-			ChangeAssignment(pos.uuid, thisUser.profile.id);
-		}
-
-		private void Context_UnassignShip(object sender, RoutedEventArgs e) {
-			OpPosition pos = (sender as MenuItem).DataContext as OpPosition;
-			ChangeAssignment(pos.uuid, -1);
-		}
-
-		private void Context_CriticalShip(object sender, RoutedEventArgs e) {
-			MenuItem item = sender as MenuItem;
-			OpPosition pos = (item).DataContext as OpPosition;
-			MessageRouter.Instance.SendOps(
-				new ANWI.Messaging.Ops.SetPositionCritical() {
-					opUUID = opUUID,
-					posUUID = pos.uuid,
-					critical = !item.IsChecked
-				},
-				null);
-		}
-
-		private void Context_DeleteShipPosition(object sender, RoutedEventArgs e) {
-			OpPosition pos = (sender as MenuItem).DataContext as OpPosition;
-			MessageRouter.Instance.SendOps(
-				new ANWI.Messaging.Ops.DeletePosition() {
-					opUUID = opUUID,
-					posUUID = pos.uuid
-				},
-				null);
-		}
-
 		#endregion
 
 		#region Wings
 		private void Context_AddWingMember(object sender, RoutedEventArgs e) {
+			FleetUnit wing = (sender as MenuItem).DataContext as FleetUnit;
 
+			SimpleDropdownSelect select = new SimpleDropdownSelect(
+				CommonData.smallHulls.ConvertAll<string>((h) => {
+					return h.name;
+				}));
+			select.ReturnSelected += (index) => {
+				MessageRouter.Instance.SendOps(
+					new ANWI.Messaging.Ops.AddOOBUnit() {
+						opUUID = opUUID,
+						wingUUID = wing.uuid,
+						type = ANWI.Messaging.Ops.AddOOBUnit.Type.Boat,
+						hullId = CommonData.smallHulls[index].id
+					},
+					null);
+			};
+			select.ShowDialog();
+		}
+
+		private void Context_ChangeNameWing(object sender, RoutedEventArgs e) {
+			Wing wing = (sender as MenuItem).DataContext as Wing;
+			SimpleTextPrompt prompt = new SimpleTextPrompt(
+				"Change Wing Name", wing.name);
+			prompt.ReturnText += (name) => {
+				MessageRouter.Instance.SendOps(
+					new ANWI.Messaging.Ops.ModifyUnit() {
+						opUUID = opUUID,
+						unitUUID = wing.uuid,
+						type = ANWI.Messaging.Ops.ModifyUnit.ChangeType.ChangeName,
+						str = name
+					},
+					null);
+			};
+			prompt.ShowDialog();
 		}
 
 		private void Context_ChangeCallsign(object sender, RoutedEventArgs e) {
-
+			Wing wing = (sender as MenuItem).DataContext as Wing;
+			SimpleTextPrompt prompt = new SimpleTextPrompt(
+				"Change Callsign", wing.callsign);
+			prompt.ReturnText += (cs) => {
+				MessageRouter.Instance.SendOps(
+					new ANWI.Messaging.Ops.ModifyUnit() {
+						opUUID = opUUID,
+						unitUUID = wing.uuid,
+						type = ANWI.Messaging.Ops.ModifyUnit.ChangeType.ChangeCallsign,
+						str = cs
+					},
+					null);
+			};
+			prompt.ShowDialog();
 		}
-		
-		private void Context_AssignSelfWing(object sender, RoutedEventArgs e) {
 
+		private void Context_AddBoatPosition(object sender, RoutedEventArgs e) {
+			FleetUnit unit = (sender as MenuItem).DataContext as FleetUnit;
+
+			SimpleDropdownSelect select = new SimpleDropdownSelect(
+				CommonData.assignmentRoles.ConvertAll<string>((r) => {
+					return r.name;
+				}));
+			select.ReturnSelected += (index) => {
+				MessageRouter.Instance.SendOps(
+					new ANWI.Messaging.Ops.AddPosition() {
+						opUUID = opUUID,
+						unitUUID = unit.uuid,
+						roleID = CommonData.assignmentRoles[index].id
+					},
+					null);
+			};
+			select.ShowDialog();
 		}
 
-		private void Context_UnassignWing(object sender, RoutedEventArgs e) {
-
-		}
-
-		private void Context_CriticalWing(object sender, RoutedEventArgs e) {
-
-		}
-
-		private void Context_DeleteWingPosition(object sender, RoutedEventArgs e) {
-
+		private void Context_SetWingCommander(object sender, RoutedEventArgs e) {
+			FleetUnit unit = (sender as MenuItem).DataContext as FleetUnit;
+			MessageRouter.Instance.SendOps(new ANWI.Messaging.Ops.ModifyUnit() {
+				opUUID = opUUID,
+				unitUUID = unit.uuid,
+				type = ANWI.Messaging.Ops.ModifyUnit.ChangeType.SetWingCommander
+			},
+			null);
 		}
 		#endregion
 

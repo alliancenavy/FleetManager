@@ -39,6 +39,7 @@ namespace ANWI.Messaging {
 		[MessagePackKnownType("op_addunit", typeof(Ops.AddOOBUnit))]
 		[MessagePackKnownType("op_upships", typeof(Ops.UpdateUnitsShips))]
 		[MessagePackKnownType("op_upwings", typeof(Ops.UpdateUnitsWings))]
+		[MessagePackKnownType("op_upboats", typeof(Ops.UpdateUnitsBoats))]
 		[MessagePackKnownType("op_delunit", typeof(Ops.DeleteOOBElement))]
 		[MessagePackKnownType("op_assus", typeof(Ops.AssignUser))]
 		[MessagePackKnownType("op_upass", typeof(Ops.UpdateAssignments))]
@@ -47,6 +48,8 @@ namespace ANWI.Messaging {
 		[MessagePackKnownType("op_delpos", typeof(Ops.DeletePosition))]
 		[MessagePackKnownType("op_uppos", typeof(Ops.UpdatePositions))]
 		[MessagePackKnownType("op_poscrit", typeof(Ops.SetPositionCritical))]
+		[MessagePackKnownType("op_upship", typeof(Ops.UpdateShip))]
+		[MessagePackKnownType("op_upwing", typeof(Ops.UpdateWing))]
 		public IMessagePayload payload;
 
 		public Message() {

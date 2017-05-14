@@ -38,6 +38,8 @@ namespace FleetManager.Services {
 				ProcessDeletePosition);
 			AddProcessor(typeof(ANWI.Messaging.Ops.SetPositionCritical),
 				ProcessSetPositionCritical);
+			AddProcessor(typeof(ANWI.Messaging.Ops.ModifyUnit),
+				ProcessModifyUnit);
 
 			// Create testing op
 			string uuid = CreateNew("Test Operation", OperationType.PATROL);
@@ -143,6 +145,8 @@ namespace FleetManager.Services {
 					op.AddFleetShip(add.shipId);
 				else if (add.type == ANWI.Messaging.Ops.AddOOBUnit.Type.Wing)
 					op.AddWing();
+				else if (add.type == ANWI.Messaging.Ops.AddOOBUnit.Type.Boat)
+					op.AddBoat(add.wingUUID, add.hullId);
 			}
 
 			return null;
@@ -169,19 +173,6 @@ namespace FleetManager.Services {
 			ActiveOperation op = GetOperation(au.opUUID);
 			if(op != null) {
 				op.ChangeAssignment(au.positionUUID, au.userId);
-			}
-
-			return null;
-		}
-
-		private ANWI.Messaging.IMessagePayload
-		ProcessModifyShip(ANWI.Messaging.IMessagePayload p) {
-			ANWI.Messaging.Ops.ModifyUnit mod
-				= p as ANWI.Messaging.Ops.ModifyUnit;
-
-			ActiveOperation op = GetOperation(mod.opUUID);
-			if(op != null) {
-				op.ModifyUnit(mod);
 			}
 
 			return null;
@@ -221,6 +212,19 @@ namespace FleetManager.Services {
 			ActiveOperation op = GetOperation(set.opUUID);
 			if(op != null) {
 				op.SetPositionCritical(set.posUUID, set.critical);
+			}
+
+			return null;
+		}
+
+		private ANWI.Messaging.IMessagePayload
+		ProcessModifyUnit(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.Ops.ModifyUnit mod
+				= p as ANWI.Messaging.Ops.ModifyUnit;
+
+			ActiveOperation op = GetOperation(mod.opUUID);
+			if (op != null) {
+				op.ModifyUnit(mod);
 			}
 
 			return null;

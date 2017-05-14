@@ -7,11 +7,9 @@
 	public class ModifyUnit : IMessagePayload {
 		public enum ChangeType {
 			SetFlagship,
+			SetWingCommander,
 			ChangeName,
 			ChangeCallsign,
-			SetPositionCritical,
-			AddPosition,
-			DeletePosition
 		}
 
 		public string opUUID;
@@ -20,7 +18,7 @@
 		public ChangeType type;
 		public bool boolean;
 		public int integer;
-		public string uuid;
+		public string str;
 		
 		public ModifyUnit() {
 		}

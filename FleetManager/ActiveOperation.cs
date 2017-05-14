@@ -143,14 +143,6 @@ namespace FleetManager {
 			ship.uuid = ANWI.Utility.UUID.GenerateUUID();
 			ship.v = LiteVessel.FetchById(id);
 			ship.isFlagship = false;
-			ship.positions.Add(new OpPosition() {
-				unitUUID = ship.uuid,
-				uuid = ANWI.Utility.UUID.GenerateUUID(),
-				role = new AssignmentRole() {
-					name = "Pilot"
-				},
-				critical = true
-			});
 
 			fleet.AddUnit(ship);
 
@@ -175,6 +167,21 @@ namespace FleetManager {
 				null));
 		}
 
+		public void AddBoat(string wingUUID, int hullID) {
+			Boat boat = new Boat() {
+				uuid = ANWI.Utility.UUID.GenerateUUID(),
+				wingUUID = wingUUID,
+				type = Hull.FetchById(hullID),
+				isWC = false
+			};
+
+			fleet.AddUnit(boat);
+
+			PushToAll(new ANWI.Messaging.Ops.UpdateUnitsBoats(
+				new List<Boat>() { boat },
+				null));
+		}
+
 		public void DeleteFleetUnit(string uuid) {
 
 			// No need to push assingment changes to users because the OOB
@@ -190,6 +197,36 @@ namespace FleetManager {
 			switch (mod.type) {
 				case ANWI.Messaging.Ops.ModifyUnit.ChangeType.SetFlagship:
 					fleet.SetFlagship(mod.unitUUID);
+					PushToAll(new ANWI.Messaging.Ops.UpdateShip() {
+						shipUUID = mod.unitUUID,
+						type = ANWI.Messaging.Ops.UpdateShip.Type.SetFlagship
+					});
+					break;
+
+				case ANWI.Messaging.Ops.ModifyUnit.ChangeType.SetWingCommander:
+					fleet.SetWingCommander(mod.unitUUID);
+					PushToAll(new ANWI.Messaging.Ops.UpdateWing() {
+						type = ANWI.Messaging.Ops.UpdateWing.Type.ChangeWingCommander,
+						boatUUID = mod.unitUUID
+					});
+					break;
+
+				case ANWI.Messaging.Ops.ModifyUnit.ChangeType.ChangeName:
+					fleet.SetWingName(mod.unitUUID, mod.str);
+					PushToAll(new ANWI.Messaging.Ops.UpdateWing() {
+						wingUUID = mod.unitUUID,
+						type = ANWI.Messaging.Ops.UpdateWing.Type.SetName,
+						str = mod.str
+					});
+					break;
+
+				case ANWI.Messaging.Ops.ModifyUnit.ChangeType.ChangeCallsign:
+					fleet.SetWingCallsign(mod.unitUUID, mod.str);
+					PushToAll(new ANWI.Messaging.Ops.UpdateWing() {
+						wingUUID = mod.unitUUID,
+						type = ANWI.Messaging.Ops.UpdateWing.Type.SetCallsign,
+						str = mod.str
+					});
 					break;
 			}
 		}
