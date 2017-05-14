@@ -120,9 +120,9 @@ namespace Client {
 
 		//
 		// Fleet Composition Table
-		private ObservableCollection<FleetCompElement> _fleetComp
-			= new ObservableCollection<FleetCompElement>();
-		public ObservableCollection<FleetCompElement> fleetComp {
+		private ObservableCollection<FleetUnit> _fleetComp
+			= new ObservableCollection<FleetUnit>();
+		public ObservableCollection<FleetUnit> fleetComp {
 			get { return _fleetComp; }
 			set {
 				if(_fleetComp != value) {
@@ -155,7 +155,7 @@ namespace Client {
 		#endregion
 
 		#region Instance Members
-		private FleetCompElement selectedShip = null;
+		private FleetUnit selectedShip = null;
 		private ListBox activePositionList = null;
 		private ListBoxItem draggedItem = null;
 
@@ -203,14 +203,14 @@ namespace Client {
 			int total = 0;
 			int critical = 0;
 
-			foreach(FleetCompElement element in _fleetComp) {
-				if(element is NamedShip) {
-					NamedShip ship = element as NamedShip;
+			foreach(FleetUnit element in _fleetComp) {
+				if(element is Ship) {
+					Ship ship = element as Ship;
 					total += ship.positions.Count;
 					critical += CountCriticalPositions(ship.positions);
 				} else if(element is Wing) {
 					Wing wing = element as Wing;
-					foreach(WingMember member in wing.members) {
+					foreach(Boat member in wing.members) {
 						total += member.positions.Count;
 						critical += CountCriticalPositions(member.positions);
 					}
@@ -233,8 +233,8 @@ namespace Client {
 			return critical;
 		}
 
-		private void AddOOBElement(FleetCompElement ship) {
-			foreach(FleetCompElement elem in fleetComp) {
+		private void AddOOBElement(FleetUnit ship) {
+			foreach(FleetUnit elem in fleetComp) {
 				if (elem.uuid == ship.uuid)
 					return;
 			}
@@ -243,7 +243,7 @@ namespace Client {
 		}
 
 		private void DeleteOOBElement(string uuid) {
-			foreach (FleetCompElement elem in fleetComp) {
+			foreach (FleetUnit elem in fleetComp) {
 				if(elem.uuid == uuid) {
 					this.Dispatcher.Invoke(() => { fleetComp.Remove(elem); });
 					break;
@@ -302,7 +302,7 @@ namespace Client {
 		private void Button_RosterRemove_Click(object sender, RoutedEventArgs e) {
 			Button b = sender as Button;
 			OpParticipant p = b.DataContext as OpParticipant;
-			OpPosition.UnassignPosition(p.position);
+			//OpPosition.UnassignPosition(p.position);
 		}
 
 		private void Button_JoinOp_Click(object sender, RoutedEventArgs e) {
@@ -311,16 +311,16 @@ namespace Client {
 
 		private void
 		List_Positions_DoubleClick(object sender, RoutedEventArgs e) {
-			OpPosition.AssignPosition( 
+			/*OpPosition.AssignPosition( 
 				(sender as ListBoxItem).DataContext as OpPosition,
-				thisUser);
+				thisUser);*/
 		}
 
 		private void
 		List_WingCrew_DoubleClick(object sender, RoutedEventArgs e) {
-			OpPosition.AssignPosition( 
+			/*OpPosition.AssignPosition( 
 				(sender as ContentControl).DataContext as OpPosition,
-				thisUser);
+				thisUser);*/
 		}
 
 		private void 
@@ -334,7 +334,7 @@ namespace Client {
 
 			if (e.AddedItems.Count > 0) {
 				// Newly selected element
-				FleetCompElement elem = e.AddedItems[0] as FleetCompElement;
+				FleetUnit elem = e.AddedItems[0] as FleetUnit;
 
 				// If this element is set as the active outer list item then
 				// this change was caused by List_Positions_SelectionChanged.
@@ -369,7 +369,7 @@ namespace Client {
 				// be used to set the currently selected item in the main OOB list
 				List_Fleet.SelectedItem = namedShip.DataContext;
 				selectedShip
-					= namedShip.DataContext as FleetCompElement;
+					= namedShip.DataContext as FleetUnit;
 
 				// Clear the selection from the previous listbox so it doesn't
 				// get stuck
@@ -418,7 +418,7 @@ namespace Client {
 			MessageRouter.Instance.SendOps(
 				new ANWI.Messaging.Ops.AssignUser() {
 					opUUID = opUUID,
-					elemUUID = pos.elemUUID,
+					elemUUID = pos.unitUUID,
 					positionUUID = pos.uuid,
 					userId = (draggedItem.DataContext as OpParticipant).profile.id
 				}, 
@@ -473,7 +473,7 @@ namespace Client {
 				= p as ANWI.Messaging.Ops.UpdateOOBShips;
 
 			if (us.addedShips != null) {
-				foreach (NamedShip s in us.addedShips) {
+				foreach (Ship s in us.addedShips) {
 					AddOOBElement(s);
 				}
 			}

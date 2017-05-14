@@ -11,7 +11,7 @@ namespace ANWI {
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		public string uuid;
-		public string elemUUID;
+		public string unitUUID;
 		public AssignmentRole role { get; set; }
 		public bool critical { get; set; }
 
@@ -50,27 +50,6 @@ namespace ANWI {
 		public OpPosition() {
 			filledById = -1;
 			filledByPointer = null;
-		}
-
-		public static void AssignPosition(OpPosition job, OpParticipant member) {
-			if (job.filledByPointer != null)
-				UnassignPosition(job);
-			if (member.position != null)
-				UnassignPosition(member.position);
-
-			member.position = job;
-			job.filledById = member.profile.id;
-			job.filledByPointer = member;
-		}
-
-		public static void UnassignPosition(OpPosition job) {
-			if (job == null)
-				return;
-
-			if (job.filledByPointer != null)
-				job.filledByPointer.position = null;
-			job.filledByPointer = null;
-			job.filledById = -1;
 		}
 
 		/// <summary>

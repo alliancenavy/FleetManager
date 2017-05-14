@@ -8,13 +8,13 @@ namespace ANWI.Messaging.Ops {
 	/// Informs clients when the ships in the OOB have changed
 	/// </summary>
 	public class UpdateOOBShips : IMessagePayload {
-		public List<NamedShip> addedShips = null;
+		public List<Ship> addedShips = null;
 		public List<string> removedShips = null;
 
 		public UpdateOOBShips() {
 		}
 
-		public UpdateOOBShips(List<NamedShip> added, List<string> removed) {
+		public UpdateOOBShips(List<Ship> added, List<string> removed) {
 			addedShips = added;
 			removedShips = removed;
 		}

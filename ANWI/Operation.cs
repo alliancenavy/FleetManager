@@ -19,7 +19,7 @@ namespace ANWI {
 
 		public List<OpParticipant> roster = null;
 
-		public List<FleetComp.FleetCompElement> fleet = null;
+		public List<FleetComp.FleetUnit> fleet = null;
 		#endregion
 		
 		public Operation() {

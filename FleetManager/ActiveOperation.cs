@@ -25,8 +25,8 @@ namespace FleetManager {
 		private List<OpParticipant> roster = new List<OpParticipant>();
 		public int rosterCount { get { return roster.Count; } }
 
-		private List<FleetCompElement> fleet = new List<FleetCompElement>();
-		public int fleetCount { get { return fleet.Count; } }
+		//private List<FleetUnit> fleet = new List<FleetUnit>();
+		//public int fleetCount { get { return fleet.Count; } }
 
 		private Dictionary<string, ConnectedUser> subscribed
 			= new Dictionary<string, ConnectedUser>();
@@ -76,15 +76,16 @@ namespace FleetManager {
 			return null;
 		}
 
-		private FleetCompElement GetOOBElement(string uuid) {
-			foreach(FleetCompElement e in fleet) {
+		private FleetUnit GetOOBElement(string uuid) {
+			/*foreach(FleetUnit e in fleet) {
 				if (e.uuid == uuid)
 					return e;
 			}
+			return null;*/
 			return null;
 		}
 
-		private OpPosition GetShipPosition(NamedShip ship, string uuid) {
+		private OpPosition GetShipPosition(Ship ship, string uuid) {
 			foreach(OpPosition pos in ship.positions) {
 				if (pos.uuid == uuid)
 					return pos;
@@ -143,12 +144,12 @@ namespace FleetManager {
 
 		#region Fleet Composition
 		public void AddFleetShip(int id) {
-			NamedShip ship = new NamedShip();
+			Ship ship = new Ship();
 			ship.uuid = ANWI.Utility.UUID.GenerateUUID();
 			ship.v = LiteVessel.FetchById(id);
 			ship.isFlagship = false;
 			ship.positions.Add(new OpPosition() {
-				elemUUID = ship.uuid,
+				unitUUID = ship.uuid,
 				uuid = ANWI.Utility.UUID.GenerateUUID(),
 				role = new AssignmentRole() {
 					name = "Pilot"
@@ -156,9 +157,9 @@ namespace FleetManager {
 				critical = true
 			});
 
-			fleet.Add(ship);
+			//fleet.Add(ship);
 			PushToAll(new ANWI.Messaging.Ops.UpdateOOBShips(
-					new List<NamedShip>() { ship },
+					new List<Ship>() { ship },
 					null
 				));
 		}
@@ -169,7 +170,7 @@ namespace FleetManager {
 				name = $"New Wing {lastWingNumber}",
 				callsign = "No Callsign",
 				primaryRole = Wing.Role.CAP,
-				members = new List<WingMember>()
+				members = new List<Boat>()
 			};
 
 			PushToAll(new ANWI.Messaging.Ops.UpdateOOBWings(
@@ -178,11 +179,11 @@ namespace FleetManager {
 		}
 
 		public void DeleteFleetElement(string uuid) {
-			FleetCompElement elem = GetOOBElement(uuid);
+			/*FleetUnit elem = GetOOBElement(uuid);
 
 			if (elem != null) {
-				if (elem is NamedShip) {
-					NamedShip ship = elem as NamedShip;
+				if (elem is Ship) {
+					Ship ship = elem as Ship;
 
 					// Unassign all positions
 					List<int> changedPos = new List<int>();
@@ -203,19 +204,19 @@ namespace FleetManager {
 				PushToAll(new ANWI.Messaging.Ops.UpdateOOBShips(
 					null,
 					new List<string>() { elem.uuid }));
-			}
+			}*/
 		}
 		#endregion
 
 		#region Positions
 		public void 
 		ChangeAssignment(string elem, string wingmem, string pos, int user) {
-			FleetCompElement unit = GetOOBElement(elem);
+			/*FleetUnit unit = GetOOBElement(elem);
 			if (unit == null)
 				return;
 
-			if(unit is NamedShip) {
-				OpPosition job = GetShipPosition(unit as NamedShip, pos);
+			if(unit is Ship) {
+				OpPosition job = GetShipPosition(unit as Ship, pos);
 				OpParticipant member = GetParticipant(user);
 				if (job == null && member == null)
 					return;
@@ -239,7 +240,7 @@ namespace FleetManager {
 
 				OpPosition.AssignPosition(job, member);
 				PushToAll(update);
-			}
+			}*/
 		}
 
 		#endregion

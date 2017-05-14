@@ -55,7 +55,7 @@
             </DataTemplate.Triggers>
         </DataTemplate>
 
-        <DataTemplate DataType="{x:Type OOB:NamedShip}">
+        <DataTemplate DataType="{x:Type OOB:Ship}">
             <Grid Height="Auto" Background="White" VerticalAlignment="Top">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="70"/>

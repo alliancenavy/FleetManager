@@ -142,6 +142,7 @@
     <Compile Include="Operation.cs" />
     <Compile Include="OpParticipant.cs" />
     <Compile Include="OpPosition.cs" />
+    <Compile Include="OrderOfBattle.cs" />
     <Compile Include="Privs.cs" />
     <Compile Include="Profile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

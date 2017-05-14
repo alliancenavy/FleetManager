@@ -37,8 +37,8 @@ namespace Client {
 		}
 
 		private void Context_DeleteShipWing(object sender, RoutedEventArgs e) {
-			FleetCompElement elem = (sender as MenuItem).DataContext 
-				as FleetCompElement;
+			FleetUnit elem = (sender as MenuItem).DataContext 
+				as FleetUnit;
 			if(elem != null) {
 				MessageRouter.Instance.SendOps(
 					new ANWI.Messaging.Ops.DeleteOOBElement(opUUID, elem.uuid),

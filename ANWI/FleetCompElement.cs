@@ -8,12 +8,12 @@ namespace ANWI {
 		/// <summary>
 		/// Base class for all elements which appear in the OOB table
 		/// </summary>
-		public class FleetCompElement : INotifyPropertyChanged {
+		public class FleetUnit : INotifyPropertyChanged {
 			public event PropertyChangedEventHandler PropertyChanged;
 
 			public string uuid;
 
-			public FleetCompElement() {
+			public FleetUnit() {
 				// Empty
 			}
 
@@ -31,13 +31,13 @@ namespace ANWI {
 		/// <summary>
 		/// A large named ship
 		/// </summary>
-		public class NamedShip : FleetCompElement {
+		public class Ship : FleetUnit {
 			public LiteVessel v { get; set; }
 			public bool isFlagship { get; set; }
 			
 			public List<OpPosition> positions { get; set; }
 
-			public NamedShip() {
+			public Ship() {
 				v = null;
 				isFlagship = false;
 				positions = new List<OpPosition>();
@@ -47,7 +47,7 @@ namespace ANWI {
 		/// <summary>
 		/// A wing of small ships
 		/// </summary>
-		public class Wing : FleetCompElement {
+		public class Wing : FleetUnit {
 			public enum Role {
 				INTERCEPTOR,
 				CAP,
@@ -56,7 +56,7 @@ namespace ANWI {
 			}
 
 			public string name { get; set; }
-			public List<WingMember> members { get; set; }
+			public List<Boat> members { get; set; }
 			public Role primaryRole { get; set; }
 			public string callsign { get; set; }
 
@@ -77,13 +77,14 @@ namespace ANWI {
 
 			public Wing() {
 				name = "";
-				members = new List<WingMember>();
+				members = new List<Boat>();
 				primaryRole = Role.INTERCEPTOR;
 				callsign = "";
 			}
 		}
 
-		public class WingMember : FleetCompElement {
+		public class Boat : FleetUnit {
+			public string wingUUID;
 			public Hull type { get; set; }
 			public string callsign { get; set; }
 			public bool isWC { get; set; }
@@ -109,7 +110,7 @@ namespace ANWI {
 				}
 			}
 
-			public WingMember() {
+			public Boat() {
 				type = null;
 				callsign = "";
 				isWC = false;
