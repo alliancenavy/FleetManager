@@ -89,6 +89,12 @@ namespace ANWI {
 					}
 				}
 			}
+			public bool isInterceptor {
+				get { return _primaryRole == Role.INTERCEPTOR; } }
+			public bool isCAP { get { return _primaryRole == Role.CAP; } }
+			public bool isBomber { get { return _primaryRole == Role.BOMBER; } }
+			public bool isDropship {
+				get { return _primaryRole == Role.DROPSHIP; } }
 
 			private string _callsign;
 			public string callsign {
@@ -109,13 +115,13 @@ namespace ANWI {
 			public string roleIcon { get {
 					switch(primaryRole) {
 						case Role.INTERCEPTOR:
-							return "/images/ops/RoleInterceptor.png";
+							return "/images/ops/roleInterceptor.png";
 						case Role.CAP:
-							return "/images/ops/RoleCAP.png";
+							return "/images/ops/roleCAP.png";
 						case Role.BOMBER:
-							return "/images/ops/RoleBomber.png";
+							return "/images/ops/roleBomber.png";
 						case Role.DROPSHIP:
-							return "/images/ops/RoleDropship.png";
+							return "/images/ops/roleDropship.png";
 						default:
 							return "";
 					}

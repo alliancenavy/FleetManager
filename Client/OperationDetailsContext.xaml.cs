@@ -99,14 +99,14 @@ namespace Client {
 			FleetUnit unit = (sender as MenuItem).DataContext as FleetUnit;
 
 			SimpleDropdownSelect select = new SimpleDropdownSelect(
-				CommonData.assignmentRoles.ConvertAll<string>((r) => {
+				CommonData.shipRoles.ConvertAll<string>((r) => {
 					return r.name; }));
 			select.ReturnSelected += (index) => {
 				MessageRouter.Instance.SendOps(
 					new ANWI.Messaging.Ops.AddPosition() {
 						opUUID = opUUID,
 						unitUUID = unit.uuid,
-						roleID = CommonData.assignmentRoles[index].id
+						roleID = CommonData.shipRoles[index].id
 					},
 					null);
 			};
@@ -178,7 +178,7 @@ namespace Client {
 			FleetUnit unit = (sender as MenuItem).DataContext as FleetUnit;
 
 			SimpleDropdownSelect select = new SimpleDropdownSelect(
-				CommonData.assignmentRoles.ConvertAll<string>((r) => {
+				CommonData.boatRoles.ConvertAll<string>((r) => {
 					return r.name;
 				}));
 			select.ReturnSelected += (index) => {
@@ -186,7 +186,7 @@ namespace Client {
 					new ANWI.Messaging.Ops.AddPosition() {
 						opUUID = opUUID,
 						unitUUID = unit.uuid,
-						roleID = CommonData.assignmentRoles[index].id
+						roleID = CommonData.boatRoles[index].id
 					},
 					null);
 			};
@@ -199,6 +199,36 @@ namespace Client {
 				opUUID = opUUID,
 				unitUUID = unit.uuid,
 				type = ANWI.Messaging.Ops.ModifyUnit.ChangeType.SetWingCommander
+			},
+			null);
+		}
+
+		private void Context_WingRoleInterceptor(object sender, RoutedEventArgs e) {
+			FleetUnit unit = (sender as MenuItem).DataContext as FleetUnit;
+			ChangeWingtype(unit.uuid, Wing.Role.INTERCEPTOR);
+		}
+
+		private void Context_WingRoleCAP(object sender, RoutedEventArgs e) {
+			FleetUnit unit = (sender as MenuItem).DataContext as FleetUnit;
+			ChangeWingtype(unit.uuid, Wing.Role.CAP);
+		}
+
+		private void Context_WingRoleBomber(object sender, RoutedEventArgs e) {
+			FleetUnit unit = (sender as MenuItem).DataContext as FleetUnit;
+			ChangeWingtype(unit.uuid, Wing.Role.BOMBER);
+		}
+
+		private void Context_WingRoleDropship(object sender, RoutedEventArgs e) {
+			FleetUnit unit = (sender as MenuItem).DataContext as FleetUnit;
+			ChangeWingtype(unit.uuid, Wing.Role.DROPSHIP);
+		}
+
+		private void ChangeWingtype(string uuid, Wing.Role role) {
+			MessageRouter.Instance.SendOps(new ANWI.Messaging.Ops.ModifyUnit() {
+				opUUID = opUUID,
+				unitUUID = uuid,
+				type = ANWI.Messaging.Ops.ModifyUnit.ChangeType.ChangeWingRole,
+				integer = (int)role
 			},
 			null);
 		}

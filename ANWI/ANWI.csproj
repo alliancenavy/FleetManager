@@ -93,6 +93,7 @@
     <Compile Include="Database\Model\Hull.cs" />
     <Compile Include="Database\Model\HullRole.cs" />
     <Compile Include="Database\Model\HullVendor.cs" />
+    <Compile Include="Database\Model\OperationRole.cs" />
     <Compile Include="Database\Model\Rank.cs" />
     <Compile Include="Database\Model\Rate.cs" />
     <Compile Include="Database\Model\ShipEquipment.cs" />
@@ -124,7 +125,7 @@
     <Compile Include="Messaging\Ops\AddPosition.cs" />
     <Compile Include="Messaging\Ops\AssignUser.cs" />
     <Compile Include="Messaging\Ops\DeletePosition.cs" />
-    <Compile Include="Messaging\Ops\ModifyShip.cs" />
+    <Compile Include="Messaging\Ops\ModifyUnit.cs" />
     <Compile Include="Messaging\Ops\SetPositionCritical.cs" />
     <Compile Include="Messaging\Ops\UpdateAssignments.cs" />
     <Compile Include="Messaging\Ops\UpdatePositions.cs" />
@@ -147,6 +148,7 @@
     <Compile Include="Messaging\ReqExp\UserIdPlus.cs" />
     <Compile Include="Messaging\Request.cs" />
     <Compile Include="Operation.cs" />
+    <Compile Include="OperationRole.cs" />
     <Compile Include="OpParticipant.cs" />
     <Compile Include="OpPosition.cs" />
     <Compile Include="OrderOfBattle.cs" />

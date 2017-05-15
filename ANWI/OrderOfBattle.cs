@@ -337,5 +337,18 @@ namespace ANWI {
 
 			wing.callsign = callsign;
 		}
+
+		/// <summary>
+		/// Changes the role of a wing
+		/// </summary>
+		/// <param name="uuid"></param>
+		/// <param name="role"></param>
+		public void ChangeWingRole(string uuid, Wing.Role role) {
+			Wing wing = GetUnit(uuid) as Wing;
+			if (wing == null)
+				return;
+
+			wing.primaryRole = role;
+		}
 	}
 }

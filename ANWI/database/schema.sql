@@ -56,6 +56,17 @@ create table if not exists AssignmentRole (
  isCompany integer not null
 );
 
+DROP TABLE IF EXISTS OperationRole;
+
+CREATE TABLE IF NOT EXISTS OperationRole (
+ id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+ name TEXT NOT NULL UNIQUE,
+ associatedRate INTEGER NOT NULL REFERENCES Rate(id),
+ onShips INTEGER NOT NULL,
+ onBoats INTEGER NOT NULL,
+ inSquads INTEGER NOT NULL
+);
+
 drop table if exists StruckRate;
 
 create table if not exists StruckRate (

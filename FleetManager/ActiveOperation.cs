@@ -175,6 +175,19 @@ namespace FleetManager {
 				isWC = false
 			};
 
+			// Add a pilot position by default to make things
+			// easy for the FC
+			boat.positions.Add(new OpPosition() {
+				uuid = ANWI.Utility.UUID.GenerateUUID(),
+				unitUUID = boat.uuid,
+				critical = false,
+				role = new OperationRole() {
+					id = 4,
+					name = "Pilot",
+					rateAbbrev = "FP"
+				}
+			});
+
 			fleet.AddUnit(boat);
 
 			PushToAll(new ANWI.Messaging.Ops.UpdateUnitsBoats(
@@ -228,6 +241,15 @@ namespace FleetManager {
 						str = mod.str
 					});
 					break;
+
+				case ANWI.Messaging.Ops.ModifyUnit.ChangeType.ChangeWingRole:
+					fleet.ChangeWingRole(mod.unitUUID, (Wing.Role)mod.integer);
+					PushToAll(new ANWI.Messaging.Ops.UpdateWing() {
+						wingUUID = mod.unitUUID,
+						type = ANWI.Messaging.Ops.UpdateWing.Type.ChangeRole,
+						integer = mod.integer
+					});
+					break;
 			}
 		}
 		#endregion
@@ -240,7 +262,7 @@ namespace FleetManager {
 				critical = false,
 				filledById = -1,
 				filledByPointer = null,
-				role = AssignmentRole.FetchById(roleID)
+				role = OperationRole.FetchById(roleID)
 			};
 
 			fleet.AddPosition(pos);

@@ -63,6 +63,14 @@
 
         <DataTemplate DataType="{x:Type OOB:Ship}">
             <Grid Height="Auto" Background="White" VerticalAlignment="Top">
+                <Grid.Resources>
+                    <CollectionViewSource x:Key="SortedPositions" Source="{Binding Path=positions}">
+                        <CollectionViewSource.SortDescriptions>
+                            <scm:SortDescription PropertyName="role.id" Direction="Ascending"/>
+                        </CollectionViewSource.SortDescriptions>
+                    </CollectionViewSource>
+                </Grid.Resources>
+                
                 <Grid.RowDefinitions>
                     <RowDefinition Height="70"/>
                     <RowDefinition Height="*"/>
@@ -70,7 +78,7 @@
                 </Grid.RowDefinitions>
                 <Border BorderThickness="1" BorderBrush="Black" Grid.RowSpan="3"/>
 
-                <Image x:Name="Image_Silhouette" Grid.Row="0" HorizontalAlignment="Left" Margin="10,10,0,0" Height="50" Width="100" VerticalAlignment="Top" OpacityMask="Black" Source="{Binding Path=icon, FallbackValue={StaticResource NoImageFound}}" Stretch="Fill"/>
+                <Image x:Name="Image_Silhouette" Grid.Row="0" HorizontalAlignment="Left" Margin="10,10,0,0" Height="50" Width="100" VerticalAlignment="Top" OpacityMask="Black" Source="{Binding Path=v.hull.silhouetteFile, FallbackValue={StaticResource NoImageFound}}" Stretch="Fill"/>
                 <TextBlock x:Name="Text_ShipName" Grid.Row="0" Margin="120,5,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding Path=v.name, FallbackValue='ANS Long Ship Name'}" FontSize="15" FontWeight="DemiBold"/>
                 <Border Grid.Row="0" BorderThickness="1" BorderBrush="Black" Margin="120,25,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
                     <TextBlock TextWrapping="Wrap" Text="{Binding v.fullHullNumber, FallbackValue='XXX-##'}" Width="80" FontSize="16" FontWeight="Bold" FontFamily="Segoe UI Black" TextAlignment="Center" Height="23"/>
@@ -79,7 +87,7 @@
                 <TextBlock x:Name="Text_ShipClass" Grid.Row="0" Margin="120,48,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding Path=v.hull.nameAndRole, FallbackValue='Ship Class'}" FontSize="12" FontWeight="Regular"/>
 
                 <Rectangle Grid.Row="1" Margin="15,5,0,5" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="10"  Fill="#FFB9B9B9" />
-                <ListBox Name="List_Positions" Grid.Row="1" Height="Auto" VerticalAlignment="Top" Margin="30,0,5,0" HorizontalContentAlignment="Stretch" ItemTemplate="{DynamicResource PositionTemplate}" ItemsSource="{Binding positions, UpdateSourceTrigger=PropertyChanged}" SelectionChanged="List_Positions_SelectionChanged" BorderThickness="0">
+                <ListBox Name="List_Positions" Grid.Row="1" Height="Auto" VerticalAlignment="Top" Margin="30,0,5,0" HorizontalContentAlignment="Stretch" ItemTemplate="{DynamicResource PositionTemplate}" ItemsSource="{Binding Source={StaticResource SortedPositions}}" SelectionChanged="List_Positions_SelectionChanged" BorderThickness="0">
                     <ListBox.Template>
                         <ControlTemplate>
                             <ItemsPresenter/>
@@ -154,7 +162,7 @@
 
         <DataTemplate x:Key="WingMemberTemplate">
             <Grid Height="Auto" Background="White">
-                <Image Name="Image_Silhouette" Height="40" Width="40" Margin="5,5,0,0"  HorizontalAlignment="Left" VerticalAlignment="Top" OpacityMask="Black" Source="{Binding icon, FallbackValue={StaticResource NoImageFound}}"/>
+                <Image Name="Image_Silhouette" Height="40" Width="40" Margin="5,5,0,0"  HorizontalAlignment="Left" VerticalAlignment="Top" OpacityMask="Black" Source="{Binding Path=type.silhouetteFile, FallbackValue={StaticResource NoImageFound}}"/>
                 <Grid Margin="50,9,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -232,6 +240,12 @@
                         <MenuItem Header="Add Boat" Click="Context_AddWingMember"/>
                         <MenuItem Header="Change Name" Click="Context_ChangeNameWing"/>
                         <MenuItem Header="Change Callsign" Click="Context_ChangeCallsign"/>
+                        <MenuItem Header="Wing Type">
+                            <MenuItem Header="Interceptor" Click="Context_WingRoleInterceptor" IsChecked="{Binding Path=isInterceptor, Mode=OneWay}"/>
+                            <MenuItem Header="CAP" Click="Context_WingRoleCAP" IsChecked="{Binding Path=isCAP, Mode=OneWay}"/>
+                            <MenuItem Header="Bomber" Click="Context_WingRoleBomber" IsChecked="{Binding Path=isBomber, Mode=OneWay}"/>
+                            <MenuItem Header="Dropship" Click="Context_WingRoleDropship" IsChecked="{Binding Path=isDropship, Mode=OneWay}"/>
+                        </MenuItem>
                         <Separator/>
                         <MenuItem Header="Delete Wing" Click="Context_DeleteUnit"/>
                     </ContextMenu>

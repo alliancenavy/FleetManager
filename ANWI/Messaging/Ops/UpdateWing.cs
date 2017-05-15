@@ -8,7 +8,8 @@
 		public enum Type {
 			SetName,
 			SetCallsign,
-			ChangeWingCommander
+			ChangeWingCommander,
+			ChangeRole
 		}
 
 		public string wingUUID;
@@ -16,6 +17,7 @@
 
 		public string str;
 		public string boatUUID;
+		public int integer;
 
 		public UpdateWing() {
 		}

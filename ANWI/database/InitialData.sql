@@ -20,16 +20,20 @@ INSERT INTO Rank (id, name, abrv, icon, ordering) VALUES (6, "Commodore", "CDRE"
 
 ---------------------------------------
 --Rate
-INSERT INTO Rate (id, name, abrv, icon) VALUES (0, "Undesignated", "UN", "");
-INSERT INTO Rate (id, name, abrv, icon) VALUES (1, "Cargo Pilot", "CP", "");
-INSERT INTO Rate (id, name, abrv, icon) VALUES (2, "Fighter Pilot", "FP", "");
-INSERT INTO Rate (id, name, abrv, icon) VALUES (3, "Dropship Pilot", "DP", "");
-INSERT INTO Rate (id, name, abrv, icon) VALUES (4, "Aerospace Mechanic", "AM", "");
-INSERT INTO Rate (id, name, abrv, icon) VALUES (5, "Aerospace Crewman", "AC", "");
-INSERT INTO Rate (id, name, abrv, icon) VALUES (6, "Quartermaster", "QM", "");
-INSERT INTO Rate (id, name, abrv, icon) VALUES (7, "Gunner's Mate", "GM", "");
-INSERT INTO Rate (id, name, abrv, icon) VALUES (8, "Damage Controlman", "DC", "");
-INSERT INTO Rate (id, name, abrv, icon) VALUES (9, "Skipper", "SK", "");
+INSERT INTO Rate (id, name, abrv) VALUES (0, "Undesignated", "UN");
+INSERT INTO Rate (id, name, abrv) VALUES (1, "Cargo Pilot", "CP");
+INSERT INTO Rate (id, name, abrv) VALUES (2, "Fighter Pilot", "FP");
+INSERT INTO Rate (id, name, abrv) VALUES (3, "Dropship Pilot", "DP");
+INSERT INTO Rate (id, name, abrv) VALUES (4, "Aerospace Mechanic", "AM");
+INSERT INTO Rate (id, name, abrv) VALUES (5, "Aerospace Crewman", "AC");
+INSERT INTO Rate (id, name, abrv) VALUES (6, "Quartermaster", "QM");
+INSERT INTO Rate (id, name, abrv) VALUES (7, "Gunner's Mate", "GM");
+INSERT INTO Rate (id, name, abrv) VALUES (8, "Damage Controlman", "DC");
+INSERT INTO Rate (id, name, abrv) VALUES (9, "Skipper", "SK");
+INSERT INTO Rate (id, name, abrv) VALUES (10, "Fleet Commander", "FC");
+INSERT INTO Rate (id, name, abrv) VALUES (11, "Wing Commander", "WC");
+INSERT INTO Rate (id, name, abrv) VALUES (12, "Section Leader", "SL");
+INSERT INTO Rate (id, name, abrv) VALUES (13, "Boarding Specialist", "BS");
 
 ---------------------------------------
 --Assignment roles
@@ -47,6 +51,20 @@ INSERT INTO AssignmentRole (id, name, isCompany) VALUES (10, "Crewman", 1);
 INSERT INTO AssignmentRole (id, name, isCompany) VALUES (11, "Pilot", 0);
 INSERT INTO AssignmentRole (id, name, isCompany) VALUES (12, "Air Crewman", 0);
 INSERT INTO AssignmentRole (id, name, isCompany) VALUES (13, "Marine", 0);
+
+---------------------------------------
+--Operation Roles
+INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads) VALUES ("Fleet Commander", 10, 1, 0, 0);
+INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads) VALUES ("Captain", 9, 1, 0, 0);
+INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads) VALUES ("Helmsman", 6, 1, 0, 0);
+INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads) VALUES ("Pilot", 2, 0, 1, 0);
+INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads) VALUES ("Co-Pilot", 2, 0, 1, 0);
+INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads) VALUES ("Gunner", 7, 1, 0, 0);
+INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads) VALUES ("Fireman", 8, 1, 0, 0);
+INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads) VALUES ("Mechanic", 4, 1, 1, 0);
+INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads) VALUES ("Crew", 5, 0, 1, 0);
+INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads) VALUES ("Section Leader", 12, 0, 0, 1);
+INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads) VALUES ("Marine", 13, 0, 0, 1);
 
 ---------------------------------------
 --Hull Vendors
@@ -160,3 +178,7 @@ INSERT INTO Hull (id, vendor, role, series, symbol, ordering) VALUES (66,2,13,"V
 INSERT INTO Hull (id, vendor, role, series, symbol, ordering) VALUES (67,2,13,"Vanguard Sentinel","",192);
 INSERT INTO Hull (id, vendor, role, series, symbol, ordering) VALUES (68,2,13,"Vanguard Warden","",193);
 INSERT INTO Hull (id, vendor, role, series, symbol, ordering) VALUES (69,1,7,"Zeus","",194);
+
+---------------------------------------
+--Users
+INSERT INTO User (id, name, auth0, rank, rate) VALUES (0, "Fleet", "", 6, null);

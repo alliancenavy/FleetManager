@@ -95,7 +95,7 @@ namespace AFOSTests {
 			ship.positions.Add(new OpPosition() {
 				uuid = "409ueomnllknqlknlkn",
 				unitUUID = ship.uuid,
-				role = new AssignmentRole() {
+				role = new OperationRole() {
 					name = "Pilot"
 				},
 				critical = true
@@ -123,7 +123,7 @@ namespace AFOSTests {
 				uuid = "4uvlkjlkj3qrlkj",
 				unitUUID = wing.uuid,
 				critical = true,
-				role = new AssignmentRole() {
+				role = new OperationRole() {
 					name = "Pilot"
 				}
 			});
@@ -146,7 +146,7 @@ namespace AFOSTests {
 				uuid = "7848whd2jdalkj3",
 				unitUUID = wing.uuid,
 				critical = true,
-				role = new AssignmentRole() {
+				role = new OperationRole() {
 					name = "Pilot"
 				}
 			});
@@ -169,7 +169,7 @@ namespace AFOSTests {
 				uuid = "2jrj2jsnn3kjnksnr",
 				unitUUID = "klkj4rlkjlkj2-asd-ei2",
 				critical = false,
-				role = new AssignmentRole() {
+				role = new OperationRole() {
 					name = "Skipper"
 				}
 			};
@@ -188,7 +188,7 @@ namespace AFOSTests {
 				uuid = "4832yufdjn45iua",
 				unitUUID = "498osjblj4lksjlkaj",
 				critical = false,
-				role = new AssignmentRole() {
+				role = new OperationRole() {
 					name = "Co-Pilot"
 				}
 			};

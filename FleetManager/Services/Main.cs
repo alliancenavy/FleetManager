@@ -73,6 +73,8 @@ namespace FleetManager.Services {
 						acd.assignmentRoles = AssignmentRole.FetchAll();
 						acd.largeHulls = Hull.FetchLarge();
 						acd.smallHulls = Hull.FetchSmall();
+						acd.shipRoles = OperationRole.FetchAllShips();
+						acd.boatRoles = OperationRole.FetchAllBoats();
 						return acd;
 					}
 

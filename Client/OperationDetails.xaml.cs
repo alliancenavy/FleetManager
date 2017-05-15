@@ -558,6 +558,10 @@ namespace Client {
 				case ANWI.Messaging.Ops.UpdateWing.Type.ChangeWingCommander:
 					fleet.SetWingCommander(upw.boatUUID);
 					break;
+
+				case ANWI.Messaging.Ops.UpdateWing.Type.ChangeRole:
+					fleet.ChangeWingRole(upw.wingUUID, (Wing.Role)upw.integer);
+					break;
 			}
 
 			NotifyPropertyChanged(string.Empty);

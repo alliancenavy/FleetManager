@@ -12,7 +12,7 @@ namespace ANWI {
 
 		public string uuid;
 		public string unitUUID;
-		public AssignmentRole role { get; set; }
+		public OperationRole role { get; set; }
 		public bool critical { get; set; }
 
 		[MessagePackIgnore]

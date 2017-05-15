@@ -352,6 +352,52 @@
   <ItemGroup>
     <Resource Include="images\AFOS_Logo.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\rates\AC0.png" />
+    <Resource Include="images\rates\AM0.png" />
+    <Resource Include="images\rates\BS0.png" />
+    <Resource Include="images\rates\BS1.png" />
+    <Resource Include="images\rates\BS2.png" />
+    <Resource Include="images\rates\BS3.png" />
+    <Resource Include="images\rates\CP0.png" />
+    <Resource Include="images\rates\DC0.png" />
+    <Resource Include="images\rates\DP0.png" />
+    <Resource Include="images\rates\FC0.png" />
+    <Resource Include="images\rates\FC1.png" />
+    <Resource Include="images\rates\FC2.png" />
+    <Resource Include="images\rates\FC3.png" />
+    <Resource Include="images\rates\FP0.png" />
+    <Resource Include="images\rates\GM0.png" />
+    <Resource Include="images\rates\QM0.png" />
+    <Resource Include="images\rates\SK0.png" />
+    <Resource Include="images\rates\SL0.png" />
+    <Resource Include="images\rates\SL1.png" />
+    <Resource Include="images\rates\SL2.png" />
+    <Resource Include="images\rates\SL3.png" />
+    <Resource Include="images\rates\UD0.png" />
+    <Resource Include="images\rates\WC0.png" />
+    <Resource Include="images\rates\WC1.png" />
+    <Resource Include="images\rates\WC2.png" />
+    <Resource Include="images\rates\WC3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\ops\roleBomber.png" />
+    <Resource Include="images\ops\roleCAP.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\ops\roleDropship.png" />
+    <Resource Include="images\ops\roleInterceptor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\ships\Idris-M.png" />
+    <Resource Include="images\ships\Idris-P.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\ships\F7C Hornet.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\ships\Cutlass Black.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -22,6 +22,10 @@ namespace Client {
 			= null;
 		public static List<Hull> largeHulls { get; private set; } = null;
 		public static List<Hull> smallHulls { get; private set; } = null;
+		public static List<OperationRole> shipRoles { get; private set; }
+			= null;
+		public static List<OperationRole> boatRoles { get; private set; }
+			= null;
 
 		public static bool loaded { get; private set; } = false;
 
@@ -36,6 +40,8 @@ namespace Client {
 			assignmentRoles = acd.assignmentRoles;
 			largeHulls = acd.largeHulls;
 			smallHulls = acd.smallHulls;
+			shipRoles = acd.shipRoles;
+			boatRoles = acd.boatRoles;
 
 			loaded = true;
 		}

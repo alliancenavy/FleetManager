@@ -10,6 +10,7 @@
 			SetWingCommander,
 			ChangeName,
 			ChangeCallsign,
+			ChangeWingRole
 		}
 
 		public string opUUID;

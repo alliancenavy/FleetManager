@@ -30,6 +30,9 @@ namespace ANWI {
 		public override string ToString() {
 			return $"{name} ({symbol})";
 		}
+		public string silhouetteFile {
+			get { return $"images/ships/{name}.png"; }
+		}
 		#endregion
 
 		#region Constructors
