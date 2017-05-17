@@ -19,7 +19,7 @@ namespace FleetManager.Services {
 		#endregion
 
 		#region Constructors
-		public Ops() : base("Ops Service", true) {
+		public Ops() : base("Ops Service " + ANWI.Utility.UUID.GenerateUUID(), true) {
 			logger.Info("Started");
 
 			AddProcessor(typeof(ANWI.Messaging.Request), 
@@ -40,10 +40,6 @@ namespace FleetManager.Services {
 				ProcessSetPositionCritical);
 			AddProcessor(typeof(ANWI.Messaging.Ops.ModifyUnit),
 				ProcessModifyUnit);
-
-			// Create testing op
-			string uuid = CreateNew("Test Operation", OperationType.PATROL);
-			activeOps[uuid].AdvanceLifecycle();
 		}
 		#endregion
 

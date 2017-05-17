@@ -51,16 +51,13 @@ namespace Client {
 			// Load credentials
 			if (Appdata.CheckFileExists(credentialsFile)) {
 				try {
-					File.Decrypt(credentialsFile);
-					StreamReader stream 
-						= Appdata.OpenTextFileEncrypted(credentialsFile);
-					JsonTextReader reader = new JsonTextReader(stream);
-					JObject root = (JObject)JToken.ReadFrom(reader);
+					JObject root
+						= Appdata.OpenJSONFileEncrypted(credentialsFile);
+					
 
 					Textbox_Username.Text = (string)root["username"];
 					Textbox_Password.Password = (string)root["password"];
 					Checkbox_RememberMe.IsChecked = true;
-					stream.Close();
 				} catch (Exception e) {
 					// Delete the credentials file so we don't fail again
 					Appdata.DeleteFile(credentialsFile);

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -58,11 +60,19 @@ namespace Client {
 		/// </summary>
 		/// <param name="filename"></param>
 		/// <returns></returns>
-		public static StreamReader OpenTextFileEncrypted(string filename) {
+		public static JObject OpenJSONFileEncrypted(string filename) {
 			VerifyAppDataDir();
 			string path = GetFullPath(filename);
 			File.Decrypt(path);
-			return File.OpenText(path);
+
+			StreamReader stream = File.OpenText(path);
+			JsonTextReader reader = new JsonTextReader(stream);
+			JObject root = (JObject)JToken.ReadFrom(reader);
+			stream.Close();
+
+			File.Encrypt(path);
+
+			return root;
 		}
 
 		/// <summary>

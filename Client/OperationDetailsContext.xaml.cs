@@ -53,12 +53,20 @@ namespace Client {
 		#region Shared
 		private void Context_AssignSelf(object sender, RoutedEventArgs e) {
 			OpPosition pos = (sender as MenuItem).DataContext as OpPosition;
-			ChangeAssignment(pos.uuid, thisUser.profile.id);
+			
+			// Users can only assign themselves if they are the FC
+			// OR if freeMove is enabled and this position is not occupied
+			if(isFC || (freeMove && pos.filledById == -1))
+				ChangeAssignment(pos.uuid, thisUser.profile.id);
 		}
 
 		private void Context_Unassign(object sender, RoutedEventArgs e) {
 			OpPosition pos = (sender as MenuItem).DataContext as OpPosition;
-			ChangeAssignment(pos.uuid, -1);
+
+			// Users can only unassigned a position if they are the FC
+			// OR freeMove is enabled and the position is filled by them
+			if(isFC || (freeMove && pos.filledById == thisUser.profile.id))
+				ChangeAssignment(pos.uuid, -1);
 		}
 
 		private void Context_CriticalPosition(object sender, RoutedEventArgs e) {

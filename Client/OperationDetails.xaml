@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:Client"
         xmlns:conv="clr-namespace:Client.Converters"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:OOB="clr-namespace:ANWI.FleetComp;assembly=ANWI"
         xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         mc:Ignorable="d"
@@ -41,12 +42,12 @@
 
                 <Grid.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Assign Self" Click="Context_AssignSelf"/>
-                        <MenuItem Header="Unassign" Click="Context_Unassign"/>
+                        <MenuItem Header="Assign Self" Click="Context_AssignSelf" IsEnabled="{Binding assignmentControlsEnabled}"/>
+                        <MenuItem Header="Unassign" Click="Context_Unassign" IsEnabled="{Binding assignmentControlsEnabled}"/>
                         <Separator/>
-                        <MenuItem Header="Critical" Click="Context_CriticalPosition" IsChecked="{Binding Path=critical}"/>
+                        <MenuItem Header="Critical" Click="Context_CriticalPosition" IsChecked="{Binding Path=critical}" IsEnabled="{Binding FCControlsEnabled}"/>
                         <Separator/>
-                        <MenuItem Header="Delete Position" Click="Context_DeletePosition"/>
+                        <MenuItem Header="Delete Position" Click="Context_DeletePosition" IsEnabled="{Binding FCControlsEnabled}"/>
                     </ContextMenu>
                 </Grid.ContextMenu>
             </Grid>
@@ -102,16 +103,16 @@
 
                 <Grid.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="New Fleet Ship" Click="Context_NewFleetShip"/>
-                        <MenuItem Header="New Custom Ship" Click="Context_NewCustomShip"/>
-                        <MenuItem Header="New Wing" Click="Context_NewWing"/>
+                        <MenuItem Header="New Fleet Ship" Click="Context_NewFleetShip" IsEnabled="{Binding FCControlsEnabled}"/>
+                        <MenuItem Header="New Custom Ship" Click="Context_NewCustomShip" IsEnabled="{Binding FCControlsEnabled}"/>
+                        <MenuItem Header="New Wing" Click="Context_NewWing" IsEnabled="{Binding FCControlsEnabled}"/>
                         <Separator/>
-                        <MenuItem Header="Set As Flagship" Click="Context_SetAsFlagship"/>
+                        <MenuItem Header="Set As Flagship" Click="Context_SetAsFlagship" IsEnabled="{Binding FCControlsEnabled}"/>
                         <Separator/>
-                        <MenuItem Header="Add Position" Click="Context_AddShipPosition"/>
-                        <MenuItem Header="Unassign All" Click="Context_UnassignAllShip"/>
+                        <MenuItem Header="Add Position" Click="Context_AddShipPosition" IsEnabled="{Binding FCControlsEnabled}"/>
+                        <MenuItem Header="Unassign All" Click="Context_UnassignAllShip" IsEnabled="{Binding FCControlsEnabled}"/>
                         <Separator/>
-                        <MenuItem Header="Delete Ship" Click="Context_DeleteUnit"/>
+                        <MenuItem Header="Delete Ship" Click="Context_DeleteUnit" IsEnabled="{Binding FCControlsEnabled}"/>
                     </ContextMenu>
                 </Grid.ContextMenu>
             </Grid>
@@ -137,12 +138,12 @@
 
                     <Grid.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Assign Self" Click="Context_AssignSelf"/>
-                            <MenuItem Header="Unassign" Click="Context_Unassign"/>
+                            <MenuItem Header="Assign Self" Click="Context_AssignSelf" IsEnabled="{Binding assignmentControlsEnabled}"/>
+                            <MenuItem Header="Unassign" Click="Context_Unassign" IsEnabled="{Binding assignmentControlsEnabled}"/>
                             <Separator/>
-                            <MenuItem Header="Critical" Click="Context_CriticalPosition" IsChecked="{Binding Path=critical}"/>
+                            <MenuItem Header="Critical" Click="Context_CriticalPosition" IsChecked="{Binding Path=critical}" IsEnabled="{Binding FCControlsEnabled}"/>
                             <Separator/>
-                            <MenuItem Header="Delete Position" Click="Context_DeletePosition"/>
+                            <MenuItem Header="Delete Position" Click="Context_DeletePosition" IsEnabled="{Binding FCControlsEnabled}"/>
                         </ContextMenu>
                     </Grid.ContextMenu>
                 </Grid>
@@ -179,11 +180,11 @@
 
                 <Grid.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Add Position" Click="Context_AddBoatPosition"/>
+                        <MenuItem Header="Add Position" Click="Context_AddBoatPosition" IsEnabled="{Binding FCControlsEnabled}"/>
                         <Separator/>
-                        <MenuItem Header="Set Wing Commander" Click="Context_SetWingCommander"/>
+                        <MenuItem Header="Set Wing Commander" Click="Context_SetWingCommander" IsEnabled="{Binding FCControlsEnabled}"/>
                         <Separator/>
-                        <MenuItem Header="Delete Boat" Click="Context_DeleteUnit"/>
+                        <MenuItem Header="Delete Boat" Click="Context_DeleteUnit" IsEnabled="{Binding FCControlsEnabled}"/>
                     </ContextMenu>
                 </Grid.ContextMenu>
             </Grid>
@@ -233,21 +234,21 @@
 
                 <Grid.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="New Fleet Ship" Click="Context_NewFleetShip"/>
-                        <MenuItem Header="New Custom Ship" Click="Context_NewCustomShip"/>
-                        <MenuItem Header="New Wing" Click="Context_NewWing"/>
+                        <MenuItem Header="New Fleet Ship" Click="Context_NewFleetShip" IsEnabled="{Binding FCControlsEnabled}"/>
+                        <MenuItem Header="New Custom Ship" Click="Context_NewCustomShip" IsEnabled="{Binding FCControlsEnabled}"/>
+                        <MenuItem Header="New Wing" Click="Context_NewWing" IsEnabled="{Binding FCControlsEnabled}"/>
                         <Separator/>
-                        <MenuItem Header="Add Boat" Click="Context_AddWingMember"/>
-                        <MenuItem Header="Change Name" Click="Context_ChangeNameWing"/>
-                        <MenuItem Header="Change Callsign" Click="Context_ChangeCallsign"/>
-                        <MenuItem Header="Wing Type">
-                            <MenuItem Header="Interceptor" Click="Context_WingRoleInterceptor" IsChecked="{Binding Path=isInterceptor, Mode=OneWay}"/>
-                            <MenuItem Header="CAP" Click="Context_WingRoleCAP" IsChecked="{Binding Path=isCAP, Mode=OneWay}"/>
-                            <MenuItem Header="Bomber" Click="Context_WingRoleBomber" IsChecked="{Binding Path=isBomber, Mode=OneWay}"/>
-                            <MenuItem Header="Dropship" Click="Context_WingRoleDropship" IsChecked="{Binding Path=isDropship, Mode=OneWay}"/>
+                        <MenuItem Header="Add Boat" Click="Context_AddWingMember" IsEnabled="{Binding FCControlsEnabled}"/>
+                        <MenuItem Header="Change Name" Click="Context_ChangeNameWing" IsEnabled="{Binding FCControlsEnabled}"/>
+                        <MenuItem Header="Change Callsign" Click="Context_ChangeCallsign" IsEnabled="{Binding FCControlsEnabled}"/>
+                        <MenuItem Header="Wing Type" IsEnabled="{Binding FCControlsEnabled}">
+                            <MenuItem Header="Interceptor" Click="Context_WingRoleInterceptor" IsChecked="{Binding Path=isInterceptor, Mode=OneWay}" IsEnabled="{Binding FCControlsEnabled}"/>
+                            <MenuItem Header="CAP" Click="Context_WingRoleCAP" IsChecked="{Binding Path=isCAP, Mode=OneWay}" IsEnabled="{Binding FCControlsEnabled}"/>
+                            <MenuItem Header="Bomber" Click="Context_WingRoleBomber" IsChecked="{Binding Path=isBomber, Mode=OneWay}" IsEnabled="{Binding FCControlsEnabled}"/>
+                            <MenuItem Header="Dropship" Click="Context_WingRoleDropship" IsChecked="{Binding Path=isDropship, Mode=OneWay}" IsEnabled="{Binding FCControlsEnabled}"/>
                         </MenuItem>
                         <Separator/>
-                        <MenuItem Header="Delete Wing" Click="Context_DeleteUnit"/>
+                        <MenuItem Header="Delete Wing" Click="Context_DeleteUnit" IsEnabled="{Binding FCControlsEnabled}"/>
                     </ContextMenu>
                 </Grid.ContextMenu>
             </Grid>
@@ -291,7 +292,7 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Row="0" Grid.Column="0"  Margin="10,5,10,0" TextWrapping="Wrap" Text="Participant Roster" VerticalAlignment="Top" FontWeight="Bold" Height="20" FontSize="15"/>
 
-                    <Button x:Name="Button_JoinOp" Grid.Column="0" Grid.Row="1"  Content="Join Operation" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_JoinOp_Click" Margin="10,3,10,0"/>
+                    <Button x:Name="Button_JoinOp" Grid.Column="0" Grid.Row="1" Content="Join Operation" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_JoinOp_Click" Margin="10,3,10,0" IsEnabled="{Binding joinButtonEnabled}"/>
 
                 </Grid>
 
@@ -328,9 +329,9 @@
         <ListBox x:Name="List_Fleet" Grid.Column="1" Margin="10,35,10,10" ItemsSource="{Binding Path=fleetComp}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" HorizontalContentAlignment="Stretch" SelectionChanged="List_Fleet_SelectionChanged">
             <ListBox.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="New Fleet Ship" Click="Context_NewFleetShip"/>
-                    <MenuItem Header="New Custom Ship" Click="Context_NewCustomShip"/>
-                    <MenuItem Header="New Wing" Click="Context_NewWing"/>
+                    <MenuItem Header="New Fleet Ship" Click="Context_NewFleetShip" IsEnabled="{Binding FCControlsEnabled}"/>
+                    <MenuItem Header="New Custom Ship" Click="Context_NewCustomShip" IsEnabled="{Binding FCControlsEnabled}"/>
+                    <MenuItem Header="New Wing" Click="Context_NewWing" IsEnabled="{Binding FCControlsEnabled}"/>
                 </ContextMenu>
             </ListBox.ContextMenu>
         </ListBox>

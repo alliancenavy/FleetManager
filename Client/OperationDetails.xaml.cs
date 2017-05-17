@@ -45,7 +45,16 @@ namespace Client {
 		#endregion
 
 		#region Single-Bound WPF Variables
-		public bool isFC { get; set; }
+		private bool _isFC;
+		public bool isFC {
+			get { return _isFC; }
+			set {
+				if(_isFC != value) {
+					_isFC = value;
+					NotifyPropertyChanged("isFC");
+				}
+			}
+		}
 
 		//
 		// Fleet Composition
@@ -107,9 +116,6 @@ namespace Client {
 				else
 					return "Next Stage: " + _status.Next().ToFriendlyString();
 			} }
-		public bool statusButtonEnabled {
-			get { return _status != OperationStatus.DISMISSING; }
-		}
 
 		//
 		// Participant Roster
@@ -144,10 +150,20 @@ namespace Client {
 					_working = value;
 					NotifyPropertyChanged("working");
 					NotifyPropertyChanged("controlEnabled");
+					
 				}
 			}
 		}
 		public bool controlEnabled { get { return !working; } }
+
+		//
+		// Enabling and Disabling certain controls
+		public bool joinButtonEnabled { get { return !isFC; } }
+		public bool statusButtonEnabled {
+			get { return isFC && (_status != OperationStatus.DISMISSING); } }
+		public bool FCControlsEnabled { get { return isFC; } }
+		public bool assignmentControlsEnabled {
+			get { return isFC || freeMove; } }
 		#endregion
 
 		#region Instance Members
@@ -208,8 +224,11 @@ namespace Client {
 
 				// Only add them if they don't already exist in the roster
 				if (GetParticipant(p.profile.id) == null) {
-					if (p.profile.id == userId)
+					if (p.profile.id == userId) {
 						thisUser = p;
+						isFC = thisUser.isFC;
+						NotifyPropertyChanged(string.Empty);
+					}
 					this.Dispatcher.Invoke(() => { roster.Add(p); });
 				}
 			}
