@@ -64,7 +64,8 @@ namespace FleetManager {
 				type = type,
 				status = status,
 				freeMove = freeMove,
-				roster = roster
+				roster = roster,
+				fleet = new List<FleetUnit>(fleet.Fleet)
 			};
 		}
 		#endregion
@@ -132,8 +133,28 @@ namespace FleetManager {
 					));
 		}
 
-		public void RemoveUser(string token) {
-			// TODO
+		public void RemoveUser(int id) {
+			OpParticipant user = GetParticipant(id);
+			if (user == null)
+				return;
+
+			// If the user is currently in a position unassign it
+			if(user.position != null) {
+				string posUUID = user.position.uuid;
+				fleet.ClearPosition(posUUID);
+				PushToAll(new ANWI.Messaging.Ops.UpdateAssignments(
+					null,
+					null,
+					new List<string>() { posUUID }
+					));
+			}
+
+			// Remove them from the roster and send update
+			roster.Remove(user);
+			PushToAll(new ANWI.Messaging.Ops.UpdateRoster(
+				null,
+				new List<int>() { user.profile.id }
+				));
 		}
 		#endregion
 

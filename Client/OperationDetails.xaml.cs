@@ -45,13 +45,16 @@ namespace Client {
 		#endregion
 
 		#region Single-Bound WPF Variables
-		private bool _isFC;
+		//
+		// Whether or not the user is the fleet commander
+		private bool _isFC = false;
 		public bool isFC {
 			get { return _isFC; }
 			set {
 				if(_isFC != value) {
 					_isFC = value;
 					NotifyPropertyChanged("isFC");
+					NotifyPropertyChanged("FCControlsEnabled");
 				}
 			}
 		}
@@ -133,6 +136,16 @@ namespace Client {
 		}
 
 		//
+		// Join button
+		public bool thisUserIsJoined { get { return thisUser != null; } }
+		public string joinButtonText { get {
+				if (thisUserIsJoined)
+					return "Leave Operation";
+				else
+					return "Join Operation";
+			} }
+
+		//
 		// Participant Numbers
 		public int currentUserNumber { get { return _roster.Count; } }
 		public int totalCriticalSlots {
@@ -186,6 +199,14 @@ namespace Client {
 			this.userId = userId;
 			working = true;
 
+			fleet.assignedPositionAdded += (pos) => {
+				OpParticipant user = GetParticipant(pos.filledById);
+				if(user != null) {
+					pos.filledByPointer = user;
+					user.position = pos;
+				}
+			};
+
 			MessageRouter.Instance.SetOpsPushTarget(this);
 
 			AddProcessor(typeof(ANWI.Messaging.Ops.FullOperationSnapshot),
@@ -236,6 +257,23 @@ namespace Client {
 			NotifyPropertyChanged("currentUserNumber");
 		}
 
+		private void RemoveParticipants(List<int> rem) {
+			foreach (int id in rem) {
+				OpParticipant user = GetParticipant(id);
+				if (user != null) {
+					if(user.profile.id == userId) {
+						thisUser = null;
+						isFC = false;
+						NotifyPropertyChanged(string.Empty);
+					}
+
+					this.Dispatcher.Invoke(() => { roster.Remove(user); });
+				}
+			}
+
+			NotifyPropertyChanged("currentUserNumber");
+		}
+
 		private OpParticipant GetParticipant(int id) {
 			foreach(OpParticipant p in _roster) {
 				if (p.profile.id == id)
@@ -244,13 +282,24 @@ namespace Client {
 			return null;
 		}
 
-		private void ChangeAssignment(string posUUID, int userID) {
-			MessageRouter.Instance.SendOps(new ANWI.Messaging.Ops.AssignUser() {
-				opUUID = opUUID,
-				positionUUID = posUUID,
-				userId = userID
-			},
-			null);
+		private void ChangeAssignment(OpPosition pos, int userID) {
+			// Only the FC can overwrite any position at any time
+			// Users can move themselves only when freemove is on and the
+			// position is empty
+			if (isFC || (
+					freeMove &&
+					thisUser != null &&
+					userID == thisUser.profile.id &&
+					pos.filledByPointer == null
+				)) {
+
+				MessageRouter.Instance.SendOps(new ANWI.Messaging.Ops.AssignUser() {
+					opUUID = opUUID,
+					positionUUID = pos.uuid,
+					userId = userID
+				},
+				null);
+			}
 		}
 		#endregion
 
@@ -269,19 +318,33 @@ namespace Client {
 		}
 
 		private void Button_JoinOp_Click(object sender, RoutedEventArgs e) {
-
+			if(thisUserIsJoined) {
+				// Leave the op
+				MessageRouter.Instance.SendOps(new ANWI.Messaging.Request(
+					ANWI.Messaging.Request.Type.LeaveOperation,
+					new ANWI.Messaging.ReqExp.IdString(userId, opUUID)
+					),
+					null);
+			} else {
+				// Join the op
+				MessageRouter.Instance.SendOps(new ANWI.Messaging.Request(
+					ANWI.Messaging.Request.Type.JoinOperation,
+					new ANWI.Messaging.ReqExp.IdString(userId, opUUID)
+					),
+					null);
+			}
 		}
 
 		private void
 		List_Positions_DoubleClick(object sender, RoutedEventArgs e) {
 			OpPosition pos = (sender as ListBoxItem).DataContext as OpPosition;
-			ChangeAssignment(pos.uuid, thisUser.profile.id);
+			ChangeAssignment(pos, thisUser.profile.id);
 		}
 
 		private void
 		List_WingCrew_DoubleClick(object sender, RoutedEventArgs e) {
 			OpPosition pos = (sender as ContentControl).DataContext as OpPosition;
-			ChangeAssignment(pos.uuid, thisUser.profile.id);
+			ChangeAssignment(pos, thisUser.profile.id);
 		}
 
 		private void 
@@ -375,9 +438,8 @@ namespace Client {
 		private void PositionGrid_Drop(object sender, DragEventArgs e) {
 			Grid grid = sender as Grid;
 			OpPosition pos = grid.DataContext as OpPosition;
-
-			ChangeAssignment(pos.uuid,
-				(draggedItem.DataContext as OpParticipant).profile.id);
+			OpParticipant user = (draggedItem.DataContext as OpParticipant);
+			ChangeAssignment(pos, user.profile.id);
 		}
 
 		private void List_Roster_SelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -414,7 +476,15 @@ namespace Client {
 
 			AddParticipants(snap.op.roster);
 
+			if (snap.op.fleet != null) {
+				foreach (FleetUnit f in snap.op.fleet) {
+					fleet.AddUnit(f);
+				}
+			}
+
 			working = false;
+
+			NotifyPropertyChanged(string.Empty);
 		}
 
 		private void ProcessUpdateRoster(ANWI.Messaging.IMessagePayload p) {
@@ -426,7 +496,7 @@ namespace Client {
 			}
 
 			if(up.removedUsers != null) {
-				// TODO
+				RemoveParticipants(up.removedUsers);
 			}
 		}
 

@@ -292,7 +292,7 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Row="0" Grid.Column="0"  Margin="10,5,10,0" TextWrapping="Wrap" Text="Participant Roster" VerticalAlignment="Top" FontWeight="Bold" Height="20" FontSize="15"/>
 
-                    <Button x:Name="Button_JoinOp" Grid.Column="0" Grid.Row="1" Content="Join Operation" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_JoinOp_Click" Margin="10,3,10,0" IsEnabled="{Binding joinButtonEnabled}"/>
+                    <Button x:Name="Button_JoinOp" Grid.Column="0" Grid.Row="1" Content="{Binding joinButtonText}" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_JoinOp_Click" Margin="10,3,10,0" IsEnabled="{Binding joinButtonEnabled}"/>
 
                 </Grid>
 

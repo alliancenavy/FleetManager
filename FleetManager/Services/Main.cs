@@ -11,7 +11,7 @@ using MsgPack.Serialization;
 namespace FleetManager.Services {
 	public class Main : BaseService {
 
-		public Main() : base("Main Service", false) {
+		public Main() : base("Main Service") {
 			logger.Info("Started");
 
 			// Build the message processor dictionary

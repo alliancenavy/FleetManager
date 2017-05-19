@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MsgPack.Serialization;
 
 namespace ANWI {
 
@@ -12,6 +13,8 @@ namespace ANWI {
 	public class OpParticipant {
 		public LiteProfile profile { get; set; }
 		public bool isFC { get; set; }
+
+		[MessagePackIgnore]
 		public OpPosition position { get; set; }
 
 		public OpParticipant() {

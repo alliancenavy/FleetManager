@@ -177,7 +177,12 @@ namespace Client {
 		/// <param name="e"></param>
 		private void Button_OpenOp_Click(object sender, RoutedEventArgs e) {
 			if(List_Ops.SelectedIndex >= 0) {
-				// TODO
+				if(opDet == null) {
+					LiteOperation op = List_Ops.SelectedItem as LiteOperation;
+					opDet = new OperationDetails(account.profile.id, op.uuid);
+					opDet.OnClose += (a) => { opDet = null; };
+					opDet.Show();
+				}
 			}
 		}
 
@@ -495,6 +500,7 @@ namespace Client {
 
 			this.Dispatcher.Invoke(() => {
 				opDet = new OperationDetails(account.profile.id, noc.uuid);
+				opDet.OnClose += (a) => { opDet = null; };
 				opDet.Show();
 
 				Button_NewOp.IsEnabled = true;

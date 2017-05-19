@@ -13,6 +13,10 @@ namespace ANWI {
 	/// </summary>
 	public class OrderOfBattle {
 
+		// Called when the snapshot is processed and there are assigned
+		// positions.  Used to connect the position and participant.
+		public event Action<OpPosition> assignedPositionAdded;
+
 		//
 		// Ships and wings in the fleet
 		private List<FleetUnit> fleetList = new List<FleetUnit>();
@@ -83,6 +87,8 @@ namespace ANWI {
 				// Add all positions
 				foreach(OpPosition p in ship.positions) {
 					positionsLookup.Add(p.uuid, p);
+					if (p.filledById != -1)
+						assignedPositionAdded?.Invoke(p);
 				}
 
 				fleetLookup.Add(unit.uuid, unit);
@@ -97,6 +103,8 @@ namespace ANWI {
 					// Add each position to the lookup
 					foreach(OpPosition p in b.positions) {
 						positionsLookup.Add(p.uuid, p);
+						if (p.filledById != -1)
+							assignedPositionAdded?.Invoke(p);
 					}
 				}
 
@@ -112,6 +120,8 @@ namespace ANWI {
 				// Add all positions
 				foreach(OpPosition p in boat.positions) {
 					positionsLookup.Add(p.uuid, p);
+					if (p.filledById != -1)
+						assignedPositionAdded?.Invoke(p);
 				}
 
 				boatLookup.Add(boat.uuid, boat);

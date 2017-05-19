@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MsgPack.Serialization;
 
 namespace ANWI {
 	/// <summary>
@@ -19,6 +21,8 @@ namespace ANWI {
 
 		public List<OpParticipant> roster = null;
 
+		[MessagePackKnownCollectionItemType("fu_ship", typeof(FleetComp.Ship))]
+		[MessagePackKnownCollectionItemType("fu_wing", typeof(FleetComp.Wing))]
 		public List<FleetComp.FleetUnit> fleet = null;
 		#endregion
 		

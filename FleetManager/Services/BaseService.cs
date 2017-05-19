@@ -19,7 +19,7 @@ namespace FleetManager.Services {
 
 		protected NLog.Logger logger = null;
 
-		private Dictionary<string, ConnectedUser> connectedUsers = null;
+		private ConnectedUser myUser = null;
 
 		private Dictionary<Type, Func<ANWI.Messaging.IMessagePayload,
 			ANWI.Messaging.IMessagePayload>> msgProcessors
@@ -30,11 +30,8 @@ namespace FleetManager.Services {
 		protected abstract string GetNameCookie();
 		protected abstract string GetLogIdentifier();
 
-		protected BaseService(string name, bool trackUsers) {
+		protected BaseService(string name) {
 			logger = LogManager.GetLogger(name);
-
-			if (trackUsers)
-				connectedUsers = new Dictionary<string, ConnectedUser>();
 		}
 
 		/// <summary>
@@ -50,12 +47,12 @@ namespace FleetManager.Services {
 		}
 
 		/// <summary>
-		/// Returns the connected user for a given token
+		/// Returns the user connected to this instance
 		/// </summary>
 		/// <param name="token"></param>
 		/// <returns></returns>
-		protected ConnectedUser GetUser(string token) {
-			return connectedUsers[token];
+		protected ConnectedUser GetUser() {
+			return myUser;
 		}
 
 		/// <summary>
@@ -63,17 +60,10 @@ namespace FleetManager.Services {
 		/// </summary>
 		protected override void OnOpen() {
 			base.OnOpen();
+
+			myUser = new ConnectedUser(this.Context);
+
 			logger.Info($"Connection received from {GetLogIdentifier()}");
-
-			if (connectedUsers != null) {
-				// Add this user to the connected list
-				connectedUsers.Add(
-					GetTokenCookie(),
-					new ConnectedUser(Context)
-					);
-
-				logger.Info("Connected user count now " + connectedUsers.Count);
-			}
 		}
 
 		/// <summary>
@@ -83,13 +73,6 @@ namespace FleetManager.Services {
 		protected override void OnClose(CloseEventArgs e) {
 			base.OnClose(e);
 			logger.Info($"Connection from {GetLogIdentifier()} closed");
-
-			if (connectedUsers != null) {
-				// Remove user from the dictionary
-				connectedUsers.Remove(GetTokenCookie());
-
-				logger.Info("Conneccted user count now " + connectedUsers.Count);
-			}
 		}
 
 		/// <summary>
@@ -98,6 +81,7 @@ namespace FleetManager.Services {
 		/// <param name="e"></param>
 		protected override void OnError(WebSocketSharp.ErrorEventArgs e) {
 			base.OnError(e);
+			logger.Error($"Error in connection from {GetLogIdentifier()}: {e}");
 		}
 
 		/// <summary>

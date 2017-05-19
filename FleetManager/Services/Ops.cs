@@ -13,13 +13,11 @@ namespace FleetManager.Services {
 	public class Ops : BaseService {
 
 		#region Instance Members
-		Dictionary<string, ActiveOperation> activeOps
-			= new Dictionary<string, ActiveOperation>();
-
+		
 		#endregion
 
 		#region Constructors
-		public Ops() : base("Ops Service " + ANWI.Utility.UUID.GenerateUUID(), true) {
+		public Ops() : base("Ops Service") {
 			logger.Info("Started");
 
 			AddProcessor(typeof(ANWI.Messaging.Request), 
@@ -76,7 +74,8 @@ namespace FleetManager.Services {
 
 			switch(req.type) {
 				case ANWI.Messaging.Request.Type.GetOperations: {
-						List<LiteOperation> ops = GetAllOps();
+						List<LiteOperation> ops
+							= OperationManager.Instance.GetOpsList();
 						return new ANWI.Messaging.FullOperationsList(ops);
 					}
 
@@ -86,7 +85,7 @@ namespace FleetManager.Services {
 
 						ActiveOperation op = GetOperation(det.str);
 						if (op != null) {
-							op.SubscribeUser(GetUser(GetTokenCookie()));
+							op.SubscribeUser(GetUser());
 							return new ANWI.Messaging.Ops.FullOperationSnapshot(
 								op.ToSnapshot());
 						} else {
@@ -115,7 +114,28 @@ namespace FleetManager.Services {
 							op.AdvanceLifecycle();
 						return null;
 					}
-					
+
+				case ANWI.Messaging.Request.Type.JoinOperation: {
+						ANWI.Messaging.ReqExp.IdString det
+							= req.detail as ANWI.Messaging.ReqExp.IdString;
+
+						ActiveOperation op = GetOperation(det.str);
+						if(op != null) {
+							op.JoinUser(GetTokenCookie());
+						}
+						return null;
+					}
+
+				case ANWI.Messaging.Request.Type.LeaveOperation: {
+						ANWI.Messaging.ReqExp.IdString det
+							= req.detail as ANWI.Messaging.ReqExp.IdString;
+
+						ActiveOperation op = GetOperation(det.str);
+						if (op != null) {
+							op.RemoveUser(det.id);
+						}
+						return null;
+					}
 			}
 
 			return null;
@@ -126,7 +146,7 @@ namespace FleetManager.Services {
 			ANWI.Messaging.Ops.CreateNewOp cno
 				= p as ANWI.Messaging.Ops.CreateNewOp;
 
-			string uuid = CreateNew(cno.name, cno.type);
+			string uuid = OperationManager.Instance.CreateNew(cno.name, cno.type);
 			return new ANWI.Messaging.Ops.NewOpCreated(uuid);
 		}
 
@@ -227,45 +247,9 @@ namespace FleetManager.Services {
 		}
 		#endregion
 
-		#region Op Lifecycle
-		private string CreateNew(string name, OperationType type) {
-			ActiveOperation op = new ActiveOperation(
-				ANWI.Utility.UUID.GenerateUUID(),
-				name,
-				type);
-
-			activeOps.Add(op.uuid, op);
-
-			logger.Info($"Created new operation with UUID {op.uuid}");
-			logger.Info($"There are now {activeOps.Count} active operations");
-
-			return op.uuid;
-		}
-		#endregion
-
-
 		#region Other Helpers
 		private ActiveOperation GetOperation(string uuid) {
-			ActiveOperation op;
-			if(!activeOps.TryGetValue(uuid, out op)) {
-				logger.Error($"Operation {uuid} does not exist");
-			}
-			return op;
-		}
-
-		/// <summary>
-		/// Returns a summary list of all active operations
-		/// </summary>
-		/// <returns></returns>
-		private List<LiteOperation> GetAllOps() {
-			List<LiteOperation> ops = new List<LiteOperation>();
-
-			foreach (KeyValuePair<string, ActiveOperation> op in activeOps) {
-				if(op.Value.status != OperationStatus.CONFIGURING)
-					ops.Add(op.Value.ToLite());
-			}
-
-			return ops;
+			return OperationManager.Instance.GetOperation(uuid);
 		}
 		#endregion
 	}
