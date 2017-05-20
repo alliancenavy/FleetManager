@@ -481,6 +481,8 @@ namespace Client {
 						new ANWI.Messaging.ReqExp.IdString(0, opUUID)),
 					null
 					);
+
+			InvokeOnClose();
 		}
 		#endregion
 

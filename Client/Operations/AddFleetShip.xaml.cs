@@ -1,4 +1,5 @@
 ﻿using ANWI;
+using ANWI.FleetComp;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -31,9 +32,13 @@ namespace Client.Operations {
 
 		public event Action<int> returnNewShip;
 
-		public AddFleetShip() {
+		ReadOnlyCollection<FleetUnit> currentFleet;
+
+		public AddFleetShip(ReadOnlyCollection<FleetUnit> currentFleet) {
 			this.DataContext = this;
 			InitializeComponent();
+
+			this.currentFleet = currentFleet;
 
 			this.AddProcessor(typeof(ANWI.Messaging.FullVesselReg),
 				ProcessVesselList);
@@ -49,7 +54,17 @@ namespace Client.Operations {
 			ANWI.Messaging.FullVesselReg reg 
 				= p as ANWI.Messaging.FullVesselReg;
 
-			_vesselList = new ObservableCollection<LiteVessel>(reg.vessels);
+			_vesselList = new ObservableCollection<LiteVessel>(
+				reg.vessels.Where(
+					vessel => {
+						foreach(FleetUnit unit in currentFleet) {
+							if (unit is Ship &&
+							(unit as Ship).v.hull.id == vessel.hull.id)
+								return false;
+						}
+						return true;
+					}
+				));
 			NotifyPropertyChanged("vesselList");
 		}
 

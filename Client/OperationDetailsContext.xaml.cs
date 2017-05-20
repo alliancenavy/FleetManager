@@ -13,7 +13,8 @@ namespace Client {
 
 		#region Composition
 		private void Context_NewFleetShip(object sender, RoutedEventArgs e) {
-			Operations.AddFleetShip afs = new Operations.AddFleetShip();
+			Operations.AddFleetShip afs 
+				= new Operations.AddFleetShip(fleet.Fleet);
 			afs.returnNewShip += (v) => {
 				MessageRouter.Instance.SendOps(
 					new ANWI.Messaging.Ops.AddOOBUnit() {

@@ -398,6 +398,10 @@
   <ItemGroup>
     <Resource Include="images\ships\Cutlass Black.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\ops\ts_commander.png" />
+    <Resource Include="images\ops\ts_member.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
