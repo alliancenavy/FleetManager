@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using WebSocketSharp;
 using ANWI;
 using ANWI.Messaging;
+using System.Windows;
 
 namespace Client {
 	public class MessageRouter {
@@ -158,7 +159,7 @@ namespace Client {
 		}
 
 		private void OnError(object sender, ErrorEventArgs e) {
-			// TODO
+			Application.Current.Shutdown();
 		}
 		#endregion
 

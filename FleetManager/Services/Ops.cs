@@ -38,6 +38,8 @@ namespace FleetManager.Services {
 				ProcessSetPositionCritical);
 			AddProcessor(typeof(ANWI.Messaging.Ops.ModifyUnit),
 				ProcessModifyUnit);
+			AddProcessor(typeof(ANWI.Messaging.Ops.SetFreeMove),
+				ProcessSetFreeMove);
 		}
 		#endregion
 
@@ -241,6 +243,19 @@ namespace FleetManager.Services {
 			ActiveOperation op = GetOperation(mod.opUUID);
 			if (op != null) {
 				op.ModifyUnit(mod);
+			}
+
+			return null;
+		}
+
+		private ANWI.Messaging.IMessagePayload
+		ProcessSetFreeMove(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.Ops.SetFreeMove sfm
+				= p as ANWI.Messaging.Ops.SetFreeMove;
+
+			ActiveOperation op = GetOperation(sfm.opUUID);
+			if(op != null) {
+				op.SetFreeMove(sfm.freeMove);
 			}
 
 			return null;

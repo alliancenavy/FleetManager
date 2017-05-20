@@ -126,8 +126,10 @@
     <Compile Include="Messaging\Ops\AssignUser.cs" />
     <Compile Include="Messaging\Ops\DeletePosition.cs" />
     <Compile Include="Messaging\Ops\ModifyUnit.cs" />
+    <Compile Include="Messaging\Ops\SetFreeMove.cs" />
     <Compile Include="Messaging\Ops\SetPositionCritical.cs" />
     <Compile Include="Messaging\Ops\UpdateAssignments.cs" />
+    <Compile Include="Messaging\Ops\UpdateSettings.cs" />
     <Compile Include="Messaging\Ops\UpdatePositions.cs" />
     <Compile Include="Messaging\Ops\UpdateShip.cs" />
     <Compile Include="Messaging\Ops\UpdateUnitsBoats.cs" />

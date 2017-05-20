@@ -31,17 +31,6 @@ namespace Client {
 
 		#region Double-Bound WPF Variables
 
-		private bool _freeMove = false;
-		public bool freeMove {
-			get { return _freeMove; }
-			set {
-				if(_freeMove != value) {
-					_freeMove = value;
-					NotifyPropertyChanged("freeMove");
-				}
-			}
-		}
-
 		#endregion
 
 		#region Single-Bound WPF Variables
@@ -55,6 +44,19 @@ namespace Client {
 					_isFC = value;
 					NotifyPropertyChanged("isFC");
 					NotifyPropertyChanged("FCControlsEnabled");
+				}
+			}
+		}
+
+		//
+		// Free move enabled or disabled
+		private bool _freeMove = false;
+		public bool freeMove {
+			get { return _freeMove; }
+			set {
+				if (_freeMove != value) {
+					_freeMove = value;
+					NotifyPropertyChanged("freeMove");
 				}
 			}
 		}
@@ -229,6 +231,8 @@ namespace Client {
 				ProcessUpdateShip);
 			AddProcessor(typeof(ANWI.Messaging.Ops.UpdateWing),
 				ProcessUpdateWing);
+			AddProcessor(typeof(ANWI.Messaging.Ops.UpdateSettings),
+				ProcessUpdateSettings);
 
 			MessageRouter.Instance.SendOps(
 				new ANWI.Messaging.Request(
@@ -289,7 +293,9 @@ namespace Client {
 			if (isFC || (
 					freeMove &&
 					thisUser != null &&
-					userID == thisUser.profile.id &&
+					(userID == thisUser.profile.id || (
+						userID == -1 && pos.filledById == thisUser.profile.id
+					)) &&
 					pos.filledByPointer == null
 				)) {
 
@@ -333,6 +339,21 @@ namespace Client {
 					),
 					null);
 			}
+		}
+
+		private void 
+		Checkbox_FreeMove_Click(object sender, RoutedEventArgs e) {
+			CheckBox check = sender as CheckBox;
+			
+			// Prevent the checkbox from unchecking before the response
+			// comes back
+			check.GetBindingExpression(CheckBox.IsCheckedProperty).UpdateTarget();
+
+			MessageRouter.Instance.SendOps(new ANWI.Messaging.Ops.SetFreeMove() {
+				opUUID = opUUID,
+				freeMove = !freeMove
+			},
+			null);
 		}
 
 		private void
@@ -655,6 +676,15 @@ namespace Client {
 
 			NotifyPropertyChanged(string.Empty);
 		}
+
+		private void ProcessUpdateSettings(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.Ops.UpdateSettings ups
+				= p as ANWI.Messaging.Ops.UpdateSettings;
+
+			freeMove = ups.freeMove;
+
+			NotifyPropertyChanged(string.Empty);
+		}
 		#endregion
 
 		/// <summary>
@@ -666,6 +696,5 @@ namespace Client {
 				PropertyChanged(this, new PropertyChangedEventArgs(name));
 			}
 		}
-		
 	}
 }

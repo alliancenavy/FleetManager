@@ -80,6 +80,12 @@ namespace FleetManager {
 			logger.Error($"User {id} is not in the roster");
 			return null;
 		}
+
+		private void SendUpdateSettings() {
+			PushToAll(new ANWI.Messaging.Ops.UpdateSettings() {
+				freeMove = freeMove
+			});
+		}
 		#endregion
 
 		#region Participant Management
@@ -155,6 +161,12 @@ namespace FleetManager {
 				null,
 				new List<int>() { user.profile.id }
 				));
+		}
+
+		public void SetFreeMove(bool fm) {
+			freeMove = fm;
+
+			SendUpdateSettings();
 		}
 		#endregion
 

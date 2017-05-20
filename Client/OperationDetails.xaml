@@ -42,12 +42,12 @@
 
                 <Grid.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Assign Self" Click="Context_AssignSelf" IsEnabled="{Binding assignmentControlsEnabled}"/>
-                        <MenuItem Header="Unassign" Click="Context_Unassign" IsEnabled="{Binding assignmentControlsEnabled}"/>
+                        <MenuItem Name="CM_AssignSelf" Header="Assign Self" Click="Context_AssignSelf" IsEnabled="False"/>
+                        <MenuItem Name="CM_Unassign" Header="Unassign" Click="Context_Unassign" IsEnabled="False"/>
                         <Separator/>
-                        <MenuItem Header="Critical" Click="Context_CriticalPosition" IsChecked="{Binding Path=critical}" IsEnabled="{Binding FCControlsEnabled}"/>
+                        <MenuItem Name="CM_Critical"  Header="Critical" Click="Context_CriticalPosition" IsChecked="{Binding Path=critical}" IsEnabled="False"/>
                         <Separator/>
-                        <MenuItem Header="Delete Position" Click="Context_DeletePosition" IsEnabled="{Binding FCControlsEnabled}"/>
+                        <MenuItem Name="CM_DeletePos" Header="Delete Position" Click="Context_DeletePosition" IsEnabled="False"/>
                     </ContextMenu>
                 </Grid.ContextMenu>
             </Grid>
@@ -58,6 +58,14 @@
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Path=critical}" Value="False">
                     <Setter TargetName="Icon_Unfilled" Property="Foreground" Value="Black"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:MailboxWindow}}, Path=FCControlsEnabled}" Value="True">
+                    <Setter TargetName="CM_Critical" Property="IsEnabled" Value="True"/>
+                    <Setter TargetName="CM_DeletePos" Property="IsEnabled" Value="True"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:MailboxWindow}}, Path=assignmentControlsEnabled}" Value="True">
+                    <Setter TargetName="CM_AssignSelf" Property="IsEnabled" Value="True"/>
+                    <Setter TargetName="CM_Unassign" Property="IsEnabled" Value="True"/>
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
@@ -102,17 +110,17 @@
                 </ListBox>
 
                 <Grid.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="New Fleet Ship" Click="Context_NewFleetShip" IsEnabled="{Binding FCControlsEnabled}"/>
-                        <MenuItem Header="New Custom Ship" Click="Context_NewCustomShip" IsEnabled="{Binding FCControlsEnabled}"/>
-                        <MenuItem Header="New Wing" Click="Context_NewWing" IsEnabled="{Binding FCControlsEnabled}"/>
+                    <ContextMenu Name="CM" IsEnabled="False">
+                        <MenuItem Header="New Fleet Ship" Click="Context_NewFleetShip"/>
+                        <MenuItem Header="New Custom Ship" Click="Context_NewCustomShip"/>
+                        <MenuItem Header="New Wing" Click="Context_NewWing"/>
                         <Separator/>
-                        <MenuItem Header="Set As Flagship" Click="Context_SetAsFlagship" IsEnabled="{Binding FCControlsEnabled}"/>
+                        <MenuItem Header="Set As Flagship" Click="Context_SetAsFlagship"/>
                         <Separator/>
-                        <MenuItem Header="Add Position" Click="Context_AddShipPosition" IsEnabled="{Binding FCControlsEnabled}"/>
-                        <MenuItem Header="Unassign All" Click="Context_UnassignAllShip" IsEnabled="{Binding FCControlsEnabled}"/>
+                        <MenuItem Header="Add Position" Click="Context_AddShipPosition"/>
+                        <MenuItem Header="Unassign All" Click="Context_UnassignAllShip"/>
                         <Separator/>
-                        <MenuItem Header="Delete Ship" Click="Context_DeleteUnit" IsEnabled="{Binding FCControlsEnabled}"/>
+                        <MenuItem Header="Delete Ship" Click="Context_DeleteUnit"/>
                     </ContextMenu>
                 </Grid.ContextMenu>
             </Grid>
@@ -120,6 +128,10 @@
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding Path=isFlagship}" Value="True">
                     <Setter TargetName="Icon_Guide" Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:MailboxWindow}}, Path=FCControlsEnabled}" Value="True">
+                    <Setter TargetName="CM" Property="IsEnabled" Value="True"/>
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
@@ -138,12 +150,12 @@
 
                     <Grid.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Assign Self" Click="Context_AssignSelf" IsEnabled="{Binding assignmentControlsEnabled}"/>
-                            <MenuItem Header="Unassign" Click="Context_Unassign" IsEnabled="{Binding assignmentControlsEnabled}"/>
+                            <MenuItem Name="CM_AssignSelf" Header="Assign Self" Click="Context_AssignSelf" IsEnabled="False"/>
+                            <MenuItem Name="CM_Unassign" Header="Unassign" Click="Context_Unassign" IsEnabled="False"/>
                             <Separator/>
-                            <MenuItem Header="Critical" Click="Context_CriticalPosition" IsChecked="{Binding Path=critical}" IsEnabled="{Binding FCControlsEnabled}"/>
+                            <MenuItem Name="CM_Critical" Header="Critical" Click="Context_CriticalPosition" IsChecked="{Binding Path=critical}" IsEnabled="False"/>
                             <Separator/>
-                            <MenuItem Header="Delete Position" Click="Context_DeletePosition" IsEnabled="{Binding FCControlsEnabled}"/>
+                            <MenuItem Name="CM_DeletePos" Header="Delete Position" Click="Context_DeletePosition" IsEnabled="False"/>
                         </ContextMenu>
                     </Grid.ContextMenu>
                 </Grid>
@@ -157,6 +169,14 @@
                 <DataTrigger Binding="{Binding criticalAndUnfilled}" Value="False">
                     <Setter TargetName="Text_Name" Property="Foreground" Value="Black"/>
                     <Setter TargetName="Text_Role" Property="Foreground" Value="Black"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:MailboxWindow}}, Path=FCControlsEnabled}" Value="True">
+                    <Setter TargetName="CM_Critical" Property="IsEnabled" Value="True"/>
+                    <Setter TargetName="CM_DeletePos" Property="IsEnabled" Value="True"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:MailboxWindow}}, Path=assignmentControlsEnabled}" Value="True">
+                    <Setter TargetName="CM_AssignSelf" Property="IsEnabled" Value="True"/>
+                    <Setter TargetName="CM_Unassign" Property="IsEnabled" Value="True"/>
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
@@ -179,12 +199,12 @@
                 <fa:ImageAwesome x:Name="Icon_Unfilled" Icon="Warning"  Margin="0,12,10,0" HorizontalAlignment="Right" VerticalAlignment="Top" Height="25" Width="25" ToolTip="Unfilled Position" Foreground="Red" Visibility="{Binding Path=isFilled, Converter={StaticResource Conv_InverseBoolToVisibility}}"/>
 
                 <Grid.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="Add Position" Click="Context_AddBoatPosition" IsEnabled="{Binding FCControlsEnabled}"/>
+                    <ContextMenu Name="CM" IsEnabled="False">
+                        <MenuItem Name="CM_AddPos" Header="Add Position" Click="Context_AddBoatPosition"/>
                         <Separator/>
-                        <MenuItem Header="Set Wing Commander" Click="Context_SetWingCommander" IsEnabled="{Binding FCControlsEnabled}"/>
+                        <MenuItem Name="CM_SetWC" Header="Set Wing Commander" Click="Context_SetWingCommander" />
                         <Separator/>
-                        <MenuItem Header="Delete Boat" Click="Context_DeleteUnit" IsEnabled="{Binding FCControlsEnabled}"/>
+                        <MenuItem Name="CM_DeleteBoat" Header="Delete Boat" Click="Context_DeleteUnit"/>
                     </ContextMenu>
                 </Grid.ContextMenu>
             </Grid>
@@ -196,6 +216,9 @@
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Path=hasUnfilledCritical}" Value="False">
                     <Setter TargetName="Icon_Unfilled" Property="Foreground" Value="Black"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:MailboxWindow}}, Path=FCControlsEnabled}" Value="True">
+                    <Setter TargetName="CM" Property="IsEnabled" Value="True"/>
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
@@ -233,25 +256,31 @@
                 </ListBox>
 
                 <Grid.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="New Fleet Ship" Click="Context_NewFleetShip" IsEnabled="{Binding FCControlsEnabled}"/>
-                        <MenuItem Header="New Custom Ship" Click="Context_NewCustomShip" IsEnabled="{Binding FCControlsEnabled}"/>
-                        <MenuItem Header="New Wing" Click="Context_NewWing" IsEnabled="{Binding FCControlsEnabled}"/>
+                    <ContextMenu Name="CM" IsEnabled="False">
+                        <MenuItem Header="New Fleet Ship" Click="Context_NewFleetShip"/>
+                        <MenuItem Header="New Custom Ship" Click="Context_NewCustomShip"/>
+                        <MenuItem Header="New Wing" Click="Context_NewWing"/>
                         <Separator/>
-                        <MenuItem Header="Add Boat" Click="Context_AddWingMember" IsEnabled="{Binding FCControlsEnabled}"/>
-                        <MenuItem Header="Change Name" Click="Context_ChangeNameWing" IsEnabled="{Binding FCControlsEnabled}"/>
-                        <MenuItem Header="Change Callsign" Click="Context_ChangeCallsign" IsEnabled="{Binding FCControlsEnabled}"/>
-                        <MenuItem Header="Wing Type" IsEnabled="{Binding FCControlsEnabled}">
-                            <MenuItem Header="Interceptor" Click="Context_WingRoleInterceptor" IsChecked="{Binding Path=isInterceptor, Mode=OneWay}" IsEnabled="{Binding FCControlsEnabled}"/>
-                            <MenuItem Header="CAP" Click="Context_WingRoleCAP" IsChecked="{Binding Path=isCAP, Mode=OneWay}" IsEnabled="{Binding FCControlsEnabled}"/>
-                            <MenuItem Header="Bomber" Click="Context_WingRoleBomber" IsChecked="{Binding Path=isBomber, Mode=OneWay}" IsEnabled="{Binding FCControlsEnabled}"/>
-                            <MenuItem Header="Dropship" Click="Context_WingRoleDropship" IsChecked="{Binding Path=isDropship, Mode=OneWay}" IsEnabled="{Binding FCControlsEnabled}"/>
+                        <MenuItem Header="Add Boat" Click="Context_AddWingMember"/>
+                        <MenuItem Header="Change Name" Click="Context_ChangeNameWing"/>
+                        <MenuItem Header="Change Callsign" Click="Context_ChangeCallsign"/>
+                        <MenuItem Header="Wing Type">
+                            <MenuItem Header="Interceptor" Click="Context_WingRoleInterceptor" IsChecked="{Binding Path=isInterceptor, Mode=OneWay}"/>
+                            <MenuItem Header="CAP" Click="Context_WingRoleCAP" IsChecked="{Binding Path=isCAP, Mode=OneWay}"/>
+                            <MenuItem Header="Bomber" Click="Context_WingRoleBomber" IsChecked="{Binding Path=isBomber, Mode=OneWay}"/>
+                            <MenuItem Header="Dropship" Click="Context_WingRoleDropship" IsChecked="{Binding Path=isDropship, Mode=OneWay}"/>
                         </MenuItem>
                         <Separator/>
-                        <MenuItem Header="Delete Wing" Click="Context_DeleteUnit" IsEnabled="{Binding FCControlsEnabled}"/>
+                        <MenuItem Header="Delete Wing" Click="Context_DeleteUnit"/>
                     </ContextMenu>
                 </Grid.ContextMenu>
             </Grid>
+
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:MailboxWindow}}, Path=FCControlsEnabled}" Value="True">
+                    <Setter TargetName="CM" Property="IsEnabled" Value="True"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
         </DataTemplate>
 
     </Window.Resources>
@@ -328,10 +357,10 @@
         <TextBlock Grid.Column="1"  Margin="10,5,10,0" TextWrapping="Wrap" Text="Order of Battle" VerticalAlignment="Top" FontWeight="Bold" Height="20" FontSize="15"/>
         <ListBox x:Name="List_Fleet" Grid.Column="1" Margin="10,35,10,10" ItemsSource="{Binding Path=fleetComp}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" HorizontalContentAlignment="Stretch" SelectionChanged="List_Fleet_SelectionChanged">
             <ListBox.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="New Fleet Ship" Click="Context_NewFleetShip" IsEnabled="{Binding FCControlsEnabled}"/>
-                    <MenuItem Header="New Custom Ship" Click="Context_NewCustomShip" IsEnabled="{Binding FCControlsEnabled}"/>
-                    <MenuItem Header="New Wing" Click="Context_NewWing" IsEnabled="{Binding FCControlsEnabled}"/>
+                <ContextMenu IsEnabled="{Binding FCControlsEnabled}">
+                    <MenuItem Header="New Fleet Ship" Click="Context_NewFleetShip"/>
+                    <MenuItem Header="New Custom Ship" Click="Context_NewCustomShip"/>
+                    <MenuItem Header="New Wing" Click="Context_NewWing"/>
                 </ContextMenu>
             </ListBox.ContextMenu>
         </ListBox>
@@ -373,7 +402,7 @@
                 <TextBlock Grid.Column="0" Grid.Row="1" Margin="45,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Stretch" Text="{Binding Path=typeString, FallbackValue='Op Type'}" />
 
                 <Button x:Name="Button_ChangeStatus" Grid.Column="1" Grid.Row="1" Content="{Binding Path=statusString, FallbackValue='Status'}" VerticalAlignment="Center" Height="29" Background="#FF316838" Foreground="White" Click="Button_ChangeStatus_Click" IsEnabled="{Binding statusButtonEnabled}" Margin="10,0,9.667,0" ToolTip="{Binding statusButtonTooltip}"/>
-                <CheckBox Name="Checkbox_FreeMove" Grid.Row="2" Grid.Column="0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="{Binding Path=freeMove, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="Free Move" ToolTip="Free Move allows members to choose their own role instead of being assigned by the FC."/>
+                <CheckBox Name="Checkbox_FreeMove" Grid.Row="2" Grid.Column="0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="{Binding Path=freeMove, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Content="Free Move" Click="Checkbox_FreeMove_Click" ToolTip="Free Move allows members to choose their own role instead of being assigned by the FC." IsEnabled="{Binding FCControlsEnabled}"/>
             </Grid>
             
             

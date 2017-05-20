@@ -50,6 +50,8 @@ namespace ANWI.Messaging {
 		[MessagePackKnownType("op_poscrit", typeof(Ops.SetPositionCritical))]
 		[MessagePackKnownType("op_upship", typeof(Ops.UpdateShip))]
 		[MessagePackKnownType("op_upwing", typeof(Ops.UpdateWing))]
+		[MessagePackKnownType("op_sfm", typeof(Ops.SetFreeMove))]
+		[MessagePackKnownType("op_upset", typeof(Ops.UpdateSettings))]
 		public IMessagePayload payload;
 
 		public Message() {
