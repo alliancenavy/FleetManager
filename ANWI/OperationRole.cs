@@ -8,7 +8,7 @@ namespace ANWI {
 		public int id { get; set; }
 		public string name { get; set; }
 
-		private int _rate;
+		public int rateId { get; set; }
 		public string rateAbbrev { get; set; }
 
 		public bool channelCdr { get; set; }
@@ -24,7 +24,7 @@ namespace ANWI {
 		public OperationRole() {
 			id = -1;
 			name = "";
-			_rate = -1;
+			rateId = -1;
 			rateAbbrev = "UD";
 			channelCdr = false;
 		}
@@ -33,9 +33,9 @@ namespace ANWI {
 			id = r.id;
 			name = r.name;
 
-			_rate = r.rate;
+			rateId = r.rate;
 			Datamodel.Rate rate = null;
-			if (!Datamodel.Rate.FetchById(ref rate, _rate))
+			if (!Datamodel.Rate.FetchById(ref rate, rateId))
 				throw new ArgumentException("Role does not have valid rate");
 			rateAbbrev = rate.abrv;
 

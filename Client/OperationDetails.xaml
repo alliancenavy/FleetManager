@@ -44,14 +44,14 @@
                 <fa:ImageAwesome x:Name="Icon_FC" Icon="Star" Margin="100,30,0,0" Height="15" Width="15" ToolTip="Fleet Command" Visibility="{Binding Path=isFC, Converter={StaticResource Conv_BoolToVisibility}}"/>
             </Canvas>
 
-            <!--<DataTemplate.Triggers>
+            <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding isAssigned}" Value="False">
                     <Setter TargetName="Text_Name" Property="Foreground" Value="Red"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding isAssigned}" Value="True">
                     <Setter TargetName="Text_Name" Property="Foreground" Value="Black"/>
                 </DataTrigger>
-            </Da-taTemplate.Triggers>-->
+            </DataTemplate.Triggers>
         </DataTemplate>
 
         <DataTemplate x:Key="PositionTemplate">
@@ -403,6 +403,7 @@
         <Grid Grid.Column="2" Margin="0,0,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="100"/>
+                <RowDefinition Height="80"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
@@ -418,7 +419,7 @@
                     <ColumnDefinition Width="0.5*"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.ColumnSpan="2" Grid.Row="0" Height="30" Margin="10,10,9.667,0" TextWrapping="NoWrap" Text="{Binding Path=operationName, FallbackValue='Op Name'}" VerticalAlignment="Top" FontSize="18" FontWeight="Bold"/>
+                <TextBlock Grid.ColumnSpan="2" Grid.Row="0" Height="30" Margin="10,5,9.667,0" TextWrapping="NoWrap" Text="{Binding Path=operationName, FallbackValue='Op Name'}" VerticalAlignment="Top" FontSize="20" FontWeight="Bold"/>
 
                 <!--<ComboBox x:Name="Combobox_Type" Grid.Column="0" Grid.Row="1" Margin="10,5,10,0" VerticalAlignment="Top" />-->
                 <Image Grid.Column="0" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5,0,0,0" Source="{Binding Path=typeImage, FallbackValue={StaticResource NoImageFound}}"/>
@@ -429,6 +430,32 @@
             </Grid>
 
             <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="75"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.ColumnSpan="2" Grid.RowSpan="2" BorderBrush="Gray" BorderThickness="0 1 0 1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,0,10,0"/>
+
+                <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Margin="10,0,10,0" TextWrapping="Wrap" Text="Your Assignment" VerticalAlignment="Top" FontWeight="Bold" Height="20" FontSize="15"/>
+                
+                <Image Grid.Column="0" Grid.Row="1" Source="{Binding posDetailsImage}"/>
+
+                <Grid Grid.Row="1" Grid.Column="1">
+                    <StackPanel Margin="5,5,0,0" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                        <TextBlock Text="{Binding posDetailsLineOne}" FontWeight="DemiBold"/>
+                        <TextBlock Text="{Binding posDetailsLineTwo}"/>
+                        <TextBlock Text="This may not be your optimal position (No rate)" Foreground="Red" Visibility="{Binding posDetailsLineThree, Converter={StaticResource Conv_BoolToVisibility}}"/>
+                    </StackPanel>
+                    
+                </Grid>
+            </Grid>
+
+            <Grid Grid.Row="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="25"/>
                     <RowDefinition Height="20"/>

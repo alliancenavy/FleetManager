@@ -179,7 +179,7 @@ namespace Client {
 			if(List_Ops.SelectedIndex >= 0) {
 				if(opDet == null) {
 					LiteOperation op = List_Ops.SelectedItem as LiteOperation;
-					opDet = new OperationDetails(account.profile.id, op.uuid);
+					opDet = new OperationDetails(account.profile, op.uuid);
 					opDet.OnClose += (a) => { opDet = null; };
 					opDet.Show();
 				}
@@ -499,7 +499,7 @@ namespace Client {
 				= p as ANWI.Messaging.Ops.NewOpCreated;
 
 			this.Dispatcher.Invoke(() => {
-				opDet = new OperationDetails(account.profile.id, noc.uuid);
+				opDet = new OperationDetails(account.profile, noc.uuid);
 				opDet.OnClose += (a) => { opDet = null; };
 				opDet.Show();
 

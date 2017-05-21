@@ -26,7 +26,8 @@ namespace Client {
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		private string opUUID;
-		private int userId;
+		private Profile profile;
+		private int userId { get { return profile.id; } }
 
 		private OrderOfBattle fleet = new OrderOfBattle();
 
@@ -196,6 +197,48 @@ namespace Client {
 		public bool controlEnabled { get { return !working; } }
 
 		//
+		// Assignment Details
+		public string posDetailsImage { get {
+				if (thisUser == null || thisUser.position == null)
+					return "";
+				else
+					return thisUser.position.role.associatedRateIcon;
+			} }
+		public string posDetailsLineOne { get {
+				if (thisUser == null || thisUser.position == null)
+					return "No Assignment";
+				else
+					return thisUser.position.role.name;
+			} }
+		public string posDetailsLineTwo { get {
+				if (thisUser == null || thisUser.position == null)
+					return "";
+
+				FleetUnit unit = fleet.GetUnit(thisUser.position.unitUUID);
+				if(unit is Ship) {
+					Ship ship = unit as Ship;
+					return $"Aboard {ship.v.name} [{ship.v.fullHullNumber}]";
+				} else if(unit is Boat) {
+					Boat boat = unit as Boat;
+					Wing wing = fleet.GetUnit(boat.wingUUID) as Wing;
+					return $"{boat.type.nameAndRole} in '{wing.callsign}' wing";
+				} else {
+					return "";
+				}
+			} }
+		public bool posDetailsLineThree { get {
+				if (thisUser == null || thisUser.position == null)
+					return false;
+
+				foreach (Rate rate in profile.rates) {
+					if (rate.rateId == thisUser.position.role.rateId)
+						return false;
+				}
+
+				return true;
+			} }
+
+		//
 		// Enabling and Disabling certain controls
 		public bool joinButtonEnabled { get { return !isFC; } }
 		public bool statusButtonEnabled {
@@ -217,12 +260,12 @@ namespace Client {
 		/// identified by the UUID
 		/// </summary>
 		/// <param name="uuid"></param>
-		public OperationDetails(int userId, string uuid) {
+		public OperationDetails(Profile profile, string uuid) {
 			this.DataContext = this;
 			InitializeComponent();
 
 			opUUID = uuid;
-			this.userId = userId;
+			this.profile = profile;
 			working = true;
 
 			fleet.assignedPositionAdded += (pos) => {
