@@ -19,7 +19,8 @@
 		ASSAULT,
 		DEFENSE,
 		MINING,
-		LOGISTICS
+		LOGISTICS,
+		TRAINING
 	}
 
 	/// <summary>
@@ -68,6 +69,8 @@
 					return "Mining";
 				case OperationType.LOGISTICS:
 					return "Logistics";
+				case OperationType.TRAINING:
+					return "Training";
 				default:
 					return "";
 			}

@@ -17,7 +17,7 @@ namespace FleetManager.Services {
 		private AuthenticationApiClient auth0Client;
 
 		// Minimum version the client must be running to connect
-		private Version minimumVersion = new Version(0, 1, 0, 0);
+		private Version minimumVersion = new Version(0, 2, 0, 0);
 
 		public Auth() {
 			// TODO: Mode this URL to config
