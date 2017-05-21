@@ -24,6 +24,8 @@ namespace Client {
 			}
 		}
 
+		public bool fleetAdmin { get; set; }
+
 		// List of all available hulls
 		private ObservableCollection<Hull> hullList = null;
 		public ObservableCollection<Hull> wpfHullList {
@@ -33,9 +35,11 @@ namespace Client {
 		// Subscribe to receive the new ship
 		public event Action<Parameters> returnNewShip;
 
-		public NewShip() {
+		public NewShip(bool fleetAdmin) {
 			this.DataContext = this;
 			hullList = new ObservableCollection<Hull>(CommonData.largeHulls);
+
+			this.fleetAdmin = fleetAdmin;
 
 			InitializeComponent();
 		}

@@ -257,7 +257,7 @@ namespace Client {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void Button_NewShip_Click(object sender, RoutedEventArgs e) {
-			NewShip ns = new NewShip();
+			NewShip ns = new NewShip(user.privs.isFleetAdmin);
 			ns.returnNewShip += AddNewShip;
 			ns.ShowDialog();
 		}
