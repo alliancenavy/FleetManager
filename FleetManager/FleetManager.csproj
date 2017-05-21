@@ -186,6 +186,7 @@
     <Compile Include="ActiveOperation.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="ConnectedUser.cs" />
+    <Compile Include="LoginTracker.cs" />
     <Compile Include="OperationManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

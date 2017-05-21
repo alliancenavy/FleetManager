@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ANWI;
+using WebSocketSharp;
 
 namespace FleetManager.Services {
 
@@ -13,7 +14,7 @@ namespace FleetManager.Services {
 	public class Ops : BaseService {
 
 		#region Instance Members
-		
+		private List<string> subscribedOps = new List<string>();
 		#endregion
 
 		#region Constructors
@@ -71,6 +72,18 @@ namespace FleetManager.Services {
 		}
 		#endregion
 
+		#region Websockets
+		protected override void OnClose(CloseEventArgs e) {
+			UnsubAllOperations();
+			base.OnClose(e);
+		}
+
+		protected override void OnError(ErrorEventArgs e) {
+			UnsubAllOperations();
+			base.OnError(e);
+		}
+		#endregion
+
 		#region Message Processors
 		private ANWI.Messaging.IMessagePayload
 		ProcessRequestMessage(ANWI.Messaging.IMessagePayload p) {
@@ -89,6 +102,7 @@ namespace FleetManager.Services {
 
 						ActiveOperation op = GetOperation(det.str);
 						if (op != null) {
+							subscribedOps.Add(det.str);
 							op.SubscribeUser(GetUser());
 							return new ANWI.Messaging.Ops.FullOperationSnapshot(
 								op.ToSnapshot());
@@ -100,6 +114,8 @@ namespace FleetManager.Services {
 				case ANWI.Messaging.Request.Type.CloseOperation: {
 						ANWI.Messaging.ReqExp.IdString det
 							= req.detail as ANWI.Messaging.ReqExp.IdString;
+
+						subscribedOps.Remove(det.str);
 
 						ActiveOperation op = GetOperation(det.str);
 						if(op != null) {
@@ -280,6 +296,22 @@ namespace FleetManager.Services {
 		#region Other Helpers
 		private ActiveOperation GetOperation(string uuid) {
 			return OperationManager.Instance.GetOperation(uuid);
+		}
+		
+		/// <summary>
+		/// Removes the user from all operations in the event of a crash or
+		/// connection loss.
+		/// </summary>
+		private void UnsubAllOperations() {
+			logger.Error($"{GetLogIdentifier()} lost connection.  Removing them"
+				+ $" from {subscribedOps.Count} operations.");
+
+			foreach(string uuid in subscribedOps) {
+				ActiveOperation op = GetOperation(uuid);
+				if(op != null) {
+					op.UnsubscribeUser(GetTokenCookie());
+				}
+			}
 		}
 		#endregion
 	}

@@ -109,6 +109,9 @@ namespace Client {
 
 			wpfProfile = account.profile;
 
+			MessageRouter.Instance.onMainClose += OnMainSocketClose;
+			MessageRouter.Instance.onError += OnSocketError;
+
 			// Open connection to the main service
 			MessageRouter.Instance.ConnectMain(account);
 			MessageRouter.Instance.ConnectOps(account);
@@ -559,6 +562,28 @@ namespace Client {
 				);
 		}
 		#endregion
+
+		private void OnMainSocketClose(CloseEventArgs c) {
+			this.Dispatcher.Invoke(() => {
+				MessageBox.Show(this,
+					"Connection to Main service closed by server.  " +
+					$"Reason: {c.Reason}", "Connection Closed",
+					MessageBoxButton.OK,
+					MessageBoxImage.Error);
+
+				Application.Current.Shutdown();
+			});
+		}
+
+		private void OnSocketError(ErrorEventArgs e) {
+			this.Dispatcher.Invoke(() => {
+				MessageBox.Show("Socket Error.  Connection Lost", "Error",
+					MessageBoxButton.OK);
+
+				Application.Current.Shutdown();
+			});
+			
+		}
 
 		/// <summary>
 		/// Notifies the UI when a bound property changes

@@ -84,6 +84,14 @@ namespace FleetManager {
 			return null;
 		}
 
+		private ConnectedUser GetSubscriber(string token) {
+			ConnectedUser user;
+			if (!subscribed.TryGetValue(token, out user)) {
+				return null;
+			}
+			return user;
+		}
+
 		private void SendUpdateSettings() {
 			PushToAll(new ANWI.Messaging.Ops.UpdateSettings() {
 				freeMove = freeMove,
@@ -102,18 +110,25 @@ namespace FleetManager {
 				JoinUser(user.token, false);
 
 				// Add some fake users for testing purposes
-				for(int i = 4; i < 35; ++i) {
+				/*for(int i = 4; i < 35; ++i) {
 					if (i == 11 || i == 12 || i == 14)
 						continue;
 
 					string token = ANWI.Utility.UUID.GenerateUUID();
 					SubscribeUser(new ConnectedUser(token, i));
 					JoinUser(token);
-				}
+				}*/
 			}
 		}
 
 		public void UnsubscribeUser(string token) {
+			ConnectedUser user = GetSubscriber(token);
+			if (user == null)
+				return;
+
+			// Remove them from the roster if they are joined
+			RemoveUser(user.profile.id);
+
 			subscribed.Remove(token);
 		}
 
@@ -123,7 +138,7 @@ namespace FleetManager {
 		}
 
 		public void JoinUser(string token, bool announce = true) {
-			ConnectedUser user = subscribed[token];
+			ConnectedUser user = GetSubscriber(token);
 			if(user == null) {
 				logger.Error("Attempted to join user but they are not subbed");
 				return;

@@ -11,6 +11,8 @@ using MsgPack.Serialization;
 namespace FleetManager.Services {
 	public class Main : BaseService {
 
+		private static LoginTracker tracker = new LoginTracker();
+
 		public Main() : base("Main Service") {
 			logger.Info("Started");
 
@@ -30,12 +32,51 @@ namespace FleetManager.Services {
 				ProcessNewShip);
 		}
 
+		#region Websockets
+		/// <summary>
+		/// 
+		/// </summary>
+		protected override void OnOpen() {
+			base.OnOpen();
+			tracker.NewSession(GetAuth0Cookie(), this);
+		}
+
+		/// <summary>
+		/// Connection ending point
+		/// </summary>
+		/// <param name="e"></param>
+		protected override void OnClose(CloseEventArgs e) {
+			tracker.EndSession(GetAuth0Cookie());
+			base.OnClose(e);
+		}
+
+		/// <summary>
+		/// Socket error handler
+		/// </summary>
+		/// <param name="e"></param>
+		protected override void OnError(WebSocketSharp.ErrorEventArgs e) {
+			tracker.EndSession(GetAuth0Cookie());
+			base.OnError(e);
+		}
+
+		public void Terminate() {
+			this.Context.WebSocket.Close();
+		}
+
 		/// <summary>
 		/// Helper to get auth token from a context
 		/// </summary>
 		/// <returns></returns>
 		protected override string GetTokenCookie() {
 			return this.Context.CookieCollection["authtoken"].Value;
+		}
+
+		/// <summary>
+		/// Helper to get auth0 id from a context
+		/// </summary>
+		/// <returns></returns>
+		protected string GetAuth0Cookie() {
+			return this.Context.CookieCollection["auth0id"].Value;
 		}
 
 		/// <summary>
@@ -53,6 +94,7 @@ namespace FleetManager.Services {
 		protected override string GetLogIdentifier() {
 			return $"[{GetNameCookie()} ({GetTokenCookie()})]";
 		}
+		#endregion
 
 		#region Message Processors
 		/// <summary>

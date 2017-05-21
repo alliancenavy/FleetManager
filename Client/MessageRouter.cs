@@ -7,9 +7,15 @@ using WebSocketSharp;
 using ANWI;
 using ANWI.Messaging;
 using System.Windows;
+using System.Threading;
+using System.Windows.Threading;
+using System.Diagnostics;
 
 namespace Client {
 	public class MessageRouter {
+		public event Action<CloseEventArgs> onMainClose;
+		public event Action<ErrorEventArgs> onError;
+
 		#region Instance Variables
 		private static MessageRouter instance = null;
 
@@ -46,6 +52,7 @@ namespace Client {
 
 			mainSocket = new WebSocket($"{CommonData.serverAddress}/main");
 			mainSocket.OnMessage += OnMainMessage;
+			mainSocket.OnClose += OnMainClose;
 			mainSocket.OnError += OnError;
 
 			opsSocket = new WebSocket($"{CommonData.serverAddress}/ops");
@@ -143,6 +150,10 @@ namespace Client {
 			}
 		}
 
+		private void OnMainClose(object sender, CloseEventArgs c) {
+			onMainClose?.Invoke(c);
+		}
+
 		private void OnOpsMessage(object sender, MessageEventArgs e) {
 			Message msg = Message.Receive(e.RawData);
 
@@ -159,7 +170,7 @@ namespace Client {
 		}
 
 		private void OnError(object sender, ErrorEventArgs e) {
-			Application.Current.Shutdown();
+			onError?.Invoke(e);
 		}
 		#endregion
 
