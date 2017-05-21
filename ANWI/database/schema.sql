@@ -64,7 +64,8 @@ CREATE TABLE IF NOT EXISTS OperationRole (
  associatedRate INTEGER NOT NULL REFERENCES Rate(id),
  onShips INTEGER NOT NULL,
  onBoats INTEGER NOT NULL,
- inSquads INTEGER NOT NULL
+ inSquads INTEGER NOT NULL,
+ channelCdr INTEGER NOT NULL
 );
 
 drop table if exists StruckRate;

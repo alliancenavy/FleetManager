@@ -18,6 +18,7 @@ namespace ANWI {
 		public OperationType type;
 		public OperationStatus status;
 		public bool freeMove;
+		public bool C2Unified;
 
 		public List<OpParticipant> roster = null;
 

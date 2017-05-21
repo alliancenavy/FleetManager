@@ -18,15 +18,17 @@ namespace ANWI.Database.Model {
 		public bool onShips;
 		public bool onBoats;
 		public bool inSquads;
+		public bool channelCdr;
 
 		private OperationRole(int id, string name, int rate, bool ships,
-			bool boats, bool squads) {
+			bool boats, bool squads, bool channelCdr) {
 			this.id = id;
 			this.name = name;
 			this.rate = rate;
 			this.onShips = ships;
 			this.onBoats = boats;
 			this.inSquads = squads;
+			this.channelCdr = channelCdr;
 		}
 		#endregion
 
@@ -38,20 +40,22 @@ namespace ANWI.Database.Model {
 				rate: -1,
 				ships: false,
 				boats: false,
-				squads: false
+				squads: false,
+				channelCdr: false
 				);
 			return result;
 		}
 
 		public static OperationRole Factory(int id, string name, int rate,
-			bool ships, bool boats, bool squads) {
+			bool ships, bool boats, bool squads, bool chanCdr) {
 			OperationRole result = new OperationRole(
 				id: id,
 				name: name,
 				rate: rate,
 				ships: ships,
 				boats: boats,
-				squads: squads
+				squads: squads,
+				channelCdr: chanCdr
 				);
 			return result;
 		}
@@ -63,17 +67,18 @@ namespace ANWI.Database.Model {
 				rate: Convert.ToInt32(reader["associatedRate"]),
 				ships: Convert.ToBoolean(reader["onShips"]),
 				boats: Convert.ToBoolean(reader["onBoats"]),
-				squads: Convert.ToBoolean(reader["inSquads"])
+				squads: Convert.ToBoolean(reader["inSquads"]),
+				channelCdr: Convert.ToBoolean(reader["channelCdr"])
 				);
 			return result;
 		}
 		
 		public static bool Create(ref OperationRole output, string name,
-			int rate, bool ships, bool boats, bool squads) {
+			int rate, bool ships, bool boats, bool squads, bool chanCdr) {
 			int result = DBI.DoAction(
 				$@"INSERT INTO OperationRole 
-				(name, rate, onShips, onBoats, inSquads)
-				VALUES ('{name}', {rate}, {ships}, {boats}, {squads});");
+				(name, rate, onShips, onBoats, inSquads, channelCdr)
+				VALUES ('{name}', {rate}, {ships}, {boats}, {squads}, {chanCdr});");
 			if(result == 1) {
 				return OperationRole.FetchById(ref output, DBI.LastInsertRowId);
 			}

@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using ANWI;
 using ANWI.FleetComp;
+using Client.C2;
 using System.ComponentModel;
 
 namespace Client {
@@ -138,6 +139,29 @@ namespace Client {
 		}
 
 		//
+		// C2 Structure
+		private bool _C2Unified = true;
+		public bool C2Unified {
+			get { return _C2Unified; }
+			set {
+				if(_C2Unified != value) {
+					_C2Unified = value;
+					NotifyPropertyChanged("C2Unified");
+				}
+			}
+		}
+		private List<C2.Channel> _C2Channels = null;
+		public List<C2.Channel> C2Channels {
+			get { return _C2Channels; }
+			set {
+				if(_C2Channels != value) {
+					_C2Channels = value;
+					NotifyPropertyChanged("C2Channels");
+				}
+			}
+		}
+
+		//
 		// Join button
 		public bool thisUserIsJoined { get { return thisUser != null; } }
 		public string joinButtonText { get {
@@ -234,6 +258,8 @@ namespace Client {
 			AddProcessor(typeof(ANWI.Messaging.Ops.UpdateSettings),
 				ProcessUpdateSettings);
 
+			RebuildC2();
+
 			MessageRouter.Instance.SendOps(
 				new ANWI.Messaging.Request(
 					ANWI.Messaging.Request.Type.GetOperation,
@@ -307,6 +333,73 @@ namespace Client {
 				null);
 			}
 		}
+
+		private void 
+		AddPositionsToC2(List<User> users, List<OpPosition> positions) {
+			foreach (OpPosition pos in positions) {
+				if (pos.filledByPointer != null) {
+					users.Add(new User(pos.filledByPointer) {
+						thisUser = pos.filledByPointer.profile.id == userId
+					});
+				}
+			}
+		}
+
+		private void RebuildC2() {
+			if (C2Unified) {
+				Channel chan = new Channel() {
+					name = "Operation",
+					expanded = true
+				};
+
+				// Go through each unit and add members filling positions
+				foreach(FleetUnit unit in fleet.Fleet) {
+					if(unit is Ship) {
+						Ship ship = unit as Ship;
+						AddPositionsToC2(chan.users, ship.positions);
+					} else if(unit is Wing) {
+						Wing wing = unit as Wing;
+						foreach(Boat boat in wing.members) {
+							AddPositionsToC2(chan.users, boat.positions);
+						}
+				}
+					}
+
+				C2Channels = new List<Channel>() { chan };
+			} else {
+				C2Channels = new List<Channel>();
+
+				foreach(FleetUnit unit in fleet.Fleet) {
+					if(unit is Ship) {
+						Ship ship = unit as Ship;
+
+						Channel chan = new Channel() {
+							name = $"{ship.v.name} [{ship.v.fullHullNumber}]",
+							unitUUID = ship.uuid,
+							expanded = true
+						};
+
+						AddPositionsToC2(chan.users, ship.positions);
+
+						C2Channels.Add(chan);
+					} else if(unit is Wing) {
+						Wing wing = unit as Wing;
+
+						Channel chan = new Channel() {
+							name = $"{wing.name} [{wing.callsign}]",
+							unitUUID = wing.uuid,
+							expanded = true
+						};
+
+						foreach(Boat boat in wing.members) {
+							AddPositionsToC2(chan.users, boat.positions);
+						}
+					}
+				}
+
+				NotifyPropertyChanged("C2Channels");
+			}
+		}
 		#endregion
 
 		#region Window Event Handlers
@@ -368,9 +461,17 @@ namespace Client {
 			ChangeAssignment(pos, thisUser.profile.id);
 		}
 
-		private void 
-		Button_FighterCrewRemove_Click(object sender, RoutedEventArgs e) {
+		private void Radio_C2Type_Click(object sender, RoutedEventArgs e) {
+			Radio_C2Unified.GetBindingExpression(
+				RadioButton.IsCheckedProperty).UpdateTarget();
+			Radio_C2Hierarchy.GetBindingExpression(
+				RadioButton.IsCheckedProperty).UpdateTarget();
 
+			MessageRouter.Instance.SendOps(new ANWI.Messaging.Ops.SetC2Type() {
+				opUUID = opUUID,
+				unified = !C2Unified
+			},
+			null);
 		}
 
 		private void
@@ -496,6 +597,7 @@ namespace Client {
 			type = snap.op.type;
 			status = snap.op.status;
 			freeMove = snap.op.freeMove;
+			C2Unified = snap.op.C2Unified;
 
 			AddParticipants(snap.op.roster);
 
@@ -506,6 +608,8 @@ namespace Client {
 			}
 
 			working = false;
+
+			RebuildC2();
 
 			NotifyPropertyChanged(string.Empty);
 		}
@@ -545,6 +649,8 @@ namespace Client {
 				}
 			}
 
+			RebuildC2();
+
 			NotifyPropertyChanged("fleetComp");
 		}
 
@@ -564,6 +670,8 @@ namespace Client {
 				}
 			}
 
+			RebuildC2();
+
 			NotifyPropertyChanged("fleetComp");
 		}
 
@@ -580,6 +688,8 @@ namespace Client {
 				foreach (string rem in ub.removed)
 					fleet.DeleteUnit(rem);
 			}
+
+			RebuildC2();
 
 			NotifyPropertyChanged(string.Empty);
 		}
@@ -610,6 +720,8 @@ namespace Client {
 				}
 			}
 
+			RebuildC2();
+
 			NotifyPropertyChanged(string.Empty);
 		}
 
@@ -637,6 +749,8 @@ namespace Client {
 					fleet.DeletePosition(rem);
 				}
 			}
+
+			RebuildC2();
 
 			NotifyPropertyChanged(string.Empty);
 		}
@@ -684,6 +798,9 @@ namespace Client {
 				= p as ANWI.Messaging.Ops.UpdateSettings;
 
 			freeMove = ups.freeMove;
+			C2Unified = ups.C2Unified;
+
+			RebuildC2();
 
 			NotifyPropertyChanged(string.Empty);
 		}

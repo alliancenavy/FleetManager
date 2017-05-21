@@ -143,6 +143,7 @@
       <DependentUpon>AddRate.xaml</DependentUpon>
     </Compile>
     <Compile Include="Appdata.cs" />
+    <Compile Include="C2Element.cs" />
     <Compile Include="ChangeRank.xaml.cs">
       <DependentUpon>ChangeRank.xaml</DependentUpon>
     </Compile>
@@ -151,6 +152,8 @@
       <DependentUpon>Confirm.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\BoolToVisibility.cs" />
+    <Compile Include="Converters\C2UserSorter.cs" />
+    <Compile Include="Converters\InverseBool.cs" />
     <Compile Include="Converters\InverseBoolToVisibility.cs" />
     <Compile Include="Converters\VesselStatusToColor.cs" />
     <Compile Include="FleetRegistry.xaml.cs">

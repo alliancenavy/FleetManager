@@ -54,17 +54,17 @@ INSERT INTO AssignmentRole (id, name, isCompany) VALUES (13, "Marine", 0);
 
 ---------------------------------------
 --Operation Roles
-INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads) VALUES ("Fleet Commander", 10, 1, 0, 0);
-INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads) VALUES ("Captain", 9, 1, 0, 0);
-INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads) VALUES ("Helmsman", 6, 1, 0, 0);
-INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads) VALUES ("Pilot", 2, 0, 1, 0);
-INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads) VALUES ("Co-Pilot", 2, 0, 1, 0);
-INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads) VALUES ("Gunner", 7, 1, 0, 0);
-INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads) VALUES ("Fireman", 8, 1, 0, 0);
-INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads) VALUES ("Mechanic", 4, 1, 1, 0);
-INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads) VALUES ("Crew", 5, 0, 1, 0);
-INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads) VALUES ("Section Leader", 12, 0, 0, 1);
-INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads) VALUES ("Marine", 13, 0, 0, 1);
+INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads, channelCdr) VALUES ("Fleet Commander", 10, 1, 0, 0, 1);
+INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads, channelCdr) VALUES ("Captain", 9, 1, 0, 0, 1);
+INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads, channelCdr) VALUES ("Helmsman", 6, 1, 0, 0, 0);
+INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads, channelCdr) VALUES ("Pilot", 2, 0, 1, 0, 0);
+INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads, channelCdr) VALUES ("Co-Pilot", 2, 0, 1, 0, 0);
+INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads, channelCdr) VALUES ("Gunner", 7, 1, 0, 0, 0);
+INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads, channelCdr) VALUES ("Fireman", 8, 1, 0, 0, 0);
+INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads, channelCdr) VALUES ("Mechanic", 4, 1, 1, 0, 0);
+INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads, channelCdr) VALUES ("Crew", 5, 0, 1, 0, 0);
+INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads, channelCdr) VALUES ("Section Leader", 12, 0, 0, 1, 1);
+INSERT INTO OperationRole (name, associatedRate, onShips, onBoats, inSquads, channelCdr) VALUES ("Marine", 13, 0, 0, 1, 0);
 
 ---------------------------------------
 --Hull Vendors

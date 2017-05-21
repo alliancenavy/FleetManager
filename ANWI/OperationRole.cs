@@ -10,6 +10,8 @@ namespace ANWI {
 
 		private int _rate;
 		public string rateAbbrev { get; set; }
+
+		public bool channelCdr { get; set; }
 		#endregion
 
 		#region WPF Helpers
@@ -24,6 +26,7 @@ namespace ANWI {
 			name = "";
 			_rate = -1;
 			rateAbbrev = "UD";
+			channelCdr = false;
 		}
 
 		private OperationRole(Datamodel.OperationRole r) {
@@ -35,6 +38,8 @@ namespace ANWI {
 			if (!Datamodel.Rate.FetchById(ref rate, _rate))
 				throw new ArgumentException("Role does not have valid rate");
 			rateAbbrev = rate.abrv;
+
+			channelCdr = r.channelCdr;
 		}
 
 		/// <summary>

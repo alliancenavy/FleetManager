@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         xmlns:conv="clr-namespace:Client.Converters"
+        xmlns:c2="clr-namespace:Client.C2"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:OOB="clr-namespace:ANWI.FleetComp;assembly=ANWI"
@@ -17,10 +18,21 @@
 
         <conv:BoolToVisibility x:Key="Conv_BoolToVisibility"/>
         <conv:InverseBoolToVisibility x:Key="Conv_InverseBoolToVisibility"/>
+        <conv:C2UserSorter x:Key="Conv_SortC2Users"/>
+        <conv:InverseBool x:Key="Conv_InverseBool"/>
 
         <CollectionViewSource x:Key="SortedRoster" Source="{Binding roster}">
             <CollectionViewSource.SortDescriptions>
                 <scm:SortDescription PropertyName="profile.nickname"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+
+        <CollectionViewSource x:Key="SortedFleet" Source="{Binding fleetComp}">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="ordering"/>
+                <scm:SortDescription PropertyName="v.hull.ordering" Direction="Ascending"/>
+                <scm:SortDescription PropertyName="v.hullNumber" Direction="Ascending"/>
+                <scm:SortDescription PropertyName="name"/>
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
 
@@ -355,7 +367,7 @@
         <Border Grid.Column="1" BorderBrush="Gray" BorderThickness="1 0 1 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,10,0,10"/>
 
         <TextBlock Grid.Column="1"  Margin="10,5,10,0" TextWrapping="Wrap" Text="Order of Battle" VerticalAlignment="Top" FontWeight="Bold" Height="20" FontSize="15"/>
-        <ListBox x:Name="List_Fleet" Grid.Column="1" Margin="10,35,10,10" ItemsSource="{Binding Path=fleetComp}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" HorizontalContentAlignment="Stretch" SelectionChanged="List_Fleet_SelectionChanged">
+        <ListBox x:Name="List_Fleet" Grid.Column="1" Margin="10,35,10,10" ItemsSource="{Binding Source={StaticResource SortedFleet}}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" HorizontalContentAlignment="Stretch" SelectionChanged="List_Fleet_SelectionChanged">
             <ListBox.ContextMenu>
                 <ContextMenu IsEnabled="{Binding FCControlsEnabled}">
                     <MenuItem Header="New Fleet Ship" Click="Context_NewFleetShip"/>
@@ -374,15 +386,13 @@
         -
         -
         -->
-        
+
         <Grid Grid.Column="2" Margin="0,0,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="100"/>
                 <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
             </Grid.RowDefinitions>
-            
+
             <!-- Top: General OP Settings -->
             <Grid Margin="0,0,0,0" Grid.Row="0">
                 <Grid.RowDefinitions>
@@ -394,9 +404,9 @@
                     <ColumnDefinition Width="0.5*"/>
                     <ColumnDefinition Width="0.5*"/>
                 </Grid.ColumnDefinitions>
-                
+
                 <TextBlock Grid.ColumnSpan="2" Grid.Row="0" Height="30" Margin="10,10,9.667,0" TextWrapping="NoWrap" Text="{Binding Path=operationName, FallbackValue='Op Name'}" VerticalAlignment="Top" FontSize="18" FontWeight="Bold"/>
-                
+
                 <!--<ComboBox x:Name="Combobox_Type" Grid.Column="0" Grid.Row="1" Margin="10,5,10,0" VerticalAlignment="Top" />-->
                 <Image Grid.Column="0" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5,0,0,0" Source="{Binding Path=typeImage, FallbackValue={StaticResource NoImageFound}}"/>
                 <TextBlock Grid.Column="0" Grid.Row="1" Margin="45,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Stretch" Text="{Binding Path=typeString, FallbackValue='Op Type'}" />
@@ -404,10 +414,55 @@
                 <Button x:Name="Button_ChangeStatus" Grid.Column="1" Grid.Row="1" Content="{Binding Path=statusString, FallbackValue='Status'}" VerticalAlignment="Center" Height="29" Background="#FF316838" Foreground="White" Click="Button_ChangeStatus_Click" IsEnabled="{Binding statusButtonEnabled}" Margin="10,0,9.667,0" ToolTip="{Binding statusButtonTooltip}"/>
                 <CheckBox Name="Checkbox_FreeMove" Grid.Row="2" Grid.Column="0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="{Binding Path=freeMove, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Content="Free Move" Click="Checkbox_FreeMove_Click" ToolTip="Free Move allows members to choose their own role instead of being assigned by the FC." IsEnabled="{Binding FCControlsEnabled}"/>
             </Grid>
-            
-            
-        </Grid>
 
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0"  Margin="10,0,10,0" TextWrapping="Wrap" Text="C2 Structure" VerticalAlignment="Top" FontWeight="Bold" Height="20" FontSize="15"/>
+
+                <StackPanel Grid.Row="1" Margin="10,0,0,0" Orientation="Horizontal" FlowDirection="LeftToRight">
+                    <StackPanel.Resources>
+                        <Style TargetType="{x:Type RadioButton}">
+                            <Setter Property="Margin" Value="10,0,0,0"/>
+                        </Style>
+                    </StackPanel.Resources>
+                    <RadioButton Name="Radio_C2Unified" IsChecked="{Binding C2Unified, Mode=OneWay}" Content="Unified" GroupName="C2Type" Click="Radio_C2Type_Click" IsEnabled="{Binding FCControlsEnabled}"/>
+                    <RadioButton Name="Radio_C2Hierarchy" IsChecked="{Binding C2Unified, Mode=OneWay, Converter={StaticResource Conv_InverseBool}}" Content="Hierarchical" GroupName="C2Type" Click="Radio_C2Type_Click" IsEnabled="{Binding FCControlsEnabled}"/>
+                </StackPanel>
+
+                <TreeView Grid.Row="2" Margin="10,5,10,10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Visible" ItemsSource="{Binding C2Channels}">
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="{x:Type TreeViewItem}">
+                            <Setter Property="IsExpanded" Value="{Binding Path=expanded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+
+                    <TreeView.Resources>
+                        <HierarchicalDataTemplate DataType="{x:Type c2:Channel}" ItemsSource="{Binding Path=users, Converter={StaticResource Conv_SortC2Users}}">
+                            <TextBlock Text="{Binding name}" FontWeight="Bold"/>
+                        </HierarchicalDataTemplate>
+
+                        <DataTemplate DataType="{x:Type c2:User}">
+                            <StackPanel Orientation="Horizontal" Visibility="Visible">
+                                <Image Source="{Binding icon}" Width="12" Height="12"/>
+                                <TextBlock Name="Name" Text="{Binding fullName}" Margin="10,0,0,0"/>
+                            </StackPanel>
+
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding thisUser}" Value="True">
+                                    <Setter TargetName="Name" Property="FontWeight" Value="DemiBold"/>
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </TreeView.Resources>
+                </TreeView>
+
+
+            </Grid>
+        </Grid>
 
 
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using MsgPack.Serialization;
 
 namespace ANWI {
 
@@ -14,8 +15,11 @@ namespace ANWI {
 
 			public string uuid;
 
-			public FleetUnit() {
-				// Empty
+			[MessagePackIgnore]
+			public int ordering { get; }
+
+			public FleetUnit(int ordering) {
+				this.ordering = ordering;
 			}
 
 			/// <summary>
@@ -33,6 +37,9 @@ namespace ANWI {
 		/// A large named ship
 		/// </summary>
 		public class Ship : FleetUnit {
+			[MessagePackIgnore]
+			private static readonly int ord = 1;
+
 			public LiteVessel v { get; set; }
 
 			private bool _isFlagship;
@@ -48,7 +55,7 @@ namespace ANWI {
 			
 			public List<OpPosition> positions { get; set; }
 
-			public Ship() {
+			public Ship() : base(ord) {
 				v = null;
 				isFlagship = false;
 				positions = new List<OpPosition>();
@@ -59,6 +66,9 @@ namespace ANWI {
 		/// A wing of small ships
 		/// </summary>
 		public class Wing : FleetUnit {
+			[MessagePackIgnore]
+			private static readonly int ord = 2;
+
 			public enum Role {
 				INTERCEPTOR,
 				CAP,
@@ -127,7 +137,7 @@ namespace ANWI {
 					}
 				} }
 
-			public Wing() {
+			public Wing() : base(ord) {
 				name = "";
 				members = new List<Boat>();
 				primaryRole = Role.INTERCEPTOR;
@@ -136,6 +146,9 @@ namespace ANWI {
 		}
 
 		public class Boat : FleetUnit {
+			[MessagePackIgnore]
+			private static readonly int ord = 3;
+
 			public string wingUUID;
 			public Hull type { get; set; }
 
@@ -183,7 +196,7 @@ namespace ANWI {
 				}
 			}
 
-			public Boat() {
+			public Boat() : base(ord) {
 				type = null;
 				callsign = "";
 				isWC = false;

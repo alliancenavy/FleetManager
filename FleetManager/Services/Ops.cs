@@ -40,6 +40,8 @@ namespace FleetManager.Services {
 				ProcessModifyUnit);
 			AddProcessor(typeof(ANWI.Messaging.Ops.SetFreeMove),
 				ProcessSetFreeMove);
+			AddProcessor(typeof(ANWI.Messaging.Ops.SetC2Type),
+				ProcessSetC2Type);
 		}
 		#endregion
 
@@ -256,6 +258,19 @@ namespace FleetManager.Services {
 			ActiveOperation op = GetOperation(sfm.opUUID);
 			if(op != null) {
 				op.SetFreeMove(sfm.freeMove);
+			}
+
+			return null;
+		}
+
+		private ANWI.Messaging.IMessagePayload
+		ProcessSetC2Type(ANWI.Messaging.IMessagePayload p) {
+			ANWI.Messaging.Ops.SetC2Type sc2
+				= p as ANWI.Messaging.Ops.SetC2Type;
+
+			ActiveOperation op = GetOperation(sc2.opUUID);
+			if (op != null) {
+				op.SetC2Type(sc2.unified);
 			}
 
 			return null;

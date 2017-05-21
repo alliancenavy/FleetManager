@@ -21,6 +21,7 @@ namespace FleetManager {
 		private OperationType type;
 		public OperationStatus status { get; private set; }
 		private bool freeMove;
+		private bool C2Unified;
 
 		private List<OpParticipant> roster = new List<OpParticipant>();
 		public int rosterCount { get { return roster.Count; } }
@@ -41,6 +42,7 @@ namespace FleetManager {
 			this.type = type;
 			this.status = OperationStatus.CONFIGURING;
 			this.freeMove = true;
+			this.C2Unified = true;
 
 			logger = LogManager.GetLogger($"Op {uuid}");
 		}
@@ -64,6 +66,7 @@ namespace FleetManager {
 				type = type,
 				status = status,
 				freeMove = freeMove,
+				C2Unified = C2Unified,
 				roster = roster,
 				fleet = new List<FleetUnit>(fleet.Fleet)
 			};
@@ -83,7 +86,8 @@ namespace FleetManager {
 
 		private void SendUpdateSettings() {
 			PushToAll(new ANWI.Messaging.Ops.UpdateSettings() {
-				freeMove = freeMove
+				freeMove = freeMove,
+				C2Unified = C2Unified
 			});
 		}
 		#endregion
@@ -165,6 +169,12 @@ namespace FleetManager {
 
 		public void SetFreeMove(bool fm) {
 			freeMove = fm;
+
+			SendUpdateSettings();
+		}
+
+		public void SetC2Type(bool unified) {
+			C2Unified = unified;
 
 			SendUpdateSettings();
 		}

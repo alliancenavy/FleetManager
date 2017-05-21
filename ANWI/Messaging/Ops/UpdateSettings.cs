@@ -6,6 +6,7 @@
 	/// </summary>
 	public class UpdateSettings : IMessagePayload {
 		public bool freeMove;
+		public bool C2Unified;
 
 		public UpdateSettings() {
 		}

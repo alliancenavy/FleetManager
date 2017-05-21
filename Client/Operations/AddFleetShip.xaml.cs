@@ -59,7 +59,7 @@ namespace Client.Operations {
 					vessel => {
 						foreach(FleetUnit unit in currentFleet) {
 							if (unit is Ship &&
-							(unit as Ship).v.hull.id == vessel.hull.id)
+							(unit as Ship).v.id == vessel.id)
 								return false;
 						}
 						return true;

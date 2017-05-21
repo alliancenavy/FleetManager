@@ -52,6 +52,7 @@ namespace ANWI.Messaging {
 		[MessagePackKnownType("op_upwing", typeof(Ops.UpdateWing))]
 		[MessagePackKnownType("op_sfm", typeof(Ops.SetFreeMove))]
 		[MessagePackKnownType("op_upset", typeof(Ops.UpdateSettings))]
+		[MessagePackKnownType("op_setc2", typeof(Ops.SetC2Type))]
 		public IMessagePayload payload;
 
 		public Message() {
