@@ -5,10 +5,24 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         xmlns:vrghelpers="clr-namespace:Client.VesselRegHelpers"
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         xmlns:fa="http://schemas.fontawesome.io/icons/" x:Class="Client.MainWindow"
         mc:Ignorable="d"
         Title="Alliance Fleet Operations System" Height="761" Width="1113" MinHeight="761" MinWidth="1113" ResizeMode="CanResizeWithGrip" Icon="images/afos_logo_VCP_icon.ico">
     <Window.Resources>
+
+        <CollectionViewSource x:Key="SortedRosterName" Source="{Binding wpfRosterList}">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="nickname"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+
+        <CollectionViewSource x:Key="SortedRosterRank" Source="{Binding wpfRosterList}">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="rank.ordering" Direction="Descending"/>
+                <scm:SortDescription PropertyName="nickname"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
 
         <DataTemplate x:Key="RateTemplate">
             <Canvas Height="70">
@@ -99,6 +113,8 @@
             <ColumnDefinition Width="371*"/>
         </Grid.ColumnDefinitions>
 
+        <Border Grid.Column="1" BorderBrush="Gray" BorderThickness="1 0 1 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,10,0,10"/>
+
         <TextBlock x:Name="Text_Nickname" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" FontSize="20" FontWeight="Bold" Margin="10,5,30.333,0">
             <TextBlock.Text>
                 <MultiBinding StringFormat="{}{0} {1}">
@@ -151,14 +167,14 @@
         <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Height="30" FontSize="20" FontWeight="Bold" Margin="10.667,5,55.667,0" Grid.Column="2">
             <TextBlock.Text>Active Operations</TextBlock.Text>
         </TextBlock>
-        <ListBox x:Name="List_Roster" Margin="9.667,40,10.333,86" Grid.Column="1" HorizontalContentAlignment="Stretch" ItemTemplate="{DynamicResource RosterTemplate}" ItemsSource="{Binding Path=wpfRosterList}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+        <ListBox x:Name="List_Roster" Margin="9.667,40,10.333,86" Grid.Column="1" HorizontalContentAlignment="Stretch" ItemTemplate="{DynamicResource RosterTemplate}" ItemsSource="{Binding Source={StaticResource SortedRosterRank}}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
         <fa:ImageAwesome x:Name="Spinner_Roster" Height="120" Icon="Cog" Spin="True" SpinDuration="10" Foreground="#FF316838" Grid.Column="1" Margin="157.667,243,149.333,304.333" Visibility="Hidden"/>
         <ListBox x:Name="List_Ops" Grid.Column="2" HorizontalContentAlignment="Stretch" Margin="9.667,40,10.667,86" ItemTemplate="{DynamicResource OpTemplate}" ItemsSource="{Binding wpfOpList}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
         <fa:ImageAwesome x:Name="Spinner_Ops" Height="120" Icon="Cog" Spin="True" SpinDuration="10" Foreground="#FF316838" Grid.Column="2" Margin="133.667,243,124.667,304.333" Visibility="Hidden"/>
         <Button x:Name="Button_RefreshRoster" Style="{StaticResource RefreshButton}" Margin="0,5,10,0" VerticalAlignment="Top" Height="25" Background="#FF316838" Foreground="White" Click="Button_RefreshRoster_Click" ToolTip="Refresh Roster" Grid.Column="1" HorizontalAlignment="Right" Width="27"/>
         <Button x:Name="Button_RefreshOps" Style="{StaticResource RefreshButton}" Margin="0,5,10,0" VerticalAlignment="Top" Height="25" Background="#FF316838" Foreground="White" Click="Button_RefreshOps_Click" ToolTip="Refresh Ops" Grid.Column="2" HorizontalAlignment="Right" Width="27"/>
-        <RadioButton x:Name="Radio_Roster_Rank" Content="Rank" Grid.Column="1" Margin="0,20,55.333,0" VerticalAlignment="Top" GroupName="RosterSort" IsChecked="True" HorizontalAlignment="Right" Width="44" Height="15" Click="Radio_RosterSort_Click"/>
-        <RadioButton x:Name="Radio_Roster_Name" Content="Name" Grid.Column="1" HorizontalAlignment="Right" Margin="0,20,103.333,0" VerticalAlignment="Top" GroupName="RosterSort" IsChecked="False" Height="15" Width="50" Click="Radio_RosterSort_Click"/>
+        <RadioButton x:Name="Radio_Roster_Name" Content="Name" Grid.Column="1" HorizontalAlignment="Right" Margin="0,20,103.333,0" VerticalAlignment="Top" GroupName="RosterSort" IsChecked="False" Height="15" Width="50" Checked="Radio_Roster_Checked"/>
+        <RadioButton x:Name="Radio_Roster_Rank" Content="Rank" Grid.Column="1" Margin="0,20,55.333,0" VerticalAlignment="Top" GroupName="RosterSort" IsChecked="True" HorizontalAlignment="Right" Width="44" Height="15" Checked="Radio_Roster_Checked"/>
         <TextBlock Grid.Column="1" HorizontalAlignment="Right" Margin="0,5,117.333,0" TextWrapping="Wrap" Text="Sort By" VerticalAlignment="Top" Height="16" Width="37"/>
         <Grid Height="70" Margin="10.667,0,10.667,11" VerticalAlignment="Bottom" Grid.Column="2">
             <Grid.RowDefinitions>

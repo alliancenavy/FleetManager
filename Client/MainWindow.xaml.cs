@@ -6,6 +6,8 @@ using ANWI;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.ComponentModel;
+using System.Windows.Data;
+using System.Windows.Controls;
 
 namespace Client {
 	/// <summary>
@@ -18,9 +20,10 @@ namespace Client {
 
 		private AuthenticatedAccount account = null;
 		private Profile currentProfile = null;
-		private List<LiteProfile> originalRoster = null;
+		
 		private ObservableCollection<LiteProfile> rosterList 
 			= new ObservableCollection<LiteProfile>();
+
 		private ObservableCollection<LiteOperation> operationList 
 			= new ObservableCollection<LiteOperation>();
 
@@ -283,33 +286,6 @@ namespace Client {
 		}
 
 		/// <summary>
-		/// Changes the sort method of the roster listbox
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void Radio_RosterSort_Click(object sender, RoutedEventArgs e) {
-			rosterList.Clear();
-
-			if(Radio_Roster_Name.IsChecked.Value) {
-				originalRoster.Sort((a, b) => {
-					return a.nickname.CompareTo(b.nickname);
-				});
-			} else if(Radio_Roster_Rank.IsChecked.Value) {
-				originalRoster.Sort((a, b) => {
-					if (a.rank.ordering > b.rank.ordering)
-						return -1;
-					else if (a.rank.ordering == b.rank.ordering)
-						return 0;
-					else return 0;
-				});
-			}
-
-			foreach(LiteProfile p in originalRoster) {
-				rosterList.Add(p);
-			}
-		}
-
-		/// <summary>
 		/// Edit user nickname button
 		/// </summary>
 		/// <param name="sender"></param>
@@ -321,6 +297,22 @@ namespace Client {
 				ChangeNickname(currentProfile.id, name);
 			};
 			prompt.ShowDialog();
+		}
+
+		private void Radio_Roster_Checked(object sender, RoutedEventArgs e) {
+			CollectionViewSource sorted = null;
+
+			if (Radio_Roster_Name.IsChecked.Value) {
+				sorted = FindResource("SortedRosterName")
+					as CollectionViewSource;
+			} else {
+				sorted = FindResource("SortedRosterRank")
+					as CollectionViewSource;
+			}
+
+			List_Roster.SetBinding(ListBox.ItemsSourceProperty, new Binding() {
+				Source = sorted
+			});
 		}
 
 		/// <summary>
@@ -416,17 +408,6 @@ namespace Client {
 				rosterList.Clear();
 				Spinner_Roster.Visibility = Visibility.Hidden;
 			});
-
-			// TODO: Sort by radio button instead of rank
-			fr.members.Sort((a, b) => {
-				if (a.rank.ordering > b.rank.ordering)
-					return -1;
-				else if (a.rank.ordering == b.rank.ordering)
-					return 0;
-				else return 0;
-			});
-
-			originalRoster = fr.members;
 
 			// Load all the records in
 			foreach (LiteProfile pf in fr.members) {
