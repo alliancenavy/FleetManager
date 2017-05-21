@@ -1,4 +1,6 @@
-﻿namespace ANWI.Messaging.Ops {
+﻿using System.Collections.Generic;
+
+namespace ANWI.Messaging.Ops {
 
 	/// <summary>
 	/// Client -> Server
@@ -7,7 +9,7 @@
 	public class AddPosition : IMessagePayload {
 		public string opUUID;
 		public string unitUUID;
-		public int roleID;
+		public List<int> roleID;
 
 		public AddPosition() {
 		}

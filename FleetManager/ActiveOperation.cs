@@ -102,7 +102,10 @@ namespace FleetManager {
 				JoinUser(user.token, false);
 
 				// Add some fake users for testing purposes
-				for(int i = 4; i < 9; ++i) {
+				for(int i = 4; i < 35; ++i) {
+					if (i == 11 || i == 12 || i == 14)
+						continue;
+
 					string token = ANWI.Utility.UUID.GenerateUUID();
 					SubscribeUser(new ConnectedUser(token, i));
 					JoinUser(token);
@@ -298,20 +301,25 @@ namespace FleetManager {
 		#endregion
 
 		#region Positions
-		public void AddPosition(string unitUUID, int roleID) {
-			OpPosition pos = new OpPosition() {
-				uuid = ANWI.Utility.UUID.GenerateUUID(),
-				unitUUID = unitUUID,
-				critical = false,
-				filledById = -1,
-				filledByPointer = null,
-				role = OperationRole.FetchById(roleID)
-			};
+		public void AddPosition(string unitUUID, List<int> roleID) {
+			List<OpPosition> newPositions = new List<OpPosition>();
 
-			fleet.AddPosition(pos);
+			foreach (int id in roleID) {
+				OpPosition pos = new OpPosition() {
+					uuid = ANWI.Utility.UUID.GenerateUUID(),
+					unitUUID = unitUUID,
+					critical = false,
+					filledById = -1,
+					filledByPointer = null,
+					role = OperationRole.FetchById(id)
+				};
+
+				fleet.AddPosition(pos);
+				newPositions.Add(pos);
+			}
 
 			PushToAll(new ANWI.Messaging.Ops.UpdatePositions(
-				new List<OpPosition>() { pos },
+				newPositions,
 				null,
 				null));
 		}

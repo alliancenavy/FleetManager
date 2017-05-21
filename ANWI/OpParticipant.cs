@@ -17,6 +17,9 @@ namespace ANWI {
 		[MessagePackIgnore]
 		public OpPosition position { get; set; }
 
+		[MessagePackIgnore]
+		public bool isAssigned { get { return position != null; } }
+
 		public OpParticipant() {
 			profile = null;
 			isFC = false;

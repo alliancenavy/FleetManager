@@ -1,5 +1,6 @@
 ﻿using ANWI;
 using ANWI.FleetComp;
+using Client.Operations;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -107,11 +108,28 @@ namespace Client {
 					new ANWI.Messaging.Ops.AddPosition() {
 						opUUID = opUUID,
 						unitUUID = unit.uuid,
-						roleID = CommonData.shipRoles[index].id
+						roleID = new List<int>() { CommonData.shipRoles[index].id }
 					},
 					null);
 			};
 			select.ShowDialog();
+		}
+
+		private void 
+		Context_MassAddShipPosition(object sender, RoutedEventArgs e) {
+			FleetUnit unit = (sender as MenuItem).DataContext as FleetUnit;
+
+			MassAddRoles mar = new MassAddRoles(CommonData.shipRoles);
+			mar.returnNewPositions += (positions) => {
+				MessageRouter.Instance.SendOps(
+					new ANWI.Messaging.Ops.AddPosition() {
+						opUUID = opUUID,
+						unitUUID = unit.uuid,
+						roleID = positions
+					},
+					null);
+			};
+			mar.ShowDialog();
 		}
 
 		private void Context_UnassignAllShip(object sender, RoutedEventArgs e) {
@@ -187,11 +205,28 @@ namespace Client {
 					new ANWI.Messaging.Ops.AddPosition() {
 						opUUID = opUUID,
 						unitUUID = unit.uuid,
-						roleID = CommonData.boatRoles[index].id
+						roleID = new List<int>() { CommonData.boatRoles[index].id }
 					},
 					null);
 			};
 			select.ShowDialog();
+		}
+
+		private void
+		Context_MassAddBoatPosition(object sender, RoutedEventArgs e) {
+			FleetUnit unit = (sender as MenuItem).DataContext as FleetUnit;
+
+			MassAddRoles mar = new MassAddRoles(CommonData.boatRoles);
+			mar.returnNewPositions += (positions) => {
+				MessageRouter.Instance.SendOps(
+					new ANWI.Messaging.Ops.AddPosition() {
+						opUUID = opUUID,
+						unitUUID = unit.uuid,
+						roleID = positions
+					},
+					null);
+			};
+			mar.ShowDialog();
 		}
 
 		private void Context_SetWingCommander(object sender, RoutedEventArgs e) {

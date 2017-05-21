@@ -394,6 +394,8 @@ namespace Client {
 						foreach(Boat boat in wing.members) {
 							AddPositionsToC2(chan.users, boat.positions);
 						}
+
+						C2Channels.Add(chan);
 					}
 				}
 

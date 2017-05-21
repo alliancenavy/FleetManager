@@ -40,17 +40,26 @@
             <Canvas Height="60" Background="White">
                 <Image x:Name="Image_Rank" HorizontalAlignment="Left" Margin="10,10,0,0" Height="40" Width="40" VerticalAlignment="Top" OpacityMask="Black" Source="{Binding profile.rank.icon}"/>
                 <Image x:Name="Image_PrimaryRate" HorizontalAlignment="Left" Margin="55,10,0,0" Height="40" VerticalAlignment="Top" Width="40" OpacityMask="Black" Source="{Binding Path=profile.primaryRate.icon, FallbackValue={StaticResource NoImageFound}}"/>
-                <TextBlock x:Name="Text_Name" TextWrapping="Wrap" Margin="100,10,0,0" Text="{Binding Path=profile.fullName, FallbackValue='Name'}" VerticalAlignment="Top" Height="16" FontWeight="DemiBold"/>
+                <TextBlock x:Name="Text_Name" TextWrapping="Wrap" Foreground="Black" Margin="100,10,0,0" Text="{Binding Path=profile.fullName, FallbackValue='Name'}" VerticalAlignment="Top" Height="16" FontWeight="DemiBold"/>
                 <fa:ImageAwesome x:Name="Icon_FC" Icon="Star" Margin="100,30,0,0" Height="15" Width="15" ToolTip="Fleet Command" Visibility="{Binding Path=isFC, Converter={StaticResource Conv_BoolToVisibility}}"/>
             </Canvas>
+
+            <!--<DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding isAssigned}" Value="False">
+                    <Setter TargetName="Text_Name" Property="Foreground" Value="Red"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding isAssigned}" Value="True">
+                    <Setter TargetName="Text_Name" Property="Foreground" Value="Black"/>
+                </DataTrigger>
+            </Da-taTemplate.Triggers>-->
         </DataTemplate>
 
         <DataTemplate x:Key="PositionTemplate">
-            <Grid Name="PositionGrid" Height="50" AllowDrop="True" Drop="PositionGrid_Drop" Background="White">
-                <Image Height="40" Width="40" Margin="5,5,0,0"  HorizontalAlignment="Left" VerticalAlignment="Top" OpacityMask="Black" Source="{Binding role.associatedRateIcon, FallbackValue={StaticResource NoImageFound}}"/>
-                <TextBlock Margin="50,9,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="Wrap" Text="{Binding Path=role.name, FallbackValue='Position Name'}" FontWeight="DemiBold"/>
-                <TextBlock Margin="50,25,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="Wrap" Text="{Binding Path=filledByPointer.profile.fullName, FallbackValue='[UNASSIGNED]'}" />
-                <fa:ImageAwesome x:Name="Icon_Unfilled" Grid.Row="0" Icon="Warning"  Margin="0,12,10,0" HorizontalAlignment="Right" VerticalAlignment="Top" Height="25" Width="25" ToolTip="Unfilled Position" Foreground="Red" Visibility="{Binding Path=isFilled, Converter={StaticResource Conv_InverseBoolToVisibility}}"/>
+            <Grid Name="PositionGrid" Height="40" AllowDrop="True" Drop="PositionGrid_Drop" Background="White">
+                <Image Height="40" Width="40" Margin="0,0,0,0"  HorizontalAlignment="Left" VerticalAlignment="Top" OpacityMask="Black" Source="{Binding role.associatedRateIcon, FallbackValue={StaticResource NoImageFound}}"/>
+                <TextBlock Margin="50,4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="Wrap" Text="{Binding Path=role.name, FallbackValue='Position Name'}" FontWeight="DemiBold"/>
+                <TextBlock Margin="50,20,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="Wrap" Text="{Binding Path=filledByPointer.profile.fullName, FallbackValue='[UNASSIGNED]'}" />
+                <fa:ImageAwesome x:Name="Icon_Unfilled" Grid.Row="0" Icon="Warning"  Margin="0,7,10,0" HorizontalAlignment="Right" VerticalAlignment="Top" Height="25" Width="25" ToolTip="Unfilled Position" Foreground="Red" Visibility="{Binding Path=isFilled, Converter={StaticResource Conv_InverseBoolToVisibility}}"/>
 
                 <Grid.ContextMenu>
                     <ContextMenu>
@@ -130,6 +139,7 @@
                         <MenuItem Header="Set As Flagship" Click="Context_SetAsFlagship"/>
                         <Separator/>
                         <MenuItem Header="Add Position" Click="Context_AddShipPosition"/>
+                        <MenuItem Header="Add Multiple Positions" Click="Context_MassAddShipPosition"/>
                         <MenuItem Header="Unassign All" Click="Context_UnassignAllShip"/>
                         <Separator/>
                         <MenuItem Header="Delete Ship" Click="Context_DeleteUnit"/>
@@ -213,6 +223,7 @@
                 <Grid.ContextMenu>
                     <ContextMenu Name="CM" IsEnabled="False">
                         <MenuItem Name="CM_AddPos" Header="Add Position" Click="Context_AddBoatPosition"/>
+                        <MenuItem Name="CM_AddMultPos" Header="Add Multiple Positions" Click="Context_MassAddBoatPosition"/>
                         <Separator/>
                         <MenuItem Name="CM_SetWC" Header="Set Wing Commander" Click="Context_SetWingCommander" />
                         <Separator/>
@@ -274,6 +285,8 @@
                         <MenuItem Header="New Wing" Click="Context_NewWing"/>
                         <Separator/>
                         <MenuItem Header="Add Boat" Click="Context_AddWingMember"/>
+                        <!--<MenuItem Header="Add Multiple Boats" Click="Context_MassAddWingMember"/>-->
+                        <Separator/>
                         <MenuItem Header="Change Name" Click="Context_ChangeNameWing"/>
                         <MenuItem Header="Change Callsign" Click="Context_ChangeCallsign"/>
                         <MenuItem Header="Wing Type">
@@ -463,10 +476,6 @@
 
             </Grid>
         </Grid>
-
-
-
-
 
 
     </Grid>
