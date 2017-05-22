@@ -70,14 +70,16 @@ CREATE TABLE IF NOT EXISTS OperationRole (
 
 drop table if exists StruckRate;
 
-create table if not exists StruckRate (
- id integer not null,
- user integer not null references User(id),
- rate integer not null references Rate(id),
- rank integer not null default 0,
- earned integer not null default 0,
- expires integer default 0
- primary key(user, rate)
+CREATE TABLE StruckRate (
+    id      INTEGER NOT NULL UNIQUE,
+    user    INTEGER NOT NULL,
+    rate    INTEGER NOT NULL,
+    rank    INTEGER NOT NULL DEFAULT 0,
+    earned  INTEGER NOT NULL DEFAULT 0,
+    expires INTEGER DEFAULT NULL,
+    PRIMARY KEY (user,rate),
+    FOREIGN KEY (user) REFERENCES User (id),
+    FOREIGN KEY (rate) REFERENCES Rate (id) 
 );
 
 drop table if exists User;
@@ -88,7 +90,7 @@ create table if not exists User (
  auth0 text not null default '',
  rank integer not null references Rank(id),
  rate integer references StruckRate(id),
- createdDate integer not null
+ created integer not null
 );
 
 drop table if exists Assignment;

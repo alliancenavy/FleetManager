@@ -248,7 +248,10 @@ namespace Client {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void Button_Register_Click(object sender, RoutedEventArgs e) {
-			SendRegister();
+			Task t = new Task(() => {
+				SendRegister();
+			});
+			t.Start();
 		}
 
 		/// <summary>
@@ -364,8 +367,12 @@ namespace Client {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void Textbox_Register_KeyDown(object sender, KeyEventArgs e) {
-			if (e.Key == Key.Return)
-				SendRegister();
+			if (e.Key == Key.Return) {
+				Task t = new Task(() => {
+					SendRegister();
+				});
+				t.Start();
+			}
 		}
 		#endregion
 	}

@@ -453,12 +453,17 @@ namespace Client {
 		}
 
 		private void Button_ChangeStatus_Click(object sender, RoutedEventArgs e) {
-			MessageRouter.Instance.SendOps(
-				new ANWI.Messaging.Request(
-					ANWI.Messaging.Request.Type.AdvanceOpLifecycle,
-						new ANWI.Messaging.ReqExp.IdString(0, opUUID)),
-				null
-				);
+			Confirm confirm = new Confirm("Advance stage to " +
+				status.Next().ToFriendlyString() + "?");
+			confirm.yesAction += () => {
+				MessageRouter.Instance.SendOps(
+					new ANWI.Messaging.Request(
+						ANWI.Messaging.Request.Type.AdvanceOpLifecycle,
+							new ANWI.Messaging.ReqExp.IdString(0, opUUID)),
+					null
+					);
+			};
+			confirm.ShowDialog();
 		}
 
 		private void Button_JoinOp_Click(object sender, RoutedEventArgs e) {

@@ -60,7 +60,8 @@ namespace FleetManager.Services {
 		}
 
 		public void Terminate() {
-			this.Context.WebSocket.Close();
+			this.Context.WebSocket.Close(CloseStatusCode.PolicyViolation,
+				"Account logged in from another location");
 		}
 
 		/// <summary>

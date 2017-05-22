@@ -1,4 +1,8 @@
-﻿DELETE FROM Assignment;
+﻿BEGIN TRANSACTION;
+
+PRAGMA foreign_key = "OFF";
+
+DELETE FROM Assignment;
 DELETE FROM AssignmentRole;
 DELETE FROM Hull;
 DELETE FROM HullRole;
@@ -8,6 +12,8 @@ DELETE FROM Rate;
 DELETE FROM StruckRate;
 DELETE FROM User;
 DELETE FROM UserShip;
+
+PRAGMA foreign_key = "ON";
 
 ---------------------------------------
 --Ranks
@@ -182,3 +188,5 @@ INSERT INTO Hull (id, vendor, role, series, symbol, ordering) VALUES (69,1,7,"Ze
 ---------------------------------------
 --Users
 INSERT INTO User (id, name, auth0, rank, rate) VALUES (0, "Fleet", "", 6, null);
+
+COMMIT TRANSACTION;

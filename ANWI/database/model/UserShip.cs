@@ -158,7 +158,7 @@ namespace ANWI.Database.Model {
 				WHERE (status != 1 AND status != 4)
 				OR (
 					(status == 1 OR status == 4)
-					AND statusDate > strftime('%s', 'now', '-1 month')
+					AND statusDate > strftime('%s', 'now', '-1 week')
 				);");
 			while (reader != null && reader.Read()) {
 				UserShip us = UserShip.Factory(reader);

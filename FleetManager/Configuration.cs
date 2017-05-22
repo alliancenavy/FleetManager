@@ -15,6 +15,7 @@ namespace FleetManager {
 			= LogManager.GetLogger("Configuration");
 
 		public class Auth0Settings {
+			public string url;
 			public string connection;
 			public string client;
 			public string secret;
@@ -53,6 +54,7 @@ namespace FleetManager {
 				JObject auth0Root = (JObject)jsonRoot["auth0"];
 
 				auth0Settings = new Auth0Settings() {
+					url = (string)auth0Root["url"],
 					connection = (string)auth0Root["connection"],
 					client = (string)auth0Root["clientId"],
 					secret = (string)auth0Root["secret"]

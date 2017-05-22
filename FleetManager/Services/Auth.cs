@@ -22,7 +22,7 @@ namespace FleetManager.Services {
 		public Auth() {
 			// TODO: Mode this URL to config
 			auth0Client 
-				= new AuthenticationApiClient("stackcollision.auth0.com");
+				= new AuthenticationApiClient(Configuration.auth0Settings.url);
 		}
 
 		protected override void OnMessage(MessageEventArgs e) {

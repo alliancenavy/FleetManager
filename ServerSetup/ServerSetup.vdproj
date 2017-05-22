@@ -832,13 +832,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_309BD6D318505ABFC88D7FD9752DAEE8"
+        "OwnerKey" = "8:_9A931A82EA8646F4ADF23B2C87B0EDDD"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_9A931A82EA8646F4ADF23B2C87B0EDDD"
+        "OwnerKey" = "8:_2E102656814DB5A404C9A15D0FECF5F4"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -989,12 +989,6 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_D2713897B18657CFC8ADD9565CB402B4"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2E102656814DB5A404C9A15D0FECF5F4"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1351,6 +1345,12 @@
         "OwnerKey" = "8:_64C2A02D8AE52120240EEBB157F0EA45"
         "MsmSig" = "8:_UNDEFINED"
         }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_309BD6D318505ABFC88D7FD9752DAEE8"
+        "MsmSig" = "8:_UNDEFINED"
+        }
     }
     "Configurations"
     {
@@ -1369,6 +1369,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
         "Release"
         {
@@ -1385,6 +1393,22 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.5"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.5 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.5"
+                    }
+                }
+            }
         }
     }
     "Deployable"
@@ -4351,15 +4375,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:AFOS Server"
-        "ProductCode" = "8:{4A37E027-6B27-432D-BAD5-E92D46CDA0DD}"
-        "PackageCode" = "8:{CDB91A23-5E89-4198-9616-A8B5872077DD}"
+        "ProductCode" = "8:{1A4F4979-EBFD-4ACD-B332-579C65787149}"
+        "PackageCode" = "8:{44B76596-31C9-4DC0-B759-CB3D6C0BA840}"
         "UpgradeCode" = "8:{7FF6AB0D-4F35-4D77-8F12-D9CA2019D721}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:0.1.3"
+        "ProductVersion" = "8:0.2.0"
         "Manufacturer" = "8:Eridanus Industries"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
