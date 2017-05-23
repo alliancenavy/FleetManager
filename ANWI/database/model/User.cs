@@ -82,7 +82,7 @@ namespace ANWI.Database.Model {
 			int rank) {
 			int result = DBI.DoPreparedAction(
 				@"INSERT INTO User (name, auth0, rank, rate, created) 
-				VALUES (@name, @aut0, @rank, null, 
+				VALUES (@name, @auth0, @rank, null, 
 				strftime('%s','now'));",
 				new Tuple<string, object>("@name", name), 
 				new Tuple<string, object>("@auth0", auth0), 

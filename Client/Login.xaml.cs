@@ -248,10 +248,7 @@ namespace Client {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void Button_Register_Click(object sender, RoutedEventArgs e) {
-			Task t = new Task(() => {
-				SendRegister();
-			});
-			t.Start();
+			SendRegister();
 		}
 
 		/// <summary>
@@ -275,16 +272,23 @@ namespace Client {
 				return;
 			}
 
-			MessageRouter.Instance.ConnectAuth(this);
+			string email = Textbox_RegisterEmail.Text;
+			string nick = Textbox_RegisterNickname.Text;
+			string pass = Textbox_RegisterPassword.Password;
 
-			// Send message to server
-			MessageRouter.Instance.SendAuth(
-				new ANWI.Messaging.RegisterRequest(
-					version,
-					Textbox_RegisterEmail.Text,
-					Textbox_RegisterNickname.Text,
-					Textbox_RegisterPassword.Password)
-				);
+			Task t = new Task(() => {
+				MessageRouter.Instance.ConnectAuth(this);
+
+				// Send message to server
+				MessageRouter.Instance.SendAuth(
+					new ANWI.Messaging.RegisterRequest(
+						version,
+						email,
+						nick,
+						pass)
+					);
+			});
+			t.Start();
 		}
 
 		/// <summary>
@@ -368,10 +372,7 @@ namespace Client {
 		/// <param name="e"></param>
 		private void Textbox_Register_KeyDown(object sender, KeyEventArgs e) {
 			if (e.Key == Key.Return) {
-				Task t = new Task(() => {
-					SendRegister();
-				});
-				t.Start();
+				SendRegister();
 			}
 		}
 		#endregion
