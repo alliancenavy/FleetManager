@@ -81,10 +81,14 @@ namespace ANWI.Database.Model {
 		/// <returns></returns>
 		public static bool Create(ref Hull output, int vendor, int role, 
 			string series, string version, string symbol, int ordering) {
-			int result = DBI.DoAction(
-				$@"INSERT INTO Hull (vendor, role, series, symbol, ordering) 
-				VALUES ({vendor}, {role}, '{series}', '{symbol}', {ordering});"
-				);
+			int result = DBI.DoPreparedAction(
+				@"INSERT INTO Hull (vendor, role, series, symbol, ordering) 
+				VALUES (@vendor, @role, @series, @symbol, @ordering);",
+				new Tuple<string, object>("@vendor", vendor), 
+				new Tuple<string, object>("@role", role), 
+				new Tuple<string, object>("@series", series), 
+				new Tuple<string, object>("@symbol", symbol),
+				new Tuple<string, object>("@ordering", ordering));
 			if (result == 1) {
 				return Hull.FetchById(ref output, DBI.LastInsertRowId);
 			}
@@ -98,9 +102,10 @@ namespace ANWI.Database.Model {
 		/// <param name="id"></param>
 		/// <returns></returns>
 		public static bool FetchById(ref Hull output, int id) {
-			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT * FROM Hull 
-				WHERE id = {id} LIMIT 1;");
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				@"SELECT * FROM Hull 
+				WHERE id = @id LIMIT 1;",
+				new Tuple<string, object>("@id", id));
 			if (reader != null && reader.Read()) {
 				output = Hull.Factory(reader);
 				return true;
@@ -117,7 +122,7 @@ namespace ANWI.Database.Model {
 			output = new List<Hull>();
 
 			SQLiteDataReader reader = DBI.DoQuery(
-				$"SELECT * FROM Hull ORDER BY ordering ASC;");
+				"SELECT * FROM Hull ORDER BY ordering ASC;");
 			while (reader != null && reader.Read()) {
 				Hull h = Hull.Factory(reader);
 				output.Add(h);
@@ -135,7 +140,7 @@ namespace ANWI.Database.Model {
 			output = new List<Hull>();
 
 			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT * FROM Hull 
+				@"SELECT * FROM Hull 
 				WHERE ordering <= 100 ORDER BY series ASC;");
 			while (reader != null && reader.Read()) {
 				Hull h = Hull.Factory(reader);
@@ -153,7 +158,7 @@ namespace ANWI.Database.Model {
 			output = new List<Hull>();
 
 			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT * FROM Hull 
+				@"SELECT * FROM Hull 
 				WHERE ordering > 100 ORDER BY series ASC;");
 			while (reader != null && reader.Read()) {
 				Hull h = Hull.Factory(reader);
@@ -168,11 +173,16 @@ namespace ANWI.Database.Model {
 		/// <param name="input"></param>
 		/// <returns></returns>
 		public static bool Store(Hull input) {
-			int result = DBI.DoAction(
-				$@"UPDATE Hull SET vendor = {input.vendor}, role = {input.role},
-				series = '{input.series}', symbol = '{input.symbol}', 
-				ordering = {input.ordering} 
-				WHERE id = {input.id};");
+			int result = DBI.DoPreparedAction(
+				@"UPDATE Hull SET vendor = @vendor, role = @role,
+				series = @series, symbol = @symbol, ordering = @ordering 
+				WHERE id = @id;",
+				new Tuple<string, object>("@vendor", input.vendor), 
+				new Tuple<string, object>("@role", input.role), 
+				new Tuple<string, object>("@series", input.series), 
+				new Tuple<string, object>("@symbol", input.symbol),
+				new Tuple<string, object>("@ordering", input.ordering), 
+				new Tuple<string, object>("@id", input.id));
 			if (result == 1)
 				return true;
 			return false;

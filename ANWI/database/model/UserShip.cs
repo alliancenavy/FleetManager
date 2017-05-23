@@ -93,17 +93,22 @@ namespace ANWI.Database.Model {
 		/// <returns></returns>
 		public static bool Create(ref UserShip output, int user, int hull, 
 			int insurance, string name, int status) {
-			int result = DBI.DoAction(
+			int result = DBI.DoPreparedAction(
 				$@"INSERT INTO UserShip (user, hull, insurance, number, name, 
 				status, statusDate) 
-				VALUES ({user}, {hull}, {insurance}, 
+				VALUES (@user, @hull, @insurance, 
 				COALESCE((
 					SELECT MAX(number)+1 FROM UserShip 
 					WHERE hull IN (
 						SELECT h1.id FROM Hull h1, Hull h2 
-						WHERE h1.symbol = h2.symbol AND h2.id = {hull}
-					)),1), '{name}', {status}, 
-				strftime('%s', 'now'));");
+						WHERE h1.symbol = h2.symbol AND h2.id = @hull
+					)),1), @name, @status, 
+				strftime('%s', 'now'));",
+				new Tuple<string, object>("@user", user), 
+				new Tuple<string, object>("@hull", hull), 
+				new Tuple<string, object>("@insurance", insurance),  
+				new Tuple<string, object>("@name", name),
+				new Tuple<string, object>("@status", status));
 
 			if (result == 1) {
 				return UserShip.FetchById(ref output, DBI.LastInsertRowId);
@@ -118,8 +123,9 @@ namespace ANWI.Database.Model {
 		/// <param name="id"></param>
 		/// <returns></returns>
 		public static bool FetchById(ref UserShip output, int id) {
-			SQLiteDataReader reader = DBI.DoQuery(
-				$"SELECT * FROM UserShip WHERE id = {id} LIMIT 1;");
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				"SELECT * FROM UserShip WHERE id = @id LIMIT 1;",
+				new Tuple<string, object>("@id", id));
 			if (reader != null && reader.Read()) {
 				output = UserShip.Factory(reader);
 				return true;
@@ -134,8 +140,9 @@ namespace ANWI.Database.Model {
 		/// <param name="name"></param>
 		/// <returns></returns>
 		public static bool FetchByName(ref UserShip output, string name) {
-			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT * FROM UserShip WHERE name = '{name}' LIMIT 1;");
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				@"SELECT * FROM UserShip WHERE name = @name LIMIT 1;",
+				new Tuple<string, object>("@name", name));
 			if (reader != null && reader.Read()) {
 				output = UserShip.Factory(reader);
 				return true;
@@ -154,7 +161,7 @@ namespace ANWI.Database.Model {
 			output = new List<UserShip>();
 
 			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT * FROM UserShip
+				@"SELECT * FROM UserShip
 				WHERE (status != 1 AND status != 4)
 				OR (
 					(status == 1 OR status == 4)
@@ -177,7 +184,7 @@ namespace ANWI.Database.Model {
 			output = new List<UserShip>();
 
 			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT * FROM UserShip
+				@"SELECT * FROM UserShip
 				WHERE status = 0 OR status = 3;");
 			while (reader != null && reader.Read()) {
 				UserShip us = UserShip.Factory(reader);
@@ -193,12 +200,19 @@ namespace ANWI.Database.Model {
 		/// <param name="input"></param>
 		/// <returns></returns>
 		public static bool Store(UserShip input) {
-			int result = DBI.DoAction(
-				$@"UPDATE UserShip SET user = {input.user}, hull = {input.hull},
-				insurance = {input.insurance}, number = {input.number}, 
-				name = '{input.name}', status = {input.status}, 
-				statusDate = {input.statusDate} 
-				WHERE id = {input.id};");
+			int result = DBI.DoPreparedAction(
+				@"UPDATE UserShip SET user = @user, hull = @hull,
+				insurance = @insurance, number = @number, name = @name, 
+				status = @status, statusDate = @statusDate 
+				WHERE id = @id;",
+				new Tuple<string, object>("@user", input.user), 
+				new Tuple<string, object>("@hull", input.hull), 
+				new Tuple<string, object>("@insurance", input.insurance), 
+				new Tuple<string, object>("@number", input.number),
+				new Tuple<string, object>("@name", input.name), 
+				new Tuple<string, object>("@status", input.status), 
+				new Tuple<string, object>("@statusDate", input.statusDate),
+				new Tuple<string, object>("@id", input.id));
 			if (result == 1)
 				return true;
 			return false;
@@ -210,10 +224,12 @@ namespace ANWI.Database.Model {
 		/// <param name="input"></param>
 		/// <returns></returns>
 		public static bool StoreUpdateStatus(UserShip input) {
-			int result = DBI.DoAction(
-				$@"UPDATE UserShip 
-				SET status = {input.status}, statusDate = strftime('%s', 'now')
-				WHERE id = {input.id};");
+			int result = DBI.DoPreparedAction(
+				@"UPDATE UserShip 
+				SET status = @status, statusDate = strftime('%s', 'now')
+				WHERE id = @id;",
+				new Tuple<string, object>("@status", input.status), 
+				new Tuple<string, object>("@id", input.id));
 			if (result == 1)
 				return true;
 			else

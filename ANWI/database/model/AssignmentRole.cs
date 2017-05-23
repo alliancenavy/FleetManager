@@ -60,9 +60,11 @@ namespace ANWI.Database.Model {
 		/// <returns></returns>
 		public static bool Create(ref AssignmentRole output, string name, 
 			bool isCompany) {
-			int result = DBI.DoAction(
-				$@"INSERT INTO AssignmentRole (name, isCompany) 
-				VALUES ('{name}', {isCompany});");
+			int result = DBI.DoPreparedAction(
+				@"INSERT INTO AssignmentRole (name, isCompany) 
+				VALUES (@name, @company);",
+				new Tuple<string, object>("@name", name),
+				new Tuple<string, object>("@company", isCompany));
 			if (result == 1) {
 				return AssignmentRole.FetchById(ref output, 
 					DBI.LastInsertRowId);
@@ -77,9 +79,10 @@ namespace ANWI.Database.Model {
 		/// <param name="id"></param>
 		/// <returns></returns>
 		public static bool FetchById(ref AssignmentRole output, int id) {
-			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT * FROM AssignmentRole 
-				WHERE id = {id} LIMIT 1;");
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				@"SELECT * FROM AssignmentRole 
+				WHERE id = @id LIMIT 1;",
+				new Tuple<string, object>("@id", id));
 			if (reader != null && reader.Read()) {
 				output = AssignmentRole.Factory(reader);
 				return true;
@@ -94,9 +97,10 @@ namespace ANWI.Database.Model {
 		/// <param name="name"></param>
 		/// <returns></returns>
 		public static bool FetchByName(ref AssignmentRole output, string name) {
-			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT * FROM AssignmentRole 
-				WHERE name = {name} LIMIT 1;");
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				@"SELECT * FROM AssignmentRole 
+				WHERE name = @name LIMIT 1;",
+				new Tuple<string, object>("@name", name));
 			if (reader != null && reader.Read()) {
 				output = AssignmentRole.Factory(reader);
 				return true;
@@ -128,10 +132,13 @@ namespace ANWI.Database.Model {
 		/// <param name="input"></param>
 		/// <returns></returns>
 		public static bool Store(AssignmentRole input) {
-			int result = DBI.DoAction(
-				$@"UPDATE AssignmentRole 
-				SET name = '{input.name}', isCompany = {input.isCompany} 
-				WHERE id = {input.id};");
+			int result = DBI.DoPreparedAction(
+				@"UPDATE AssignmentRole 
+				SET name = @name, isCompany = @company 
+				WHERE id = @id;",
+				new Tuple<string, object>("@name", input.name), 
+				new Tuple<string, object>("@company", input.isCompany), 
+				new Tuple<string, object>("@id", input.id));
 			if (result == 1)
 				return true;
 			return false;

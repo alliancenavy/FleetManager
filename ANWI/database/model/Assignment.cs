@@ -81,9 +81,14 @@ namespace ANWI.Database.Model {
 		/// <returns></returns>
 		public static bool Create(ref Assignment output, int user, int ship, 
 			int role, long from, long until) {
-			int result = DBI.DoAction(
-				$@"INSERT INTO Assignment (user, ship, role, start, until) 
-				VALUES ({user}, {ship}, {role}, {from}, {until});");
+			int result = DBI.DoPreparedAction(
+				@"INSERT INTO Assignment (user, ship, role, start, until) 
+				VALUES (@user, @ship, @role, @from, @until);",
+				new Tuple<string, object>("@user", user), 
+				new Tuple<string, object>("@ship", ship), 
+				new Tuple<string, object>("@role", role), 
+				new Tuple<string, object>("@from", from), 
+				new Tuple<string, object>("@until", until));
 			if (result == 1) {
 				return Assignment.FetchById(ref output, DBI.LastInsertRowId);
 			}
@@ -101,9 +106,12 @@ namespace ANWI.Database.Model {
 		/// <returns></returns>
 		public static bool Create(ref Assignment output, int user, int ship, 
 			int role) {
-			int result = DBI.DoAction(
-				$@"INSERT INTO Assignment (user, ship, role, start) 
-				VALUES ({user}, {ship}, {role}, strftime('%s', 'now'));");
+			int result = DBI.DoPreparedAction(
+				@"INSERT INTO Assignment (user, ship, role, start) 
+				VALUES (@user, @ship, @role, strftime('%s', 'now'));",
+				new Tuple<string, object>("@user", user), 
+				new Tuple<string, object>("@ship", ship), 
+				new Tuple<string, object>("@role", role));
 			if (result == 1) {
 				return Assignment.FetchById(ref output, DBI.LastInsertRowId);
 			}
@@ -117,11 +125,12 @@ namespace ANWI.Database.Model {
 		/// <param name="id"></param>
 		/// <returns></returns>
 		public static bool FetchById(ref Assignment output, int id) {
-			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT id, user, ship, role, start, 
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				@"SELECT id, user, ship, role, start, 
 				COALESCE(until, -1) AS until 
 				FROM Assignment 
-				WHERE id = {id} LIMIT 1;");
+				WHERE id = @id LIMIT 1;",
+				new Tuple<string, object>("@id", id));
 			if (reader != null && reader.Read()) {
 				output = Assignment.Factory(reader);
 				return true;
@@ -137,11 +146,12 @@ namespace ANWI.Database.Model {
 		/// <returns></returns>
 		public static bool FetchCurrentAssignment(ref Assignment output, 
 			int userId) {
-			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT id, user, ship, role, start, 
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				@"SELECT id, user, ship, role, start, 
 				COALESCE(until, -1) AS until 
 				FROM Assignment 
-				WHERE user = {userId} AND until IS NULL LIMIT 1;");
+				WHERE user = @user AND until IS NULL LIMIT 1;",
+				new Tuple<string, object>("@user", userId));
 			if (reader != null && reader.Read()) {
 				output = Assignment.Factory(reader);
 				return true;
@@ -160,11 +170,12 @@ namespace ANWI.Database.Model {
 			int userId) {
 			output = new List<Assignment>();
 
-			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT id, user, ship, role, start, 
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				@"SELECT id, user, ship, role, start, 
 				COALESCE(until, -1) AS until 
 				FROM Assignment 
-				WHERE user = {userId} ORDER BY start DESC;");
+				WHERE user = @user ORDER BY start DESC;",
+				new Tuple<string, object>("@user", userId));
 			while (reader != null && reader.Read()) {
 				Assignment a = Assignment.Factory(reader);
 				output.Add(a);
@@ -179,11 +190,17 @@ namespace ANWI.Database.Model {
 		/// <param name="input"></param>
 		/// <returns></returns>
 		public static bool Store(Assignment input) {
-			int result = DBI.DoAction(
-				$@"UPDATE Assignment 
-				SET user = {input.user}, ship = {input.ship}, 
-				role = {input.role}, start = {input.from}, until = {input.until}
-				WHERE id = {input.id};");
+			int result = DBI.DoPreparedAction(
+				@"UPDATE Assignment 
+				SET user = @user, ship = @ship, 
+				role = @role, start = @start, until = @until
+				WHERE id = @id;",
+				new Tuple<string, object>("@user", input.user), 
+				new Tuple<string, object>("@ship", input.ship), 
+				new Tuple<string, object>("@role", input.role), 
+				new Tuple<string, object>("@from", input.from),
+				new Tuple<string, object>("@until", input.until),
+				new Tuple<string, object>("@id", input.id));
 			if (result == 1)
 				return true;
 			else
@@ -197,10 +214,12 @@ namespace ANWI.Database.Model {
 		/// <param name="assignmentId"></param>
 		/// <returns></returns>
 		public static bool EndAssignment(int userId, int assignmentId) {
-			int result = DBI.DoAction(
-				$@"UPDATE Assignment 
+			int result = DBI.DoPreparedAction(
+				@"UPDATE Assignment 
 				SET until = strftime('%s', 'now') 
-				WHERE user = {userId} AND id = {assignmentId};");
+				WHERE user = @user AND id = @assignment;",
+				new Tuple<string, object>("@user", userId),
+				new Tuple<string, object>("@assignment", assignmentId));
 			if (result == 1)
 				return true;
 			else

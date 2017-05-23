@@ -80,10 +80,13 @@ namespace ANWI.Database.Model {
 		/// <returns></returns>
 		public static bool Create(ref User output, string name, string auth0,
 			int rank) {
-			int result = DBI.DoAction(
-				$@"INSERT INTO User (name, auth0, rank, rate, created) 
-				VALUES ('{name}', '{auth0}', {rank}, null, 
-				strftime('%s','now'));");
+			int result = DBI.DoPreparedAction(
+				@"INSERT INTO User (name, auth0, rank, rate, created) 
+				VALUES (@name, @aut0, @rank, null, 
+				strftime('%s','now'));",
+				new Tuple<string, object>("@name", name), 
+				new Tuple<string, object>("@auth0", auth0), 
+				new Tuple<string, object>("@rank", rank));
 			if (result == 1) {
 				return User.FetchById(ref output, DBI.LastInsertRowId);
 			}
@@ -101,10 +104,13 @@ namespace ANWI.Database.Model {
 		/// <returns></returns>
 		public static bool Create(ref User output, string name, string auth0,
 			int rank, int rate) {
-			int result = DBI.DoAction(
-				$@"INSERT INTO User (name, auth0, rank, rate, created) 
-				VALUES ('{name}', '{auth0}', {rank}, {rate},
-				strftime('%s','now');");
+			int result = DBI.DoPreparedAction(
+				@"INSERT INTO User (name, auth0, rank, rate, created) 
+				VALUES (@name, @auth0, @rank, @rate, strftime('%s','now');",
+				new Tuple<string, object>("@name", name), 
+				new Tuple<string, object>("@auth0", auth0), 
+				new Tuple<string, object>("@rank", rank), 
+				new Tuple<string, object>("@rate", rate));
 			if (result == 1) {
 				return User.FetchById(ref output, DBI.LastInsertRowId);
 			}
@@ -120,7 +126,7 @@ namespace ANWI.Database.Model {
 			output = new List<User>();
 
 			SQLiteDataReader reader = DBI.DoQuery(
-				$"SELECT * FROM User WHERE id != 0");
+				"SELECT * FROM User WHERE id != 0");
 			while (reader != null && reader.Read()) {
 				User u = User.Factory(reader);
 				output.Add(u);
@@ -142,12 +148,14 @@ namespace ANWI.Database.Model {
 			output = new List<User>();
 
 			int isCompany = Convert.ToInt32(company);
-			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT u.id, u.name, u.auth0, u.rank, u.rate, u.created 
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				@"SELECT u.id, u.name, u.auth0, u.rank, u.rate, u.created 
 				FROM User u, Assignment a, AssignmentRole ar 
 				WHERE a.user = u.id AND a.role = ar.id 
-				AND ar.isCompany = {isCompany} AND a.ship = {shipId} 
-				AND a.until is null ORDER BY ar.id ASC;");
+				AND ar.isCompany = @company AND a.ship = @ship 
+				AND a.until is null ORDER BY ar.id ASC;",
+				new Tuple<string, object>("@company", isCompany), 
+				new Tuple<string, object>("@ship", shipId));
 			while (reader != null && reader.Read()) {
 				User u = User.Factory(reader);
 				output.Add(u);
@@ -185,8 +193,9 @@ namespace ANWI.Database.Model {
 		/// <param name="id"></param>
 		/// <returns></returns>
 		public static bool FetchById(ref User output, int id) {
-			SQLiteDataReader reader = DBI.DoQuery(
-				$"SELECT * FROM User WHERE id = {id} LIMIT 1;");
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				"SELECT * FROM User WHERE id = @id LIMIT 1;",
+				new Tuple<string, object>("@id", id));
 			if (reader != null && reader.Read()) {
 				output = User.Factory(reader);
 				return true;
@@ -201,8 +210,9 @@ namespace ANWI.Database.Model {
 		/// <param name="name"></param>
 		/// <returns></returns>
 		public static bool FetchByName(ref User output, string name) {
-			SQLiteDataReader reader = DBI.DoQuery(
-				$"SELECT * FROM User WHERE name = '{name}' LIMIT 1;");
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				"SELECT * FROM User WHERE name = @name LIMIT 1;",
+				new Tuple<string, object>("@name", name));
 			if (reader != null && reader.Read()) {
 				output = User.Factory(reader);
 				return true;
@@ -217,8 +227,9 @@ namespace ANWI.Database.Model {
 		/// <param name="auth0"></param>
 		/// <returns></returns>
 		public static bool FetchByAuth0(ref User output, string auth0) {
-			SQLiteDataReader reader = DBI.DoQuery(
-				$"SELECT * FROM User WHERE auth0 = '{auth0}' LIMIT 1;");
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				"SELECT * FROM User WHERE auth0 = @auth0 LIMIT 1;",
+				new Tuple<string, object>("@auth0", auth0));
 			if (reader != null && reader.Read()) {
 				output = User.Factory(reader);
 				return true;
@@ -232,10 +243,15 @@ namespace ANWI.Database.Model {
 		/// <param name="input"></param>
 		/// <returns></returns>
 		public static bool Store(User input) {
-			int result = DBI.DoAction(
-				$@"UPDATE User SET name = '{input.name}', 
-				auth0 = '{input.auth0}', rank = {input.rank},
-				rate = {input.rate} WHERE id = {input.id};");
+			int result = DBI.DoPreparedAction(
+				@"UPDATE User SET name = @name, 
+				auth0 = @auth0, rank = @rank,
+				rate = @rate WHERE id = @id;",
+				new Tuple<string, object>("@name", input.name), 
+				new Tuple<string, object>("@auth0", input.auth0), 
+				new Tuple<string, object>("@rank", input.rank), 
+				new Tuple<string, object>("@rate", input.rate),
+				new Tuple<string, object>("@id", input.id));
 			if (result == 1)
 				return true;
 			return false;

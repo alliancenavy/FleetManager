@@ -66,9 +66,12 @@ namespace ANWI.Database.Model {
 		/// <returns></returns>
 		public static bool Create(ref HullVendor output, string name, 
 			string abrv, string icon = "") {
-			int result = DBI.DoAction(
-				$@"INSERT INTO HullVendor (name, abrv, icon) 
-				VALUES ('{name}', '{abrv}', '{icon}');");
+			int result = DBI.DoPreparedAction(
+				@"INSERT INTO HullVendor (name, abrv, icon) 
+				VALUES (@name, @abrv, @icon);",
+				new Tuple<string, object>("@name", name), 
+				new Tuple<string, object>("@abrv", abrv),
+				new Tuple<string, object>("@icon", icon));
 			if (result == 1) {
 				return HullVendor.FetchById(ref output, DBI.LastInsertRowId);
 			}
@@ -82,9 +85,10 @@ namespace ANWI.Database.Model {
 		/// <param name="id"></param>
 		/// <returns></returns>
 		public static bool FetchById(ref HullVendor output, int id) {
-			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT * FROM HullVendor 
-				WHERE id = {id} LIMIT 1;");
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				@"SELECT * FROM HullVendor 
+				WHERE id = @id LIMIT 1;",
+				new Tuple<string, object>("@id", id));
 			if (reader != null && reader.Read()) {
 				output = HullVendor.Factory(reader);
 				return true;
@@ -99,9 +103,10 @@ namespace ANWI.Database.Model {
 		/// <param name="name"></param>
 		/// <returns></returns>
 		public static bool FetchByName(ref HullVendor output, string name) {
-			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT * FROM HullVendor 
-				WHERE name = {name} LIMIT 1;");
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				@"SELECT * FROM HullVendor 
+				WHERE name = @name LIMIT 1;",
+				new Tuple<string, object>("@name", name));
 			if (reader != null && reader.Read()) {
 				output = HullVendor.Factory(reader);
 				return true;
@@ -115,11 +120,14 @@ namespace ANWI.Database.Model {
 		/// <param name="input"></param>
 		/// <returns></returns>
 		public static bool Store(HullVendor input) {
-			int result = DBI.DoAction(
-				$@"UPDATE HullVendor 
-				SET name = '{input.name}', abrv = '{input.abrv}', 
-				icon = '{input.icon}' 
-				WHERE id = {input.id};");
+			int result = DBI.DoPreparedAction(
+				@"UPDATE HullVendor 
+				SET name = @name, abrv = @abrv, icon = @icon
+				WHERE id = @id;",
+				new Tuple<string, object>("@name", input.name), 
+				new Tuple<string, object>("@abrv", input.abrv), 
+				new Tuple<string, object>("@icon", input.icon), 
+				new Tuple<string, object>("@id", input.id));
 			if (result == 1)
 				return true;
 			return false;

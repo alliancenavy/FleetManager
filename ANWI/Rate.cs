@@ -187,8 +187,9 @@ namespace ANWI {
 		}
 
 		public sealed override bool Equals(object other) {
-			if (other is Rate)
-				return (other as Rate).rateId == this.rateId;
+			Rate ro = other as Rate;
+			if (ro != null)
+				return ro.rateId == this.rateId && ro.rank == this.rank;
 			else
 				return base.Equals(other);
 		}
@@ -203,7 +204,7 @@ namespace ANWI {
 				if (ReferenceEquals(b, null))
 					return false;
 				else
-					return a.rateId == b.rateId;
+					return a.rateId == b.rateId && a.rank == b.rank;
 			}
 		}
 
@@ -217,7 +218,8 @@ namespace ANWI {
 				if (ReferenceEquals(b, null))
 					return true;
 				else
-					return a.rateId == b.rateId;
+					return a.rateId != b.rateId || 
+						(a.rateId == b.rateId && a.rank != b.rank);
 			}
 		}
 		#endregion

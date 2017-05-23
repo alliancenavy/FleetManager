@@ -64,6 +64,33 @@ namespace ANWI.Database
         }
 
 		/// <summary>
+		/// Runs a prepared query which returns data
+		/// </summary>
+		/// <param name="query"></param>
+		/// <param name="parameters"></param>
+		/// <returns></returns>
+		public static SQLiteDataReader 
+		DoPreparedQuery(string query, params Tuple<string, object>[] parameters) {
+			SQLiteCommand statement = new SQLiteCommand(query, dbConn);
+
+			foreach(Tuple<string, object> param in parameters) {
+				statement.Parameters.Add(
+					new SQLiteParameter(param.Item1, param.Item2)
+					);
+			}
+
+			try {
+				Open();
+				return statement.ExecuteReader();
+			} catch(SQLiteException e) {
+				logger.Error("Failed to run prepared query\n\n" + 
+					statement.CommandText +
+					"\n\nException: " + e);
+				return null;
+			}
+		}
+
+		/// <summary>
 		/// Runs a query which does not return data
 		/// </summary>
 		/// <param name="query"></param>
@@ -79,6 +106,33 @@ namespace ANWI.Database
 				return -1;
 			}
         }
+
+		/// <summary>
+		/// Runs a prepared query which does not return data
+		/// </summary>
+		/// <param name="query"></param>
+		/// <param name="parameters"></param>
+		/// <returns></returns>
+		public static int 
+		DoPreparedAction(string query, params Tuple<string, object>[] parameters) {
+			SQLiteCommand statement = new SQLiteCommand(query, dbConn);
+
+			foreach(Tuple<string, object> param in parameters) {
+				statement.Parameters.Add(
+					new SQLiteParameter(param.Item1, param.Item2)
+					);
+			}
+
+			try {
+				Open();
+				return statement.ExecuteNonQuery();
+			} catch(SQLiteException e) {
+				logger.Error("Failed to run prepared query\n\n" + 
+					statement.CommandText +
+					"\n\nException: " + e);
+				return -1;
+			}
+		}
 
 		/// <summary>
 		/// Returns the last inserted row id

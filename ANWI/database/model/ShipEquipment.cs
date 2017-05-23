@@ -63,9 +63,11 @@ namespace ANWI.Database.Model {
 		/// <returns></returns>
 		public static bool Create(ref ShipEquipment output, int hull, 
 			int ship) {
-			int result = DBI.DoAction(
-				$@"INSERT INTO ShipEquipment (hull, ship) 
-				VALUES ({hull}, {ship});");
+			int result = DBI.DoPreparedAction(
+				@"INSERT INTO ShipEquipment (hull, ship) 
+				VALUES (@hull, @ship);",
+				new Tuple<string, object>("@hull", hull), 
+				new Tuple<string, object>("@ship", ship));
 			if(result == 1) {
 				return ShipEquipment.FetchById(ref output, DBI.LastInsertRowId);
 			}
@@ -79,9 +81,10 @@ namespace ANWI.Database.Model {
 		/// <param name="id"></param>
 		/// <returns></returns>
 		public static bool FetchById(ref ShipEquipment output, int id) {
-			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT id, hull, ship, 0 AS count
-				FROM ShipEquipment WHERE id = {id};");
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				@"SELECT id, hull, ship, 0 AS count
+				FROM ShipEquipment WHERE id = @id;",
+				new Tuple<string, object>("@id", id));
 			if(reader != null && reader.Read()) {
 				output = ShipEquipment.Factory(reader);
 				return true;
@@ -98,11 +101,13 @@ namespace ANWI.Database.Model {
 		/// <returns></returns>
 		public static bool FetchHullByShip(ref ShipEquipment output, int hullId,
 			int shipId) {
-			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT id, hull, ship, COUNT(id) AS count
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				@"SELECT id, hull, ship, COUNT(id) AS count
 				FROM ShipEquipment
-				WHERE ship = {shipId} AND hull = {hullId}
-				GROUP BY hull;");
+				WHERE ship = @ship AND hull = @hull
+				GROUP BY hull;",
+				new Tuple<string, object>("@ship", shipId), 
+				new Tuple<string, object>("@hull", hullId));
 			if (reader != null && reader.Read()) {
 				output = ShipEquipment.Factory(reader);
 				return true;
@@ -120,11 +125,12 @@ namespace ANWI.Database.Model {
 			int shipId) {
 			output = new List<ShipEquipment>();
 
-			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT 0 AS id, hull, ship, COUNT(id) AS count
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				@"SELECT 0 AS id, hull, ship, COUNT(id) AS count
 				FROM ShipEquipment
-				WHERE ship = {shipId}
-				GROUP BY hull;");
+				WHERE ship = @ship
+				GROUP BY hull;",
+				new Tuple<string, object>("@ship", shipId));
 			while(reader != null && reader.Read()) {
 				output.Add(ShipEquipment.Factory(reader));
 			}
@@ -138,10 +144,13 @@ namespace ANWI.Database.Model {
 		/// <param name="input"></param>
 		/// <returns></returns>
 		public static bool Store(ShipEquipment input) {
-			int result = DBI.DoAction(
-				$@"UPDATE ShipEquipment
-				SET hull = {input.hull}, ship = {input.ship}
-				WHERE id = {input.id};");
+			int result = DBI.DoPreparedAction(
+				@"UPDATE ShipEquipment
+				SET hull = @hull, ship = @ship
+				WHERE id = @id;",
+				new Tuple<string, object>("@hull", input.hull), 
+				new Tuple<string, object>("@ship", input.ship), 
+				new Tuple<string, object>("@id", input.id));
 			if (result == 1)
 				return true;
 			else
@@ -154,12 +163,14 @@ namespace ANWI.Database.Model {
 		/// <param name="hullId"></param>
 		/// <returns></returns>
 		public static bool DeleteOneOfHullOnShip(int hullId, int shipId) {
-			int result = DBI.DoAction(
-				$@"DELETE FROM ShipEquipment
+			int result = DBI.DoPreparedAction(
+				@"DELETE FROM ShipEquipment
 				WHERE id IN (
 					SELECT id FROM ShipEquipment
-					WHERE hull = {hullId} AND ship = {shipId}
-				);");
+					WHERE hull = @hull AND ship = @ship
+				);",
+				new Tuple<string, object>("@hull", hullId), 
+				new Tuple<string, object>("@ship", shipId));
 			if (result == 1)
 				return true;
 			else

@@ -59,9 +59,11 @@ namespace ANWI.Database.Model {
 		/// <returns></returns>
 		public static bool Create(ref HullRole output, string name, 
 			string icon = "") {
-			int result = DBI.DoAction(
-				$@"INSERT INTO HullRole (name, icon) 
-				VALUES ('{name}', '{icon}');");
+			int result = DBI.DoPreparedAction(
+				@"INSERT INTO HullRole (name, icon) 
+				VALUES (@name, @icon);",
+				new Tuple<string, object>("@name", name),
+				new Tuple<string, object>("@icon", icon));
 			if (result == 1) {
 				return HullRole.FetchById(ref output, DBI.LastInsertRowId);
 			}
@@ -75,9 +77,10 @@ namespace ANWI.Database.Model {
 		/// <param name="id"></param>
 		/// <returns></returns>
 		public static bool FetchById(ref HullRole output, int id) {
-			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT * FROM HullRole 
-				WHERE id = {id} LIMIT 1;");
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				@"SELECT * FROM HullRole 
+				WHERE id = @id LIMIT 1;",
+				new Tuple<string, object>("@id", id));
 			if (reader != null && reader.Read()) {
 				output = HullRole.Factory(reader);
 				return true;
@@ -92,9 +95,10 @@ namespace ANWI.Database.Model {
 		/// <param name="name"></param>
 		/// <returns></returns>
 		public static bool FetchByName(ref HullRole output, string name) {
-			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT * FROM HullRole 
-				WHERE name = {name} LIMIT 1;");
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				@"SELECT * FROM HullRole 
+				WHERE name = @name LIMIT 1;",
+				new Tuple<string, object>("@name", name));
 			if (reader != null && reader.Read()) {
 				output = HullRole.Factory(reader);
 				return true;
@@ -108,10 +112,13 @@ namespace ANWI.Database.Model {
 		/// <param name="input"></param>
 		/// <returns></returns>
 		public static bool Store(HullRole input) {
-			int result = DBI.DoAction(
-				$@"UPDATE HullRole 
-				SET name = '{input.name}', icon = '{input.icon}' 
-				WHERE id = {input.id};");
+			int result = DBI.DoPreparedAction(
+				@"UPDATE HullRole 
+				SET name = @name, icon = @icon 
+				WHERE id = @id;",
+				new Tuple<string, object>("@name", input.name), 
+				new Tuple<string, object>("@icon", input.icon), 
+				new Tuple<string, object>("@id", input.id));
 			if (result == 1)
 				return true;
 			return false;

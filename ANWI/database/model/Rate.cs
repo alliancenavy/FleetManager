@@ -73,9 +73,13 @@ namespace ANWI.Database.Model {
 		/// <returns></returns>
 		public static bool Create(ref Rate output, string name, string abrv, 
 			long r2dur, long r1dur) {
-			int result = DBI.DoAction(
-				$@"INSERT INTO Rate (name, abrv, rank2duration, rank1duration) 
-				VALUES ('{name}', '{abrv}', {r2dur}, {r1dur});");
+			int result = DBI.DoPreparedAction(
+				@"INSERT INTO Rate (name, abrv, rank2duration, rank1duration) 
+				VALUES (@name, @abrv, @rank2dur, @rank1dur);",
+				new Tuple<string, object>("@name", name), 
+				new Tuple<string, object>("@abrv", abrv), 
+				new Tuple<string, object>("@rank2dur", r2dur), 
+				new Tuple<string, object>("@rank1dur", r1dur));
 			if (result == 1) {
 				return Rate.FetchById(ref output, DBI.LastInsertRowId);
 			}
@@ -91,7 +95,7 @@ namespace ANWI.Database.Model {
 			output = new List<Rate>();
 
 			SQLiteDataReader reader = DBI.DoQuery(
-				$"SELECT * FROM Rate ORDER BY id ASC;");
+				"SELECT * FROM Rate ORDER BY id ASC;");
 			while (reader != null && reader.Read()) {
 				output.Add(Rate.Factory(reader));
 			}
@@ -106,8 +110,9 @@ namespace ANWI.Database.Model {
 		/// <param name="id"></param>
 		/// <returns></returns>
 		public static bool FetchById(ref Rate output, int id) {
-			SQLiteDataReader reader = DBI.DoQuery(
-				$"SELECT * FROM Rate WHERE id = {id} LIMIT 1;");
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				"SELECT * FROM Rate WHERE id = @id LIMIT 1;",
+				new Tuple<string, object>("@id", id));
 			if (reader != null && reader.Read()) {
 				output = Rate.Factory(reader);
 				return true;
@@ -122,8 +127,9 @@ namespace ANWI.Database.Model {
 		/// <param name="name"></param>
 		/// <returns></returns>
 		public static bool FetchByName(ref Rate output, string name) {
-			SQLiteDataReader reader = DBI.DoQuery(
-				$"SELECT * FROM Rate WHERE name = {name} LIMIT 1;");
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				"SELECT * FROM Rate WHERE name = @name LIMIT 1;",
+				new Tuple<string, object>("@name", name));
 			if (reader != null && reader.Read()) {
 				output = Rate.Factory(reader);
 				return true;
@@ -137,11 +143,16 @@ namespace ANWI.Database.Model {
 		/// <param name="input"></param>
 		/// <returns></returns>
 		public static bool Store(Rate input) {
-			int result = DBI.DoAction(
-				$@"UPDATE Rate SET name = '{input.name}', abrv = '{input.abrv}',
-				rank2duration = {input.rank2duration}, 
-				rank1duration = {input.rank1duration} 
-				WHERE id = {input.id};");
+			int result = DBI.DoPreparedAction(
+				@"UPDATE Rate SET name = @name, abrv = @abrv,
+				rank2duration = @rank2dur,
+				rank1duration = @rank1dur 
+				WHERE id = @id;",
+				new Tuple<string, object>("@name", input.name), 
+				new Tuple<string, object>("@abrv", input.abrv), 
+				new Tuple<string, object>("@rank2dur", input.rank2duration), 
+				new Tuple<string, object>("@rank1dur", input.rank1duration), 
+				new Tuple<string, object>("@id", input.id));
 			if (result == 1)
 				return true;
 			return false;

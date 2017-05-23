@@ -76,12 +76,12 @@ namespace ANWI.Database.Model {
 		/// <param name="rate">The rate being struck</param>
 		/// <param name="rank">The rank level</param>
 		/// <returns></returns>
-		private static string getExpirationQuery(int rate, int rank) {
+		private static string getExpirationQuery(int rank) {
 			if (rank == 3) {
 				return "null";
 			} else {
 				return $"(SELECT strftime('%s', 'now') + " + 
-					$"(SELECT rank{rank}duration FROM Rate WHERE id = {rate}))";
+					$"(SELECT rank{rank}duration FROM Rate WHERE id = @rate))";
 			}
 		}
 
@@ -96,12 +96,15 @@ namespace ANWI.Database.Model {
 		/// <returns></returns>
 		public static bool Create(ref StruckRate output, int user, int rate, 
 			int rank) {
-			string expQuery = getExpirationQuery(rate, rank);
-			int result = DBI.DoAction(
+			string expQuery = getExpirationQuery(rank);
+			int result = DBI.DoPreparedAction(
 				$@"INSERT INTO StruckRate (id, user, rate, 
 				rank, earned, expires) 
-				VALUES ((SELECT max(id) FROM StruckRate) + 1, {user}, {rate}, 
-				{rank}, strftime('%s', 'now'), {expQuery});");
+				VALUES ((SELECT max(id) FROM StruckRate) + 1, @user, @rate, 
+				@rank, strftime('%s', 'now'), {expQuery});",
+				new Tuple<string, object>("@user", user), 
+				new Tuple<string, object>("@rate", rate), 
+				new Tuple<string, object>("@rank", rank));
 			if (result == 1) {
 				return StruckRate.FetchById(ref output, DBI.LastInsertRowId);
 			}
@@ -115,11 +118,12 @@ namespace ANWI.Database.Model {
 		/// <param name="id"></param>
 		/// <returns></returns>
 		public static bool FetchById(ref StruckRate output, int id) {
-			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT id, user, rate, rank, earned, 
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				@"SELECT id, user, rate, rank, earned, 
 				COALESCE(expires, -1) AS expires 
 				FROM StruckRate 
-				WHERE id = {id} LIMIT 1;");
+				WHERE id = @id LIMIT 1;",
+				new Tuple<string, object>("@id", id));
 			if (reader != null && reader.Read()) {
 				output = StruckRate.Factory(reader);
 				return true;
@@ -136,11 +140,13 @@ namespace ANWI.Database.Model {
 		/// <returns></returns>
 		public static bool FetchByUserRate(ref StruckRate output, int uid, 
 			int rid) {
-			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT id, user, rate, rank, earned, 
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				@"SELECT id, user, rate, rank, earned, 
 				COALESCE(expires, -1) AS expires 
 				FROM StruckRate 
-				WHERE user = {uid} AND id = {rid};");
+				WHERE user = @user AND rate = @rate;",
+				new Tuple<string, object>("@user", uid), 
+				new Tuple<string, object>("@rate", rid));
 			if (reader != null && reader.Read()) {
 				output = StruckRate.Factory(reader);
 				return true;
@@ -158,11 +164,12 @@ namespace ANWI.Database.Model {
 			int user) {
 			output = new List<StruckRate>();
 
-			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT id, user, rate, rank, earned, 
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				@"SELECT id, user, rate, rank, earned, 
 				COALESCE(expires, -1) AS expires 
 				FROM StruckRate 
-				WHERE user = {user};");
+				WHERE user = @user;",
+				new Tuple<string, object>("@user", user));
 			while (reader != null && reader.Read()) {
 				output.Add(StruckRate.Factory(reader));
 			}
@@ -180,11 +187,12 @@ namespace ANWI.Database.Model {
 			int rate) {
 			output = new List<StruckRate>();
 
-			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT id, user, rate, rank, earned, 
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				@"SELECT id, user, rate, rank, earned, 
 				COALESCE(expires, -1) AS expires 
 				FROM StruckRate 
-				WHERE id = {rate};");
+				WHERE id = @id;",
+				new Tuple<string, object>("@id", rate));
 			while (reader != null && reader.Read()) { 
 				output.Add(StruckRate.Factory(reader));
 			}
@@ -199,12 +207,16 @@ namespace ANWI.Database.Model {
 		/// <param name="input"></param>
 		/// <returns></returns>
 		public static bool Store(StruckRate input) {
-			string expQuery = getExpirationQuery(input.rank, input.rank);
-			int result = DBI.DoAction(
-				$@"UPDATE StruckRate SET user = {input.user}, 
-				rate = {input.rate}, rank = {input.rank}, 
+			string expQuery = getExpirationQuery(input.rank);
+			int result = DBI.DoPreparedAction(
+				$@"UPDATE StruckRate SET user = @user, 
+				rate = @rate, rank = @rank, 
 				earned = strftime('%s', 'now'), expires = {expQuery} 
-				WHERE id = {input.id};");
+				WHERE id = @id;",
+				new Tuple<string, object>("@user", input.user), 
+				new Tuple<string, object>("@rate", input.rate), 
+				new Tuple<string, object>("@rank", input.rank), 
+				new Tuple<string, object>("@id", input.id));
 			if (result == 1)
 				return true;
 			return false;
@@ -216,8 +228,9 @@ namespace ANWI.Database.Model {
 		/// <param name="StruckID"></param>
 		/// <returns></returns>
 		public static bool DeleteById(int StruckID) {
-			int result = DBI.DoAction(
-				$"DELETE FROM StruckRate WHERE id = {StruckID}");
+			int result = DBI.DoPreparedAction(
+				"DELETE FROM StruckRate WHERE id = @id",
+				new Tuple<string, object>("@id", StruckID));
 			if (result == 1)
 				return true;
 			return false;

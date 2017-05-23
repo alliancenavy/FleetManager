@@ -75,10 +75,16 @@ namespace ANWI.Database.Model {
 		
 		public static bool Create(ref OperationRole output, string name,
 			int rate, bool ships, bool boats, bool squads, bool chanCdr) {
-			int result = DBI.DoAction(
-				$@"INSERT INTO OperationRole 
+			int result = DBI.DoPreparedAction(
+				@"INSERT INTO OperationRole 
 				(name, rate, onShips, onBoats, inSquads, channelCdr)
-				VALUES ('{name}', {rate}, {ships}, {boats}, {squads}, {chanCdr});");
+				VALUES (@name, @rate, @ships, @boats, @squads, @chanCdr);",
+				new Tuple<string, object>("@name", name), 
+				new Tuple<string, object>("@rate", rate), 
+				new Tuple<string, object>("@ships", ships), 
+				new Tuple<string, object>("@boats", boats), 
+				new Tuple<string, object>("@squads", squads),
+				new Tuple<string, object>("@chanCdr", chanCdr));
 			if(result == 1) {
 				return OperationRole.FetchById(ref output, DBI.LastInsertRowId);
 			}
@@ -92,8 +98,9 @@ namespace ANWI.Database.Model {
 		/// <param name="id"></param>
 		/// <returns></returns>
 		public static bool FetchById(ref OperationRole output, int id) {
-			SQLiteDataReader reader = DBI.DoQuery(
-				$"SELECT * FROM OperationRole WHERE id = {id} LIMIT 1;");
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				"SELECT * FROM OperationRole WHERE id = @id LIMIT 1;",
+				new Tuple<string, object>("@id", id));
 			if(reader != null && reader.Read()) {
 				output = OperationRole.Factory(reader);
 				return true;
@@ -110,7 +117,7 @@ namespace ANWI.Database.Model {
 			output = new List<OperationRole>();
 
 			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT * FROM OperationRole
+				@"SELECT * FROM OperationRole
 				WHERE onShips = 1
 				ORDER BY id ASC;");
 			while(reader != null && reader.Read()) {
@@ -129,7 +136,7 @@ namespace ANWI.Database.Model {
 			output = new List<OperationRole>();
 
 			SQLiteDataReader reader = DBI.DoQuery(
-				$@"SELECT * FROM OperationRole
+				@"SELECT * FROM OperationRole
 				WHERE onBoats = 1
 				ORDER BY id ASC;");
 			while (reader != null && reader.Read()) {

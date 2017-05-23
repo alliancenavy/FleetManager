@@ -78,11 +78,16 @@ namespace ANWI.Database.Model {
 		public static bool Create(ref UserPrivs output, int user,
 			bool canPromote, bool canCertify, bool canAssign, bool canStartOps,
 			bool isFleetAdmin) {
-			int result = DBI.DoAction(
-				$@"INSERT INTO UserPrivs (user, canPromote, canCertify, 
+			int result = DBI.DoPreparedAction(
+				@"INSERT INTO UserPrivs (user, canPromote, canCertify, 
 				canAssign, canStartOps, isFleetAdmin) 
-				VALUES ({user}, {canPromote}, {canCertify}, {canAssign}, 
-				{canStartOps}, {isFleetAdmin});");
+				VALUES (@user, @promote, @cert, @assign, @ops, @fleetad);",
+				new Tuple<string, object>("@user", user), 
+				new Tuple<string, object>("@promote", canPromote), 
+				new Tuple<string, object>("@cert", canCertify), 
+				new Tuple<string, object>("@assign", canAssign), 
+				new Tuple<string, object>("@ops", canStartOps), 
+				new Tuple<string, object>("@fleetad", isFleetAdmin));
 			if (result == 1) {
 				return UserPrivs.FetchByUser(ref output, user);
 			}
@@ -95,8 +100,9 @@ namespace ANWI.Database.Model {
 		/// <param name="user"></param>
 		/// <returns></returns>
 		public static bool FetchByUser(ref UserPrivs output, int user) {
-			SQLiteDataReader reader = DBI.DoQuery(
-				$"SELECT * FROM UserPrivs WHERE user={user};");
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				"SELECT * FROM UserPrivs WHERE user=@user;",
+				new Tuple<string, object>("@user", user));
 			if (reader != null && reader.Read()) {
 				output = UserPrivs.Factory(reader);
 				return true;
