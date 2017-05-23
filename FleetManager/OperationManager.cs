@@ -14,6 +14,8 @@ namespace FleetManager {
 		private Dictionary<string, ActiveOperation> activeOps
 			= new Dictionary<string, ActiveOperation>();
 
+		private static readonly long opPruneTime = 30; // Minutes
+
 		#endregion
 
 		#region Constructors
@@ -38,11 +40,12 @@ namespace FleetManager {
 		/// <param name="name"></param>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		public string CreateNew(string name, OperationType type) {
+		public string CreateNew(string name, OperationType type, int fc) {
 			ActiveOperation op = new ActiveOperation(
 				ANWI.Utility.UUID.GenerateUUID(),
 				name,
-				type);
+				type,
+				fc);
 
 			activeOps.Add(op.uuid, op);
 
@@ -58,6 +61,22 @@ namespace FleetManager {
 		/// </summary>
 		/// <returns></returns>
 		public List<LiteOperation> GetOpsList() {
+			// Check through all the existing ops and see if any dismissing
+			// ones have expired and should be pruned
+			long currentTime = DateTime.UtcNow.Ticks;
+			List<string> remove = new List<string>();
+			foreach(KeyValuePair<string, ActiveOperation> op in activeOps) {
+				long difference = currentTime - op.Value.timestamp;
+				if(difference > TimeSpan.TicksPerMinute * opPruneTime) {
+					remove.Add(op.Key);
+				}
+			}
+
+			foreach(string key in remove) {
+				activeOps.Remove(key);
+			}
+
+			// Return the list of active operations
 			List<LiteOperation> ops = new List<LiteOperation>();
 
 			foreach (KeyValuePair<string, ActiveOperation> op in activeOps) {

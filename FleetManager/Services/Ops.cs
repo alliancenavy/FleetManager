@@ -166,7 +166,8 @@ namespace FleetManager.Services {
 			ANWI.Messaging.Ops.CreateNewOp cno
 				= p as ANWI.Messaging.Ops.CreateNewOp;
 
-			string uuid = OperationManager.Instance.CreateNew(cno.name, cno.type);
+			string uuid = OperationManager.Instance.CreateNew(
+				cno.name, cno.type, cno.userId);
 			return new ANWI.Messaging.Ops.NewOpCreated(uuid);
 		}
 

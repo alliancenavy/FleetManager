@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using WebSocketSharp.Net.WebSockets;
 using NLog;
+using System;
 
 namespace FleetManager {
 
@@ -16,6 +17,8 @@ namespace FleetManager {
 
 		#region Instance Members
 		public string uuid { get; private set; }
+		public long timestamp { get; private set; }
+		public int FCID { get; private set; }
 
 		private string name;
 		private OperationType type;
@@ -36,13 +39,16 @@ namespace FleetManager {
 		#endregion
 
 		#region Constructors
-		public ActiveOperation(string uuid, string name, OperationType type) {
+		public 
+		ActiveOperation(string uuid, string name, OperationType type, int fc) {
 			this.uuid = uuid;
 			this.name = name;
 			this.type = type;
 			this.status = OperationStatus.CONFIGURING;
 			this.freeMove = true;
 			this.C2Unified = true;
+			this.FCID = fc;
+			this.timestamp = GetTimestamp();
 
 			logger = LogManager.GetLogger($"Op {uuid}");
 		}
@@ -98,16 +104,19 @@ namespace FleetManager {
 				C2Unified = C2Unified
 			});
 		}
+
+		private long GetTimestamp() {
+			return DateTime.UtcNow.Ticks;
+		}
 		#endregion
 
 		#region Participant Management
 		public void SubscribeUser(ConnectedUser user) {
 			subscribed.Add(user.token, user);
 
-			// Join the first subscribing user to the roster
-			// This will always be the FC
-			if (rosterCount == 0) {
-				JoinUser(user.token, false);
+			// Force this user to join if they are the FC
+			if (user.profile.id == FCID) {
+				JoinUser(user.token);
 
 				// Add some fake users for testing purposes
 				/*for(int i = 4; i < 35; ++i) {
@@ -134,10 +143,11 @@ namespace FleetManager {
 
 		public void AdvanceLifecycle() {
 			status = status.Next();
+			timestamp = GetTimestamp();
 			PushToAll(new ANWI.Messaging.Ops.UpdateStatus(status));
 		}
 
-		public void JoinUser(string token, bool announce = true) {
+		public void JoinUser(string token) {
 			ConnectedUser user = GetSubscriber(token);
 			if(user == null) {
 				logger.Error("Attempted to join user but they are not subbed");
@@ -147,18 +157,14 @@ namespace FleetManager {
 			OpParticipant np = new OpParticipant();
 			np.profile = user.profile;
 			np.position = null;
-
-			// The first person to join will always be the FC
-			// They cannot leave
-			np.isFC = roster.Count == 0;
+			np.isFC = user.profile.id == FCID;
 
 			roster.Add(np);
 
-			if(announce)
-				PushToAll(new ANWI.Messaging.Ops.UpdateRoster(
-						new List<OpParticipant>() { np },
-						null
-					));
+			PushToAll(new ANWI.Messaging.Ops.UpdateRoster(
+					new List<OpParticipant>() { np },
+					null
+				));
 		}
 
 		public void RemoveUser(int id) {
