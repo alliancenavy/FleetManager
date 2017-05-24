@@ -168,6 +168,7 @@ namespace ANWI.Database.Model {
 				WHERE id IN (
 					SELECT id FROM ShipEquipment
 					WHERE hull = @hull AND ship = @ship
+					LIMIT 1
 				);",
 				new Tuple<string, object>("@hull", hullId), 
 				new Tuple<string, object>("@ship", shipId));

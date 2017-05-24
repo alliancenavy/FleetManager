@@ -4376,7 +4376,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:AFOS Server"
         "ProductCode" = "8:{E023756F-FCD6-46DB-ABAF-FC8665069F7F}"
-        "PackageCode" = "8:{CC376707-2184-4EB9-90AF-ED9FB771BED2}"
+        "PackageCode" = "8:{1EDC85D9-490D-4722-8595-8BFE5A641250}"
         "UpgradeCode" = "8:{7FF6AB0D-4F35-4D77-8F12-D9CA2019D721}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -4399,7 +4399,7 @@
         "UseSystemSearchPath" = "11:TRUE"
         "TargetPlatform" = "3:0"
         "PreBuildEvent" = "8:"
-        "PostBuildEvent" = "8:"
+        "PostBuildEvent" = "8:\"C:\\Program Files (x86)\\Windows Kits\\8.0\\bin\\x86\\signtool.exe\" sign /a  $(BuiltOuputPath)"
         "RunPostBuildEvent" = "3:0"
         }
         "Registry"

@@ -81,9 +81,8 @@ namespace Client {
 			AssignmentRole role = Combo_Role.SelectedItem as AssignmentRole;
 			if(profile != null && role != null && returnNewAssignment != null) {
 				returnNewAssignment(profile.id, role.id);
+				this.Close();
 			}
-
-			this.Close();
 		}
 
 		/// <summary>

@@ -6,6 +6,7 @@ using Client.VesselRegHelpers;
 using WebSocketSharp;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System;
 
 namespace Client {
 	
@@ -422,6 +423,11 @@ namespace Client {
 		private void Button_Close_Click(object sender, RoutedEventArgs e) {
 			InvokeOnClose();
 			this.Close();
+		}
+
+		protected override void OnClosed(EventArgs e) {
+			InvokeOnClose();
+			base.OnClosed(e);
 		}
 
 		#endregion

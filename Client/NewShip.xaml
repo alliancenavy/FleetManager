@@ -12,7 +12,7 @@
         <ComboBox x:Name="Combobox_Hull" Margin="10,53,11.667,0" VerticalAlignment="Top" ItemsSource="{Binding Path=wpfHullList}"/>
         <TextBlock HorizontalAlignment="Left" Margin="10,37,0,0" TextWrapping="Wrap" Text="Hull" VerticalAlignment="Top" FontWeight="Bold"/>
         <TextBlock  HorizontalAlignment="Left" Margin="12,11,0,0" TextWrapping="Wrap" Text="ANS" VerticalAlignment="Top" FontWeight="Bold"/>
-        <TextBox x:Name="Textbox_Name" Height="23" Margin="39,10,11.667,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+        <TextBox x:Name="Textbox_Name" Height="23" Margin="39,10,11.667,0" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" AcceptsReturn="False"/>
         <CheckBox x:Name="Checkbox_LTI" Content="LTI" HorizontalAlignment="Left" Margin="10,116,0,0" VerticalAlignment="Top"/>
         <TextBlock HorizontalAlignment="Left" Margin="10,80,0,0" TextWrapping="Wrap" Text="Owner" VerticalAlignment="Top" FontWeight="Bold"/>
         <RadioButton x:Name="Radio_OwnerMe" Content="Me" IsChecked="True" HorizontalAlignment="Left" Margin="10,96,0,0" VerticalAlignment="Top" GroupName="OwnerGroup"/>

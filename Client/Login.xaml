@@ -19,7 +19,7 @@
             <TabItem Header="Log In">
                 <Grid Background="#FFE5E5E5" Margin="0,0,-0.333,-0.667">
                     <TextBox x:Name="Textbox_Username" Height="25" Margin="26,25,26,0" TextWrapping="NoWrap" VerticalAlignment="Top" FontSize="14" AcceptsReturn="False" KeyDown="Textbox_Login_KeyDown"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="25,10,0,0" TextWrapping="Wrap" Text="Username" VerticalAlignment="Top"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="25,10,0,0" TextWrapping="Wrap" Text="Email" VerticalAlignment="Top"/>
                     <TextBlock HorizontalAlignment="Left" Margin="25,64,0,0" TextWrapping="Wrap" Text="Password" VerticalAlignment="Top"/>
                     <PasswordBox x:Name="Textbox_Password" Margin="26,80,26,0" VerticalAlignment="Top" Height="24" KeyDown="Textbox_Login_KeyDown"/>
                     <Button x:Name="Button_Login" Content="Login" HorizontalAlignment="Left" Margin="52,0,0,50.667" VerticalAlignment="Bottom" Width="125" Height="40" Background="#FF316838" Foreground="White" Click="Button_Login_Click"/>

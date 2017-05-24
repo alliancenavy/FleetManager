@@ -22,8 +22,24 @@
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type helpers:NamedVessel}">
-            <Canvas x:Name="Base" Height="90" VerticalAlignment="Top" Background="{Binding Path=status, Converter={StaticResource Conv_VesselStatusColor}}">
-                <Grid Height="54" Width="245" Canvas.Top="31" Canvas.Left="10">
+            <Grid Background="{Binding Path=status, Converter={StaticResource Conv_VesselStatusColor}, FallbackValue=White}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Margin="10,5,35,0" VerticalAlignment="Top" HorizontalAlignment="Stretch" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding Path=name, FallbackValue='ANS Ship Name'}" FontSize="14" FontWeight="Bold"/>
+
+                <fa:ImageAwesome Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"  Icon="Medkit" Height="22" Width="22" ToolTip="LTI" Visibility="{Binding Path=isLTI, Converter={StaticResource Conv_BoolToVisibility}}"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,10,5" TextWrapping="NoWrap" Text="{Binding fullHullNumber, FallbackValue='HH-XX'}" Width="90" FontSize="24" FontWeight="Bold" FontFamily="Segoe UI Black" TextAlignment="Right"/>
+
+                <Grid Grid.Row="1" Margin="10,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="54">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -50,36 +66,9 @@
                     <TextBlock Text="{Binding Path=statusString}" Grid.Column="1" Grid.Row="1"/>
                     <TextBlock Text="{Binding Path=owner}" Grid.Column="1" Grid.Row="2"/>
                 </Grid>
-                <TextBlock Canvas.Left="10" TextWrapping="Wrap" Text="{Binding Path=name}" Canvas.Top="10" Canvas.Right="10" FontSize="14" FontWeight="Bold"/>
-                <fa:ImageAwesome x:Name="LTIIcon" Icon="Medkit" Height="19" Canvas.Right="10" Width="22" Canvas.Top="10" ToolTip="LTI" Visibility="{Binding Path=isLTI, Converter={StaticResource Conv_BoolToVisibility}}"/>
-                <TextBlock Canvas.Left="260" TextWrapping="Wrap" Text="{Binding fullHullNumber}" Canvas.Top="48" Width="90" FontSize="24" FontWeight="Bold" FontFamily="Segoe UI Black" TextAlignment="Right"/>
-            </Canvas>
-
+            </Grid>
         </DataTemplate>
-
-        <DataTemplate DataType="{x:Type helpers:UnnamedVessel}">
-            <Canvas HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="360" Background="White">
-                <TextBlock Canvas.Left="42" TextWrapping="Wrap" Canvas.Top="10" Width="243" FontSize="14" FontWeight="Bold">
-                    <TextBlock.Text>
-                        <MultiBinding StringFormat="{}{0}{1} {2}">
-                            <Binding Path="manufacturer"/>
-                            <Binding Path="type"/>
-                            <Binding Path="subtype"/>
-                        </MultiBinding>
-                    </TextBlock.Text>
-                </TextBlock>
-                <Expander x:Name="expander" Canvas.Top="10" Canvas.Left="10">
-                </Expander>
-                <TextBlock Canvas.Left="310" TextWrapping="Wrap" Canvas.Top="10" Width="40" FontSize="14" TextAlignment="Right">
-                    <TextBlock.Text>
-                        <MultiBinding StringFormat="x{0}">
-                            <Binding Path="count"/>
-                        </MultiBinding>
-                    </TextBlock.Text>
-                </TextBlock>
-            </Canvas>
-        </DataTemplate>
-
+        
         <DataTemplate x:Key="CrewTemplate">
             <Canvas x:Name="Base" Height="45" VerticalAlignment="Top" Background="White">
                 <Image x:Name="Image_Rank" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="25" OpacityMask="Black" Source="{Binding rank.icon}" Canvas.Left="10" Canvas.Top="10"/>
@@ -110,7 +99,7 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <ListBox x:Name="List_Fleet" HorizontalAlignment="Left" Margin="10,34,0,80.333" Width="395" HorizontalContentAlignment="Stretch" ItemsSource="{Binding Path=vesselList}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+        <ListBox x:Name="List_Fleet" HorizontalAlignment="Left" Margin="10,34,0,80.333" Width="395" HorizontalContentAlignment="Stretch" ItemsSource="{Binding Path=vesselList}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
         <TextBlock HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="Registered Vessels" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Height="30" Width="290"/>
         <fa:ImageAwesome x:Name="Spinner_List" Icon="Cog" Spin="True" SpinDuration="10" Margin="36,170,46,236.333" Foreground="#FF316838" Grid.Column="0" Visibility="Hidden"/>
         <Button x:Name="Button_RefreshRegistry" Style="{StaticResource RefreshButton}" Margin="0,5,14,0" VerticalAlignment="Top" Height="25" Background="#FF316838" Foreground="White" Click="Button_RefreshRegistry_Click" ToolTip="Refresh Registry" HorizontalAlignment="Right" Width="27" RenderTransformOrigin="0.512,0.5"/>
@@ -135,7 +124,7 @@
                 <RowDefinition Height="270*"/>
                 <RowDefinition Height="76*"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Margin="10,0,8.333,0" TextWrapping="Wrap" Text="{Binding currentVessel.detailName, FallbackValue='[No Ship Selected]'}" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Height="30"/>
+            <TextBlock Grid.Row="0" Margin="10,0,8.333,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding currentVessel.detailName, FallbackValue='[No Ship Selected]'}" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Height="30"/>
             <TextBlock Grid.Row="0" Margin="10,30,8.333,0" TextWrapping="Wrap" Text="{Binding currentVessel.detailType}" VerticalAlignment="Top" FontWeight="Bold" Height="16"/>
             <TextBlock Grid.Row="0" Margin="34,62,7.333,0" TextWrapping="Wrap" Text="{Binding currentVessel.statusStringWithDate}" VerticalAlignment="Top" Height="16"/>
             <Button x:Name="Button_EditStatus" Grid.Row="0" Style="{StaticResource EditButton}" Content="Button" IsEnabled="{Binding vesselSelectedStatus}" HorizontalAlignment="Left" Margin="10,62,0,0" VerticalAlignment="Top" Width="19" Height="16" Click="Button_EditStatus_Click" ToolTip="Edit Status"/>
@@ -204,5 +193,9 @@
 
             <fa:ImageAwesome x:Name="Spinner_Detail" Icon="Cog" Spin="True" SpinDuration="10" Margin="46,214.667,36.333,215" Foreground="#FF316838" Visibility="Hidden" Grid.Row="1" Grid.RowSpan="2"/>
         </Grid>
+
+        
+
+
     </Grid>
 </local:MailboxWindow>

@@ -209,11 +209,11 @@ namespace FleetManager.Services {
 
 			bool success = false;
 			Datamodel.StruckRate sr = null;
-			if (Datamodel.StruckRate.FetchByUserRate(
+			if (Datamodel.StruckRate.FetchByUserRateId(
 				ref sr, ar.userId, ar.rateId)) {
 				sr.rank = ar.rank;
 				if (Datamodel.StruckRate.Store(sr)) {
-					logger.Info($"Updated ate {ar.rateId} to rank {ar.rank}" +
+					logger.Info($"Updated rate {ar.rateId} to rank {ar.rank}" +
 						$" to user {ar.userId}");
 					success = true;
 				} else {

@@ -132,20 +132,43 @@ namespace ANWI.Database.Model {
 		}
 
 		/// <summary>
+		/// Gets a user's primary rate based on their id and strike id
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="uid"></param>
+		/// <param name="rid"></param>
+		/// <returns></returns>
+		public static bool FetchByUserStruckId(ref StruckRate output, int uid, 
+			int rid) {
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				@"SELECT id, user, rate, rank, earned, 
+				COALESCE(expires, -1) AS expires 
+				FROM StruckRate 
+				WHERE user = @user AND id = @rate;",
+				new Tuple<string, object>("@user", uid), 
+				new Tuple<string, object>("@rate", rid));
+			if (reader != null && reader.Read()) {
+				output = StruckRate.Factory(reader);
+				return true;
+			}
+			return false;
+		}
+
+		/// <summary>
 		/// Gets a user's primary rate based on their id and rate id
 		/// </summary>
 		/// <param name="output"></param>
 		/// <param name="uid"></param>
 		/// <param name="rid"></param>
 		/// <returns></returns>
-		public static bool FetchByUserRate(ref StruckRate output, int uid, 
+		public static bool FetchByUserRateId(ref StruckRate output, int uid,
 			int rid) {
 			SQLiteDataReader reader = DBI.DoPreparedQuery(
 				@"SELECT id, user, rate, rank, earned, 
 				COALESCE(expires, -1) AS expires 
 				FROM StruckRate 
 				WHERE user = @user AND rate = @rate;",
-				new Tuple<string, object>("@user", uid), 
+				new Tuple<string, object>("@user", uid),
 				new Tuple<string, object>("@rate", rid));
 			if (reader != null && reader.Read()) {
 				output = StruckRate.Factory(reader);

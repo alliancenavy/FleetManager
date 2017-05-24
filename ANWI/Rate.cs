@@ -147,7 +147,7 @@ namespace ANWI {
 		/// <returns></returns>
 		public static Rate FetchUsersRate(int userId, int rateId) {
 			Datamodel.StruckRate sr = null;
-			if(Datamodel.StruckRate.FetchByUserRate(ref sr, userId, rateId)) {
+			if(Datamodel.StruckRate.FetchByUserStruckId(ref sr, userId, rateId)) {
 				return new Rate(sr);
 			} else {
 				return Rate.UNDESIGNATED;
