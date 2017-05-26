@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client.Operations"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
         Title="New Operation" Height="196" Width="378.333" ResizeMode="NoResize">
     <Grid>
 

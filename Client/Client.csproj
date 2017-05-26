@@ -213,6 +213,9 @@
     <Compile Include="SimpleTextPrompt.xaml.cs">
       <DependentUpon>SimpleTextPrompt.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Splash.xaml.cs">
+      <DependentUpon>Splash.xaml</DependentUpon>
+    </Compile>
     <Compile Include="VesselRegHelpers.cs" />
     <Page Include="AddRate.xaml">
       <SubType>Designer</SubType>
@@ -278,6 +281,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SimpleTextPrompt.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Splash.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

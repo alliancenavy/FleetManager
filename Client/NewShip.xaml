@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
         Title="New Ship" Height="210.333" Width="300" ResizeMode="NoResize">
     <Grid>
         <Button x:Name="Button_OK" Content="OK" HorizontalAlignment="Left" Margin="85,0,0,10.333" VerticalAlignment="Bottom" Width="57" Height="25" Background="#FF316838" Foreground="White" Click="Button_OK_Click"/>

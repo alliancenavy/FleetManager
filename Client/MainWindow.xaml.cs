@@ -87,6 +87,14 @@ namespace Client {
 			AddProcessor(typeof(ANWI.Messaging.Ops.NewOpCreated),
 				ProcessNewOpCreated);
 
+			MessageRouter.Instance.onMainClose += OnMainSocketClose;
+			MessageRouter.Instance.onError += OnSocketError;
+
+			//
+			// Open the splash screen which doubles as the updater
+			//Splash splash = new Splash();
+			//splash.ShowDialog();
+
 
 			// Open a modal login window
 			// When the window closes the authclient member will be either null
@@ -108,9 +116,6 @@ namespace Client {
 			InitializeComponent();
 
 			wpfProfile = account.profile;
-
-			MessageRouter.Instance.onMainClose += OnMainSocketClose;
-			MessageRouter.Instance.onError += OnSocketError;
 
 			// Open connection to the main service
 			MessageRouter.Instance.ConnectMain(account);

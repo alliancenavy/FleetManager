@@ -39,6 +39,9 @@ namespace FleetManager {
 		public static string sslCertName { get; private set; }
 		public static string sslCertPassword { get; private set; }
 
+		// Update service
+		public static Version clientVersion { get; private set; }
+
 		/// <summary>
 		/// Loads the configuration file
 		/// </summary>
@@ -73,6 +76,10 @@ namespace FleetManager {
 				} else {
 					hasSSLConfig = false;
 				}
+
+				clientVersion 
+					= new Version((string)jsonRoot["update"]["clientVer"]);
+
 			} catch (Exception e) {
 				logger.Error("Fatal error loading configuration: " + e);
 				return false;

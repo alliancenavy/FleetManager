@@ -53,6 +53,9 @@ namespace ANWI.Messaging {
 		[MessagePackKnownType("op_sfm", typeof(Ops.SetFreeMove))]
 		[MessagePackKnownType("op_upset", typeof(Ops.UpdateSettings))]
 		[MessagePackKnownType("op_setc2", typeof(Ops.SetC2Type))]
+		[MessagePackKnownType("up_chk", typeof(CheckUpdate))]
+		[MessagePackKnownType("up_st", typeof(UpdateStatus))]
+		[MessagePackKnownType("up_chunk", typeof(UpdateChunk))]
 		public IMessagePayload payload;
 
 		public Message() {

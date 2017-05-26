@@ -194,6 +194,7 @@
     <Compile Include="Services\BaseService.cs" />
     <Compile Include="Services\Main.cs" />
     <Compile Include="Services\Ops.cs" />
+    <Compile Include="Services\Update.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

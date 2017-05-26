@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
         Title="Confirm" Height="135.333" Width="307.667" ResizeMode="NoResize">
     <Grid>
         <TextBlock x:Name="Text_Message" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Message" VerticalAlignment="Top" Height="45" Width="275" TextAlignment="Center"/>

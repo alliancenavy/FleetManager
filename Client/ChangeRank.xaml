@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
         Title="Change Rank" Height="146" Width="263.333" ResizeMode="NoResize">
 
     <Window.Resources>

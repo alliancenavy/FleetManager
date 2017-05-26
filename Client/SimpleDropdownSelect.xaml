@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
         Title="Select" Height="126" Width="298.333" ResizeMode="NoResize" ShowInTaskbar="False">
     <Grid>
         <Button x:Name="Button_OK" Grid.Row="0" Content="OK" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_OK_Click" HorizontalAlignment="Left" Width="100" Margin="45,50,0,0"/>
