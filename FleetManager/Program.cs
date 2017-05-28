@@ -4,6 +4,7 @@ using WebSocketSharp.Server;
 using FleetManager.Services;
 using NLog;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading;
 
 namespace FleetManager {
 
@@ -70,7 +71,7 @@ $@"
 			wssv.Start();
 
 			while (true)
-				;
+				Thread.Sleep(1000);
 		}
 
 		private static void UEHandler(object sender, 
