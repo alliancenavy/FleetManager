@@ -13,6 +13,11 @@
             <Setter Property="Background" Value="#FF316838"/>
         </Style>
 
+        <Style x:Key="DefaultYellowButton" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#FFB9AC60"/>
+        </Style>
+
         <Style x:Key="EditButton" TargetType="Button">
             <Setter Property="ContentTemplate">
                 <Setter.Value>
