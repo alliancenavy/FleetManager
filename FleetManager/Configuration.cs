@@ -40,7 +40,7 @@ namespace FleetManager {
 		public static string sslCertPassword { get; private set; }
 
 		// Update service
-		public static Version clientVersion { get; private set; }
+		public static string updateDir { get; private set; }
 
 		/// <summary>
 		/// Loads the configuration file
@@ -77,8 +77,10 @@ namespace FleetManager {
 					hasSSLConfig = false;
 				}
 
-				clientVersion 
-					= new Version((string)jsonRoot["update"]["clientVer"]);
+				JToken ud;
+				if (jsonRoot.TryGetValue("updateDir", out ud)) {
+					updateDir = (string)ud;
+				}
 
 			} catch (Exception e) {
 				logger.Error("Fatal error loading configuration: " + e);

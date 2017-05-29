@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FleetManager", "FleetManager\FleetManager.csproj", "{11D81C08-5445-4D2A-8E70-614279C15FFE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{5D0DDFE3-320C-4064-92D9-9EB7FD5AA434}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EA365B09-EF1B-4E3F-8F01-6EF729EC91F0} = {EA365B09-EF1B-4E3F-8F01-6EF729EC91F0}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ANWI", "ANWI\ANWI.csproj", "{F80E34D8-1A0A-49E2-AB7A-E38503DF89EC}"
 EndProject
@@ -14,6 +17,8 @@ EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "ServerSetup", "ServerSetup\ServerSetup.vdproj", "{B8A8C712-0D66-46D1-BAC0-9B85A3891CEE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AFOSTests", "AFOSTests\AFOSTests.csproj", "{80A4F92D-C282-4B00-B308-9AE67327455C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Patcher", "Patcher\Patcher.csproj", "{EA365B09-EF1B-4E3F-8F01-6EF729EC91F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,6 +59,12 @@ Global
 		{80A4F92D-C282-4B00-B308-9AE67327455C}.Deploy|Any CPU.Build.0 = Debug|Any CPU
 		{80A4F92D-C282-4B00-B308-9AE67327455C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80A4F92D-C282-4B00-B308-9AE67327455C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA365B09-EF1B-4E3F-8F01-6EF729EC91F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA365B09-EF1B-4E3F-8F01-6EF729EC91F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA365B09-EF1B-4E3F-8F01-6EF729EC91F0}.Deploy|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA365B09-EF1B-4E3F-8F01-6EF729EC91F0}.Deploy|Any CPU.Build.0 = Debug|Any CPU
+		{EA365B09-EF1B-4E3F-8F01-6EF729EC91F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA365B09-EF1B-4E3F-8F01-6EF729EC91F0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

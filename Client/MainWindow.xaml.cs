@@ -8,6 +8,7 @@ using System.Threading;
 using System.ComponentModel;
 using System.Windows.Data;
 using System.Windows.Controls;
+using System.Diagnostics;
 
 namespace Client {
 	/// <summary>
@@ -17,6 +18,8 @@ namespace Client {
 	public partial class MainWindow : MailboxWindow, INotifyPropertyChanged {
 
 		public event PropertyChangedEventHandler PropertyChanged;
+
+		private bool updated = false;
 
 		private AuthenticatedAccount account = null;
 		private Profile currentProfile = null;
@@ -92,9 +95,14 @@ namespace Client {
 
 			//
 			// Open the splash screen which doubles as the updater
-			//Splash splash = new Splash();
-			//splash.ShowDialog();
+			Splash splash = new Splash();
+			splash.UpdateDownloaded += OnUpdateDownloaded;
+			splash.ShowDialog();
 
+			if (updated) {
+				Application.Current.Shutdown();
+				return;
+			}
 
 			// Open a modal login window
 			// When the window closes the authclient member will be either null
@@ -588,6 +596,25 @@ namespace Client {
 				Application.Current.Shutdown();
 			});
 			
+		}
+
+		private bool OnUpdateDownloaded(string archiveName) {
+			int thisPID = Process.GetCurrentProcess().Id;
+
+			string name = Process.GetCurrentProcess().ProcessName;
+
+			Process updater = new Process();
+			updater.StartInfo = new ProcessStartInfo(
+				"patcher.exe",
+				$"{name} {archiveName}");
+
+			try {
+				updated = true;
+				updater.Start();
+				return true;
+			} catch(Exception e) {
+				return false;
+			}
 		}
 
 		/// <summary>

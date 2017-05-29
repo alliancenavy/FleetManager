@@ -13,6 +13,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ANWI;
+using ANWI.Utility;
+using ANWI.Messaging;
 
 namespace Client {
 	/// <summary>
@@ -22,7 +25,18 @@ namespace Client {
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		public int progress { get; private set; } = 0;
+		private UpdateReceiver receiver = null;
+
+		public Func<string, bool> UpdateDownloaded;
+
+		public int progress {
+			get {
+				if (receiver == null)
+					return 0;
+				else
+					return receiver.progress;
+			}
+		}
 
 		private bool _updating = false;
 		public bool updating {
@@ -36,32 +50,32 @@ namespace Client {
 		}
 
 		public Splash() {
-			AddProcessor(typeof(ANWI.Messaging.UpdateStatus),
+			AddProcessor(typeof(ANWI.Messaging.Updater.CheckResult),
 				ProcessUpdateStatus);
-			AddProcessor(typeof(ANWI.Messaging.UpdateChunk),
+			AddProcessor(typeof(ANWI.Messaging.Updater.Chunk),
 				ProcessUpdateChunk);
 
 			this.DataContext = this;
 			InitializeComponent();
 
 			MessageRouter.Instance.ConnectUpdate(this);
-			MessageRouter.Instance.SendUpdate(new ANWI.Messaging.CheckUpdate() {
-				ver = CommonData.version
+			MessageRouter.Instance.SendUpdate(new ANWI.Messaging.Updater.Check() {
+				checksums = MD5List.GetDirectoryChecksum(".")
 			});
 		}
 
 		private void ProcessUpdateStatus(ANWI.Messaging.IMessagePayload p) {
-			ANWI.Messaging.UpdateStatus up
-				= p as ANWI.Messaging.UpdateStatus;
+			ANWI.Messaging.Updater.CheckResult res
+				= p as ANWI.Messaging.Updater.CheckResult;
 
-			if(up.updateNeeded) {
+			if(res.updateNeeded) {
 				this.Dispatcher.Invoke(() => {
 					Text_Message.Text = "Downloading Update.";
 				});
 
 				Thread.Sleep(1000);
-				updating = true;
-				Thread.Sleep(1000);
+
+				receiver = new UpdateReceiver(res.updateSize);
 
 				MessageRouter.Instance.SendUpdate(new ANWI.Messaging.Request() {
 					type = ANWI.Messaging.Request.Type.GetUpdateChunk
@@ -80,16 +94,36 @@ namespace Client {
 		}
 
 		private void ProcessUpdateChunk(ANWI.Messaging.IMessagePayload p) {
-			ANWI.Messaging.UpdateChunk chunk
-				= p as ANWI.Messaging.UpdateChunk;
+			ANWI.Messaging.Updater.Chunk chunk
+				= p as ANWI.Messaging.Updater.Chunk;
 
-			progress += 5;
-			NotifyPropertyChanged("progress");
+			updating = true;
+			if (receiver.AddChunk(chunk.data)) {
+				NotifyPropertyChanged("progress");
+				MessageRouter.Instance.SendUpdate(new ANWI.Messaging.Request() {
+					type = ANWI.Messaging.Request.Type.GetUpdateChunk
+				});
+			} else {
+				NotifyPropertyChanged("progress");
 
-			Thread.Sleep(1000);
-			MessageRouter.Instance.SendUpdate(new ANWI.Messaging.Request() {
-				type = ANWI.Messaging.Request.Type.GetUpdateChunk
-			});
+				if (!receiver.Write() || 
+					UpdateDownloaded?.Invoke(receiver.outputPath) == false) {
+
+					updating = false;
+					this.Dispatcher.Invoke(() => {
+						Text_Message.Text = "Patching failed";
+					});
+
+				} else {
+					updating = false;
+					this.Dispatcher.Invoke(() => {
+						Text_Message.Text = "Patching...";
+					});
+				}
+
+				Thread.Sleep(1000);
+				this.Dispatcher.Invoke(() => { this.Close(); });
+			}
 		}
 
 		/// <summary>

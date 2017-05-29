@@ -44,7 +44,7 @@ namespace ANWI.Messaging {
 			LeaveOperation,			// Detail: IdString
 
 			//
-			// Update
+			// Updating
 			GetUpdateChunk
 		}
 

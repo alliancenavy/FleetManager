@@ -71,6 +71,9 @@ namespace Client {
 		#region Interface
 		public void ConnectUpdate(Splash spl) {
 			splashScreen = spl;
+			updateSocket.SetCookie(
+				new WebSocketSharp.Net.Cookie("name", Environment.MachineName)
+				);
 			updateSocket.Connect();
 		}
 
@@ -80,6 +83,9 @@ namespace Client {
 
 		public void ConnectAuth(Login lWin) {
 			loginWindow = lWin;
+			authSocket.SetCookie(
+				new WebSocketSharp.Net.Cookie("name", Environment.MachineName)
+				);
 			authSocket.Connect();
 		}
 

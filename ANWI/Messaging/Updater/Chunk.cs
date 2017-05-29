@@ -4,20 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ANWI.Messaging {
+namespace ANWI.Messaging.Updater {
 	/// <summary>
 	/// Server -> Client
 	/// Chunk of data for the updater
 	/// </summary>
-	public class UpdateChunk : IMessagePayload {
+	public class Chunk : IMessagePayload {
 		public byte[] data;
 
-		public UpdateChunk() {
+		public Chunk() {
 			data = null;
 		}
 
 		public override string ToString() {
-			return $"Type: UpdateChunk.";
+			return $"Type: Updater.Chunk.";
 		}
 	}
 }

@@ -109,7 +109,7 @@
     <Compile Include="Messaging\AddRate.cs" />
     <Compile Include="Messaging\AllCommonData.cs" />
     <Compile Include="Messaging\ChangeShipStatus.cs" />
-    <Compile Include="Messaging\CheckUpdate.cs" />
+    <Compile Include="Messaging\Updater\Check.cs" />
     <Compile Include="Messaging\ConfirmUpdate.cs" />
     <Compile Include="Messaging\FullOperationsList.cs" />
     <Compile Include="Messaging\FullProfile.cs" />
@@ -151,8 +151,8 @@
     <Compile Include="Messaging\ReqExp\IRequestDetail.cs" />
     <Compile Include="Messaging\ReqExp\UserIdPlus.cs" />
     <Compile Include="Messaging\Request.cs" />
-    <Compile Include="Messaging\UpdateChunk.cs" />
-    <Compile Include="Messaging\UpdateStatus.cs" />
+    <Compile Include="Messaging\Updater\Chunk.cs" />
+    <Compile Include="Messaging\Updater\CheckResult.cs" />
     <Compile Include="Operation.cs" />
     <Compile Include="OperationRole.cs" />
     <Compile Include="OpParticipant.cs" />
@@ -166,6 +166,7 @@
     <Compile Include="SharedEnums.cs" />
     <Compile Include="ShipEquipment.cs" />
     <Compile Include="Utility\DumpWriter.cs" />
+    <Compile Include="Utility\MD5List.cs" />
     <Compile Include="Utility\UUID.cs" />
     <Compile Include="Vessel.cs" />
   </ItemGroup>
