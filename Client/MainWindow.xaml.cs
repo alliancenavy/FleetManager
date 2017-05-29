@@ -93,11 +93,13 @@ namespace Client {
 			MessageRouter.Instance.onMainClose += OnMainSocketClose;
 			MessageRouter.Instance.onError += OnSocketError;
 
+#if !DEBUG
 			//
 			// Open the splash screen which doubles as the updater
 			Splash splash = new Splash();
 			splash.UpdateDownloaded += OnUpdateDownloaded;
 			splash.ShowDialog();
+#endif
 
 			if (updated) {
 				Application.Current.Shutdown();
@@ -136,9 +138,9 @@ namespace Client {
 			FetchOps();
 
 		}
-		#endregion
+#endregion
 
-		#region Window Event Handlers
+#region Window Event Handlers
 		/// <summary>
 		/// Closes the application
 		/// </summary>
@@ -340,9 +342,9 @@ namespace Client {
 
 			Application.Current.Shutdown();
 		}
-		#endregion
+#endregion
 		
-		#region Request Senders
+#region Request Senders
 		/// <summary>
 		/// Gets commonly used data like the list of ranks and rates from 
 		/// the server for storing globally.
@@ -408,9 +410,9 @@ namespace Client {
 				this
 				);
 		}
-		#endregion
+#endregion
 
-		#region Response Processors
+#region Response Processors
 
 		/// <summary>
 		/// Response handler for the full roster request.
@@ -503,9 +505,9 @@ namespace Client {
 				Button_NewOp.IsEnabled = true;
 			});
 		}
-		#endregion
+#endregion
 
-		#region Callbacks
+#region Callbacks
 		/// <summary>
 		/// Adds a rate to the given user
 		/// </summary>
@@ -574,7 +576,7 @@ namespace Client {
 				this
 				);
 		}
-		#endregion
+#endregion
 
 		private void OnMainSocketClose(CloseEventArgs c) {
 			this.Dispatcher.Invoke(() => {
