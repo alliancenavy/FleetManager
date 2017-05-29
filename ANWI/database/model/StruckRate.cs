@@ -100,7 +100,7 @@ namespace ANWI.Database.Model {
 			int result = DBI.DoPreparedAction(
 				$@"INSERT INTO StruckRate (id, user, rate, 
 				rank, earned, expires) 
-				VALUES ((SELECT max(id) FROM StruckRate) + 1, @user, @rate, 
+				VALUES (COALESCE((SELECT max(id) FROM StruckRate),0) + 1, @user, @rate, 
 				@rank, strftime('%s', 'now'), {expQuery});",
 				new Tuple<string, object>("@user", user), 
 				new Tuple<string, object>("@rate", rate), 

@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
-        Title="New Assignment" Height="381" Width="318.333" ShowInTaskbar="False" ResizeMode="NoResize">
+        Title="New Assignment" Height="381" Width="318.333" ShowInTaskbar="False" ResizeMode="CanResizeWithGrip">
     <Window.Resources>
 
         <DataTemplate x:Key="RosterTemplate">
@@ -45,7 +45,7 @@
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Unassigned Personnel" VerticalAlignment="Bottom" FontWeight="Bold"/>
-            <ListBox x:Name="List_Roster" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" ItemTemplate="{DynamicResource RosterTemplate}" ItemsSource="{Binding unassignedPersonnel}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+            <ListBox x:Name="List_Roster" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" ItemTemplate="{DynamicResource RosterTemplate}" ItemsSource="{Binding unassignedPersonnel}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
 
             <fa:ImageAwesome x:Name="Spinner_Roster" Icon="Cog" Spin="True" SpinDuration="10" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" Foreground="#FF316838" Visibility="Hidden"/>
         </Grid>
