@@ -7,23 +7,57 @@
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
-        Title="New Assignment" Height="381" Width="318.333">
+        Title="New Assignment" Height="381" Width="318.333" ShowInTaskbar="False" ResizeMode="NoResize">
     <Window.Resources>
 
         <DataTemplate x:Key="RosterTemplate">
-            <Canvas HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="245" Background="White">
-                <Image Height="30" Width="30" Source="{Binding Path=rank.icon}"/>
-                <TextBlock Canvas.Left="30" TextWrapping="Wrap" Text="{Binding fullName}" Canvas.Top="7" Width="220"/>
-            </Canvas>
+            <Grid Height="30" Background="White">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="30"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Image Grid.Column="0" Height="30" Width="30" Source="{Binding Path=rank.icon, FallbackValue={StaticResource NoImageFound}}"/>
+                <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5,0,5,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding fullName, FallbackValue='RNK Full Name'}"/>
+            </Grid>
         </DataTemplate>
     </Window.Resources>
     <Grid>
-        <Button x:Name="Button_OK" Grid.Row="0" Content="OK" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_OK_Click" HorizontalAlignment="Left" Width="100" Margin="50,305,0,0"/>
-        <Button x:Name="Button_Cancel" Grid.Row="0" Content="Cancel" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_Cancel_Click" HorizontalAlignment="Left" Width="100" Margin="155,305,0,0"/>
-        <ListBox x:Name="List_Roster" Height="231" Margin="10,69,14.333,0" VerticalAlignment="Top" ItemTemplate="{DynamicResource RosterTemplate}" ItemsSource="{Binding unassignedPersonnel}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
-        <ComboBox x:Name="Combo_Role" Margin="10,26,14.333,0" VerticalAlignment="Top" ItemsSource="{Binding roleList}"/>
-        <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Role" VerticalAlignment="Top" FontWeight="Bold"/>
-        <TextBlock HorizontalAlignment="Left" Margin="10,53,0,0" TextWrapping="Wrap" Text="Unassigned Personnel" VerticalAlignment="Top" FontWeight="Bold" Width="200"/>
-        <fa:ImageAwesome x:Name="Spinner_Roster" Icon="Cog" Spin="True" SpinDuration="10" Margin="37,139,44.667,120" Foreground="#FF316838" Grid.Column="0" Visibility="Hidden"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="45"/>
+            <RowDefinition/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="10,0,10,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Role" VerticalAlignment="Bottom" FontWeight="Bold"/>
+            <ComboBox x:Name="Combo_Role" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Stretch" ItemsSource="{Binding roleList}"/>
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="10,0,10,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Unassigned Personnel" VerticalAlignment="Bottom" FontWeight="Bold"/>
+            <ListBox x:Name="List_Roster" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" ItemTemplate="{DynamicResource RosterTemplate}" ItemsSource="{Binding unassignedPersonnel}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+
+            <fa:ImageAwesome x:Name="Spinner_Roster" Icon="Cog" Spin="True" SpinDuration="10" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" Foreground="#FF316838" Visibility="Hidden"/>
+        </Grid>
+
+        <Grid Grid.Row="2" Height="35">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Button x:Name="Button_OK" Content="OK" Style="{StaticResource DefaultButton}" Grid.Column="0" Height="29" Click="Button_OK_Click" HorizontalAlignment="Right" VerticalAlignment="Center" Width="100" Margin="0,0,5,0"/>
+            <Button x:Name="Button_Cancel" Content="Cancel" Style="{StaticResource DefaultButton}" Grid.Column="1" VerticalAlignment="Center" Height="29" Click="Button_Cancel_Click" HorizontalAlignment="Left" Width="100" Margin="5,0,0,0"/>
+        </Grid>
     </Grid>
 </local:MailboxWindow>

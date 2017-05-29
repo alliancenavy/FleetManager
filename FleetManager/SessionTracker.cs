@@ -10,18 +10,18 @@ namespace FleetManager {
 	/// <summary>
 	/// Keeps track of which users are currently connected to the server
 	/// </summary>
-	public class LoginTracker {
+	public class SessionTracker {
 		private class Session {
 			public Main service;
 			public string auth0;
 		}
 
-		private Logger logger = LogManager.GetLogger("Login Tracker");
+		private Logger logger = LogManager.GetLogger("Session Tracker");
 
 		private Dictionary<string, Session> sessions 
 			= new Dictionary<string, Session>();
 
-		public LoginTracker() {
+		public SessionTracker() {
 			logger.Info("Started");
 		}
 

@@ -6,11 +6,23 @@
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
-        Title="SimpleTextPrompt" Height="131" Width="300" ResizeMode="NoResize" ShowInTaskbar="False">
+        Title="SimpleTextPrompt" Height="115.333" Width="300" ResizeMode="NoResize" ShowInTaskbar="False" Icon="images/afos_logo_VCP_icon.ico">
     <Grid>
-        <Button x:Name="Button_OK" Grid.Row="0" Content="OK" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Accept" HorizontalAlignment="Left" Width="100" Margin="45,50,0,0"/>
-        <Button x:Name="Button_Cancel" Grid.Row="0" Content="Cancel" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_Cancel_Click" HorizontalAlignment="Left" Width="100" Margin="150,50,0,0"/>
-        <TextBox x:Name="Textbox_Entry" Height="23" Margin="10,10,9.667,0" TextWrapping="Wrap" VerticalAlignment="Top" KeyDown="Textbox_Entry_KeyDown" AcceptsReturn="False"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        
+        <TextBox x:Name="Textbox_Entry" Height="23" Margin="10,0,10,0" TextWrapping="Wrap" VerticalAlignment="Center" KeyDown="Textbox_Entry_KeyDown" AcceptsReturn="False"/>
 
+        <Grid Grid.Row="1" Height="35">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Button x:Name="Button_OK" Content="OK" Style="{StaticResource DefaultButton}" Grid.Column="0" Height="29" Click="Accept" HorizontalAlignment="Right" VerticalAlignment="Center" Width="100" Margin="0,0,5,0"/>
+            <Button x:Name="Button_Cancel" Content="Cancel" Style="{StaticResource DefaultButton}" Grid.Column="1" VerticalAlignment="Center" Height="29" Click="Button_Cancel_Click" HorizontalAlignment="Left" Width="100" Margin="5,0,0,0"/>
+        </Grid>
     </Grid>
 </Window>

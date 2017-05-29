@@ -9,7 +9,7 @@
         xmlns:conv="clr-namespace:Client.Converters"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
-        Title="Add Fleet Ship" Height="151" Width="423.333">
+        Title="Add Fleet Ship" Height="151" Width="423.333" Icon="/AFOSClient;component/images/afos_logo_VCP_icon.ico" ResizeMode="NoResize" ShowInTaskbar="False">
     <Window.Resources>
         <conv:BoolToVisibility x:Key="Conv_BoolToVisibility"/>
         <conv:VesselStatusToColor x:Key="Conv_VesselStatusColor"/>
@@ -26,15 +26,20 @@
         </DataTemplate>
     </Window.Resources>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="65"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        
         <ComboBox Name="Combobox_Ships"  Margin="10,10,10,0"  HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="40" ItemsSource="{Binding vesselList, UpdateSourceTrigger=PropertyChanged}" ItemTemplate="{DynamicResource ShipTemplate}" HorizontalContentAlignment="Stretch"/>
-        <Grid Margin="30,70,30,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="30">
+        <Grid Grid.Row="1" Height="35">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="10"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Button x:Name="Button_OK" Grid.Row="0" Grid.Column="0" Content="OK" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_OK_Click" HorizontalAlignment="Right" Width="100"/>
-            <Button x:Name="Button_Cancel" Grid.Row="0" Grid.Column="2" Content="Cancel" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_Cancel_Click" HorizontalAlignment="Left" Width="100"/>
+
+            <Button x:Name="Button_OK" Content="OK" Style="{StaticResource DefaultButton}" Grid.Column="0" Height="29" Click="Button_OK_Click" HorizontalAlignment="Right" VerticalAlignment="Center" Width="100" Margin="0,0,5,0"/>
+            <Button x:Name="Button_Cancel" Content="Cancel" Style="{StaticResource DefaultButton}" Grid.Column="1" VerticalAlignment="Center" Height="29" Click="Button_Cancel_Click" HorizontalAlignment="Left" Width="100" Margin="5,0,0,0"/>
         </Grid>
     </Grid>
 </client:MailboxWindow>

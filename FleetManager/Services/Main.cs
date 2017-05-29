@@ -11,7 +11,7 @@ using MsgPack.Serialization;
 namespace FleetManager.Services {
 	public class Main : BaseService {
 
-		private static LoginTracker tracker = new LoginTracker();
+		private static SessionTracker tracker = new SessionTracker();
 
 		public Main() : base("Main Service") {
 			logger.Info("Started");

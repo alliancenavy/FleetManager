@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Client.Operations"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
-        Title="New Operation" Height="196" Width="378.333" ResizeMode="NoResize">
+        Title="New Operation" Height="196" Width="378.333" ShowInTaskbar="False" ResizeMode="NoResize" Icon="/AFOSClient;component/images/afos_logo_VCP_icon.ico">
     <Grid>
 
         <Grid.RowDefinitions>
@@ -28,14 +28,14 @@
             <ComboBoxItem>Training</ComboBoxItem>
         </ComboBox>
 
-        <Grid Grid.Row="2" Margin="30,10,30,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="30">
+        <Grid Grid.Row="2" Height="35">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="10"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Button x:Name="Button_OK" Grid.Row="0" Grid.Column="0" Content="OK" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_OK_Click" HorizontalAlignment="Right" Width="100"/>
-            <Button x:Name="Button_Cancel" Grid.Row="0" Grid.Column="2" Content="Cancel" VerticalAlignment="Top" Height="29" Background="#FF316838" Foreground="White" Click="Button_Cancel_Click" HorizontalAlignment="Left" Width="100"/>
+
+            <Button x:Name="Button_OK" Content="OK" Style="{StaticResource DefaultButton}" Grid.Column="0" Height="29" Click="Button_OK_Click" HorizontalAlignment="Right" VerticalAlignment="Center" Width="100" Margin="0,0,5,0"/>
+            <Button x:Name="Button_Cancel" Content="Cancel" Style="{StaticResource DefaultButton}" Grid.Column="1" VerticalAlignment="Center" Height="29" Click="Button_Cancel_Click" HorizontalAlignment="Left" Width="100" Margin="5,0,0,0"/>
         </Grid>
     </Grid>
 </Window>

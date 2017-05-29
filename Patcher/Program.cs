@@ -74,6 +74,7 @@ namespace Updater {
 				client.Start();
 			} catch(Exception e) {
 				Console.WriteLine("Failed to launch client.  Please start it manually.");
+				Thread.Sleep(2000);
 			}
 		}
 
