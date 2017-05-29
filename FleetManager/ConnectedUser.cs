@@ -18,9 +18,13 @@ namespace FleetManager {
 		/// </summary>
 		/// <param name="ctxt"></param>
 		public ConnectedUser(WebSocketContext ctxt) {
-			token = ctxt.CookieCollection["authtoken"].Value;
-			profile = LiteProfile.FetchByAuth0(
-				ctxt.CookieCollection["auth0id"].Value);
+			if(ctxt.CookieCollection["authtoken"] != null)
+				token = ctxt.CookieCollection["authtoken"].Value;
+
+			if(ctxt.CookieCollection["auth0id"] != null)
+				profile = LiteProfile.FetchByAuth0(
+					ctxt.CookieCollection["auth0id"].Value);
+
 			socket = ctxt.WebSocket;
 		}
 

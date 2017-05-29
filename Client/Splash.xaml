@@ -1,0 +1,20 @@
+﻿<local:MailboxWindow x:Class="Client.Splash"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:conv="clr-namespace:Client.Converters"
+        xmlns:local="clr-namespace:Client"
+        mc:Ignorable="d"
+        Title="Splash" Height="80" Width="300"
+        WindowStyle="None" WindowStartupLocation="CenterScreen" Topmost="True" ResizeMode="NoResize">
+    <Window.Resources>
+        <conv:BoolToVisibility x:Key="Conv_BoolToVisibility"/>
+    </Window.Resources>
+    <Grid>
+        <Image Source="images/AFOS_Logo.png" HorizontalAlignment="Center" VerticalAlignment="Top" Width="75" Margin="0,-7,0,0"/>
+        <TextBlock Name="Text_Message" Text="Checking for updates..." HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,5"/>
+        <ProgressBar HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="15" Margin="5,0,5,5" Value="{Binding Path=progress, Mode=OneWay}" Foreground="#FF316838" Visibility="{Binding updating, Converter={StaticResource Conv_BoolToVisibility}}"/>
+
+    </Grid>
+</local:MailboxWindow>

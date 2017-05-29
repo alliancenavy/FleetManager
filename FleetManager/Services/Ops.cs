@@ -19,8 +19,6 @@ namespace FleetManager.Services {
 
 		#region Constructors
 		public Ops() : base("Ops Service") {
-			logger.Info("Started");
-
 			AddProcessor(typeof(ANWI.Messaging.Request), 
 				ProcessRequestMessage);
 			AddProcessor(typeof(ANWI.Messaging.Ops.CreateNewOp),
@@ -51,7 +49,7 @@ namespace FleetManager.Services {
 		/// Helper to get auth token from a context
 		/// </summary>
 		/// <returns></returns>
-		protected override string GetTokenCookie() {
+		protected string GetTokenCookie() {
 			return this.Context.CookieCollection["authtoken"].Value;
 		}
 
@@ -59,7 +57,7 @@ namespace FleetManager.Services {
 		/// Helper to get username from a context
 		/// </summary>
 		/// <returns></returns>
-		protected override string GetNameCookie() {
+		protected string GetNameCookie() {
 			return this.Context.CookieCollection["name"].Value;
 		}
 

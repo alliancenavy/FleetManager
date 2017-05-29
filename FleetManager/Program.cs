@@ -61,8 +61,9 @@ $@"
 				wssv = new WebSocketServer(Configuration.fullSocketUrl);
 			}
 
-			
+
 			// Set up services
+			wssv.AddWebSocketService<Update>("/update");
 			wssv.AddWebSocketService<Auth>("/auth");
 			wssv.AddWebSocketService<Main>("/main");
 			wssv.AddWebSocketService<Ops>("/ops");

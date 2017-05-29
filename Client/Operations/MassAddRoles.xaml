@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:Client.Operations"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" x:Class="Client.Operations.MassAddRoles"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
         Title="Add Multiple Positions" Width="400" SizeToContent="Height" Icon="/AFOSClient;component/images/afos_logo_VCP_icon.ico">
 
     <Window.Resources>

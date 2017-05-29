@@ -6,6 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
         Title="New Assignment" Height="381" Width="318.333">
     <Window.Resources>
 

@@ -41,7 +41,11 @@ namespace ANWI.Messaging {
 			CloseOperation,
 			AdvanceOpLifecycle,
 			JoinOperation,			// Detail: IdString
-			LeaveOperation			// Detail: IdString
+			LeaveOperation,			// Detail: IdString
+
+			//
+			// Updating
+			GetUpdateChunk
 		}
 
 		public Type type { get; set; }

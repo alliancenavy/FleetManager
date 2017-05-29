@@ -8,6 +8,7 @@
         xmlns:local="clr-namespace:Client.Operations"
         xmlns:conv="clr-namespace:Client.Converters"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
         Title="Add Fleet Ship" Height="151" Width="423.333">
     <Window.Resources>
         <conv:BoolToVisibility x:Key="Conv_BoolToVisibility"/>

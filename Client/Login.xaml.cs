@@ -20,10 +20,9 @@ namespace Client {
 		public event Action<AuthenticatedAccount> returnuser;
 
 		// Version of the client
-		private Version version 
-			= System.Reflection.Assembly.GetExecutingAssembly().
-				GetName().Version;
-		public string versionString { get { return $"version {version}"; } }
+		public string versionString { get {
+				return $"version {CommonData.version}";
+			} }
 
 		// Name of file to store remember-me credentials
 		private static readonly string credentialsFile = ".login.json";
@@ -110,7 +109,10 @@ namespace Client {
 
 				// Send message to login server
 				MessageRouter.Instance.SendAuth(
-					new ANWI.Messaging.LoginRequest(version, uname, pass)
+					new ANWI.Messaging.LoginRequest(
+						CommonData.version, 
+						uname, 
+						pass)
 					);
 
 				// Save credentials
@@ -282,7 +284,7 @@ namespace Client {
 				// Send message to server
 				MessageRouter.Instance.SendAuth(
 					new ANWI.Messaging.RegisterRequest(
-						version,
+						CommonData.version,
 						email,
 						nick,
 						pass)

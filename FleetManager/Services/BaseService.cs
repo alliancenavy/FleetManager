@@ -25,9 +25,7 @@ namespace FleetManager.Services {
 			ANWI.Messaging.IMessagePayload>> msgProcessors
 			= new Dictionary<Type, Func<ANWI.Messaging.IMessagePayload, 
 				ANWI.Messaging.IMessagePayload>>();
-
-		protected abstract string GetTokenCookie();
-		protected abstract string GetNameCookie();
+		
 		protected abstract string GetLogIdentifier();
 
 		protected BaseService(string name) {

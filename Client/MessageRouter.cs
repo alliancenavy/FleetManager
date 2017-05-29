@@ -19,6 +19,9 @@ namespace Client {
 		#region Instance Variables
 		private static MessageRouter instance = null;
 
+		private IMailbox splashScreen = null;
+		private WebSocket updateSocket = null;
+
 		private IMailbox loginWindow = null;
 		private WebSocket authSocket = null;
 
@@ -46,6 +49,10 @@ namespace Client {
 
 		#region Constructors
 		private MessageRouter() {
+			updateSocket = new WebSocket($"{CommonData.serverAddress}/update");
+			updateSocket.OnMessage += OnUpdateMessage;
+			updateSocket.OnError += OnError;
+
 			authSocket = new WebSocket($"{CommonData.serverAddress}/auth");
 			authSocket.OnMessage += OnAuthMessage;
 			authSocket.OnError += OnAuthError;
@@ -62,8 +69,23 @@ namespace Client {
 		#endregion
 
 		#region Interface
+		public void ConnectUpdate(Splash spl) {
+			splashScreen = spl;
+			updateSocket.SetCookie(
+				new WebSocketSharp.Net.Cookie("name", Environment.MachineName)
+				);
+			updateSocket.Connect();
+		}
+
+		public void DisconnectUpdate() {
+			updateSocket.Close();
+		}
+
 		public void ConnectAuth(Login lWin) {
 			loginWindow = lWin;
+			authSocket.SetCookie(
+				new WebSocketSharp.Net.Cookie("name", Environment.MachineName)
+				);
 			authSocket.Connect();
 		}
 
@@ -101,6 +123,10 @@ namespace Client {
 			opsSocket.Close();
 		}
 
+		public void SendUpdate(IMessagePayload payload) {
+			Message.Send(updateSocket, 0, payload);
+		}
+
 		public void SendAuth(IMessagePayload payload) {
 			Message.Send(authSocket, 0, payload);
 		}
@@ -130,6 +156,12 @@ namespace Client {
 		#endregion
 
 		#region Socket Functions
+		private void OnUpdateMessage(object sender, MessageEventArgs e) {
+			if(splashScreen != null) {
+				splashScreen.DeliverMessage(Message.Receive(e.RawData));
+			}
+		}
+
 		private void OnAuthMessage(object sender, MessageEventArgs e) {
 			if(loginWindow != null) {
 				loginWindow.DeliverMessage(Message.Receive(e.RawData));

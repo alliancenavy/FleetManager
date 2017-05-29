@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ANWI;
+using System;
 
 namespace Client {
 
@@ -8,6 +9,9 @@ namespace Client {
 	/// the list of rates, ranks, etc
 	/// </summary>
 	public static class CommonData {
+		public static Version version
+			= System.Reflection.Assembly.GetExecutingAssembly().
+				GetName().Version;
 
 #if DEBUG
 		public static readonly string serverAddress = "wss://localhost:9000";
