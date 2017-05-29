@@ -840,6 +840,8 @@ namespace Client {
 					break;
 			}
 
+			RebuildC2();
+
 			NotifyPropertyChanged(string.Empty);
 		}
 

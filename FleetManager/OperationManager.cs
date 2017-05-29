@@ -60,7 +60,7 @@ namespace FleetManager {
 		/// the configuring stage
 		/// </summary>
 		/// <returns></returns>
-		public List<LiteOperation> GetOpsList() {
+		public List<LiteOperation> GetOpsList(int user) {
 			// Check through all the existing ops and see if any dismissing
 			// ones have expired and should be pruned
 			long currentTime = DateTime.UtcNow.Ticks;
@@ -80,7 +80,8 @@ namespace FleetManager {
 			List<LiteOperation> ops = new List<LiteOperation>();
 
 			foreach (KeyValuePair<string, ActiveOperation> op in activeOps) {
-				if (op.Value.status != OperationStatus.CONFIGURING)
+				if (user == op.Value.FCID || 
+					op.Value.status != OperationStatus.CONFIGURING)
 					ops.Add(op.Value.ToLite());
 			}
 

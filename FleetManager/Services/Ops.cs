@@ -90,7 +90,9 @@ namespace FleetManager.Services {
 			switch(req.type) {
 				case ANWI.Messaging.Request.Type.GetOperations: {
 						List<LiteOperation> ops
-							= OperationManager.Instance.GetOpsList();
+							= OperationManager.Instance.GetOpsList(
+								GetUser().profile.id
+								);
 						return new ANWI.Messaging.FullOperationsList(ops);
 					}
 
