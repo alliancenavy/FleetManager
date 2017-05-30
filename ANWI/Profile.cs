@@ -13,6 +13,7 @@ namespace ANWI {
 
 		#region Instance Variables
 		public int id;
+		public string auth0;
 		public string nickname { get; set; }
 
 		// User's time in service
@@ -102,12 +103,14 @@ namespace ANWI {
 		#region Constructors
 		public Profile() {
 			id = 0;
+			auth0 = "";
 			nickname = "";
 			createdDate = DateTime.Now;
 		}
 
 		private Profile(Datamodel.User user) {
 			id = user.id;
+			auth0 = user.auth0;
 			nickname = user.name;
 			_rankId = user.rank;
 			_primaryRateId = user.rate;
@@ -143,8 +146,23 @@ namespace ANWI {
 				return null;
 			}
 		}
-
-
 		#endregion
+
+		public void Refresh() {
+			Profile r = Profile.FetchById(id);
+
+			nickname = r.nickname;
+			_rankId = r._rankId;
+			_primaryRateId = r._primaryRateId;
+
+			_rank = null;
+			_rates = null;
+			_primaryRate = null;
+			_assignment = null;
+			_assignmentHistory = null;
+			_privs = null;
+
+			createdDate = r.createdDate;
+		}
 	}
 }

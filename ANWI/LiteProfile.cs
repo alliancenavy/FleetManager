@@ -12,6 +12,7 @@ namespace ANWI {
 	public class LiteProfile {
 		#region Instance Variables
 		public int id { get; set; }
+		public string auth0;
 		public string nickname { get; set; }
 
 		// The user's rank
@@ -65,6 +66,7 @@ namespace ANWI {
 		#region Constructors
 		public LiteProfile() {
 			id = 0;
+			auth0 = "";
 			nickname = "";
 			_rankId = 0;
 			_primaryRateId = 0;
@@ -72,6 +74,7 @@ namespace ANWI {
 
 		private LiteProfile(Datamodel.User u) {
 			id = u.id;
+			auth0 = u.auth0;
 			nickname = u.name;
 			_rankId = u.rank;
 			_primaryRateId = u.rate;
@@ -144,5 +147,17 @@ namespace ANWI {
 				return new LiteProfile(a); });
 		}
 		#endregion
+
+		public void Refresh() {
+			LiteProfile p = LiteProfile.FetchById(id);
+
+			nickname = p.nickname;
+			_rankId = p._rankId;
+			_primaryRateId = p._primaryRateId;
+
+			_rank = null;
+			_primaryRate = null;
+			_assignment = null;
+		}
 	}
 }

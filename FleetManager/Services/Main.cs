@@ -135,12 +135,6 @@ namespace FleetManager.Services {
 						List<LiteVessel> avail = LiteVessel.FetchAvailable();
 						return new ANWI.Messaging.FullVesselReg(avail);
 					}
-
-				case ANWI.Messaging.Request.Type.GetOperations: {
-						// TODO
-						List<LiteOperation> ops = new List<LiteOperation>();
-						return new ANWI.Messaging.FullOperationsList(ops);
-					}
 					
 				case ANWI.Messaging.Request.Type.GetRoster: {
 						List<LiteProfile> profiles = LiteProfile.FetchAll();
@@ -232,6 +226,9 @@ namespace FleetManager.Services {
 				}
 			}
 
+			if (ar.userId == GetUser().profile.id)
+				GetUser().RefreshProfile();
+
 			return new ANWI.Messaging.ConfirmUpdate(success, ar.userId);
 		}
 
@@ -255,6 +252,9 @@ namespace FleetManager.Services {
 					$" {ns.userId} on ship {ns.shipId}");
 			}
 
+			if (ns.userId == GetUser().profile.id)
+				GetUser().RefreshProfile();
+
 			return new ANWI.Messaging.ConfirmUpdate(success, ns.shipId);
 		}
 
@@ -276,6 +276,9 @@ namespace FleetManager.Services {
 				logger.Error($"Failed to end assignment {es.assignmentId}" +
 					$" for user {es.userId}");
 			}
+
+			if (es.userId == GetUser().profile.id)
+				GetUser().RefreshProfile();
 
 			return new ANWI.Messaging.ConfirmUpdate(success, es.shipId);
 		}
@@ -357,6 +360,9 @@ namespace FleetManager.Services {
 				logger.Error("Could not set rank: no user with id {uid} found");
 			}
 
+			if (uid == GetUser().profile.id)
+				GetUser().RefreshProfile();
+
 			return new ANWI.Messaging.ConfirmUpdate(success, uid);
 		}
 
@@ -373,6 +379,9 @@ namespace FleetManager.Services {
 			} else {
 				logger.Error($"Failed to delete rate {rid} from user {uid}");
 			}
+
+			if (uid == GetUser().profile.id)
+				GetUser().RefreshProfile();
 
 			return new ANWI.Messaging.ConfirmUpdate(success, uid);
 		}
@@ -400,6 +409,9 @@ namespace FleetManager.Services {
 					$" id {uid} found");
 			}
 
+			if (uid == GetUser().profile.id)
+				GetUser().RefreshProfile();
+
 			return new ANWI.Messaging.ConfirmUpdate(success, uid);
 		}
 
@@ -424,6 +436,9 @@ namespace FleetManager.Services {
 			} else {
 				logger.Error($"Could not change name: no user with id {uid}.");
 			}
+
+			if (uid == GetUser().profile.id)
+				GetUser().RefreshProfile();
 
 			return new ANWI.Messaging.ConfirmUpdate(success, uid);
 		}

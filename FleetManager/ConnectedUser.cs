@@ -22,7 +22,7 @@ namespace FleetManager {
 				token = ctxt.CookieCollection["authtoken"].Value;
 
 			if(ctxt.CookieCollection["auth0id"] != null)
-				profile = LiteProfile.FetchByAuth0(
+				profile = ProfileCache.Instance.GetProfile(
 					ctxt.CookieCollection["auth0id"].Value);
 
 			socket = ctxt.WebSocket;
@@ -36,12 +36,16 @@ namespace FleetManager {
 		/// <param name="userID"></param>
 		public ConnectedUser(string token, int userID) {
 			this.token = token;
-			this.profile = LiteProfile.FetchById(userID);
+			this.profile = ProfileCache.Instance.GetProfile(userID);
 			socket = null;
 		}
 
 		public void SendMessageTo(ANWI.Messaging.Message m) {
 			ANWI.Messaging.Message.Send(socket, m);
+		}
+
+		public void RefreshProfile() {
+			profile.Refresh();
 		}
 	}
 }
