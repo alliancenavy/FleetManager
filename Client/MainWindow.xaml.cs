@@ -638,7 +638,7 @@ namespace Client {
 			UnhandledExceptionEventArgs e) {
 			if (e.IsTerminating) {
 				ANWI.Utility.DumpWriter.MiniDumpToFile("crashdump.dmp");
-				Application.Current.Shutdown();
+				Process.GetCurrentProcess().Kill();
 			}
 		}
 	}

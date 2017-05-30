@@ -10,12 +10,12 @@
 
         <Style x:Key="DefaultButton" TargetType="Button">
             <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Background" Value="#FF316838"/>
+            <Setter Property="Background" Value="DarkGreen"/>
         </Style>
 
         <Style x:Key="DefaultYellowButton" TargetType="Button">
             <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Background" Value="#FFB9AC60"/>
+            <Setter Property="Background" Value="DarkCyan"/>
         </Style>
 
         <Style x:Key="EditButton" TargetType="Button">
@@ -26,7 +26,7 @@
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
-            <Setter Property="Background" Value="#FF316838"/>
+            <Setter Property="Background" Value="DarkGreen"/>
         </Style>
 
         <Style x:Key="RefreshButton" TargetType="Button">
@@ -37,7 +37,7 @@
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
-            <Setter Property="Background" Value="#FF316838"/>
+            <Setter Property="Background" Value="DarkGreen"/>
         </Style>
 
         <Style x:Key="XButton" TargetType="Button">

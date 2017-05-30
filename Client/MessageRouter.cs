@@ -75,6 +75,9 @@ namespace Client {
 				new WebSocketSharp.Net.Cookie("name", Environment.MachineName)
 				);
 			updateSocket.Connect();
+
+			if (!updateSocket.IsAlive)
+				throw new ArgumentException("Could not connect to server");
 		}
 
 		public void DisconnectUpdate() {

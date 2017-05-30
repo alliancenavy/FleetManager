@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using ANWI;
 using ANWI.Utility;
 using ANWI.Messaging;
+using System.Diagnostics;
 
 namespace Client {
 	/// <summary>
@@ -58,10 +59,22 @@ namespace Client {
 			this.DataContext = this;
 			InitializeComponent();
 
-			MessageRouter.Instance.ConnectUpdate(this);
-			MessageRouter.Instance.SendUpdate(new ANWI.Messaging.Updater.Check() {
-				checksums = MD5List.GetDirectoryChecksum(".")
+			Task t = new Task(() => {
+				try {
+					MessageRouter.Instance.ConnectUpdate(this);
+					MessageRouter.Instance.SendUpdate(new ANWI.Messaging.Updater.Check() {
+						checksums = MD5List.GetDirectoryChecksum(".")
+					});
+				} catch (Exception e) {
+					this.Dispatcher.Invoke(() => {
+						Text_Message.Text = "Failed to Connect to Server.";
+						Text_Message.Foreground = Brushes.Red;
+					});
+					Thread.Sleep(2000);
+					Process.GetCurrentProcess().Kill();
+				}
 			});
+			t.Start();
 		}
 
 		private void ProcessUpdateStatus(ANWI.Messaging.IMessagePayload p) {
