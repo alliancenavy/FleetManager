@@ -266,7 +266,7 @@ namespace Client {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void Button_ChangeRank_Click(object sender, RoutedEventArgs e) {
-			ChangeRank cr = new ChangeRank();
+			ChangeRank cr = new ChangeRank(account.profile.rank.ordering);
 			cr.ReturnNewRank += (rank) => {
 				ChangeRank(currentProfile.id, rank);
 			};

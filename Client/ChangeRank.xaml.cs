@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Collections.ObjectModel;
 using ANWI;
+using System.Linq;
 
 namespace Client {
 	/// <summary>
@@ -17,9 +18,10 @@ namespace Client {
 		/// </summary>
 		public event Action<int> ReturnNewRank;
 
-		public ChangeRank() {
+		public ChangeRank(int max) {
 			this.DataContext = this;
-			_rankList = new ObservableCollection<Rank>(CommonData.ranks);
+			_rankList = new ObservableCollection<Rank>(
+				CommonData.ranks.Where(r => r.ordering <= max));
 
 			InitializeComponent();
 		}
