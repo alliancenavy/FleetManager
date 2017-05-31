@@ -181,6 +181,10 @@
     <Compile Include="Converters\InverseBool.cs" />
     <Compile Include="Converters\InverseBoolToVisibility.cs" />
     <Compile Include="Converters\VesselStatusToColor.cs" />
+    <Compile Include="CrestDesigner.xaml.cs">
+      <DependentUpon>CrestDesigner.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CrestDesignerElements.cs" />
     <Compile Include="FleetRegistry.xaml.cs">
       <DependentUpon>FleetRegistry.xaml</DependentUpon>
     </Compile>
@@ -228,6 +232,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Confirm.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CrestDesigner.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

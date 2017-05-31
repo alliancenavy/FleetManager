@@ -93,6 +93,9 @@ namespace Client {
 			MessageRouter.Instance.onMainClose += OnMainSocketClose;
 			MessageRouter.Instance.onError += OnSocketError;
 
+			CrestDesigner des = new CrestDesigner();
+			des.ShowDialog();
+
 #if !DEBUG
 			//
 			// Open the splash screen which doubles as the updater
