@@ -49,11 +49,6 @@ namespace Client {
 			this.DataContext = this;
 			InitializeComponent();
 
-			/*Task t = new Task(() => {
-				Thread.Sleep(1000);
-				SaveToFile("crest.png");
-			});
-			t.Start();*/
 		}
 
 		private void SaveToFile(string filename) {
@@ -74,6 +69,38 @@ namespace Client {
 					png.Save(stream);
 				}
 			});
+		}
+
+		private void TextOnEllipse(string text, Ellipse e) {
+			EllipseGeometry egeo = new EllipseGeometry(
+				new Point(),
+				//new Point(e.RenderTransform.Value.OffsetX, e.RenderTransform.Value.OffsetY),
+				e.ActualWidth/2.0d,
+				e.ActualHeight/2.0d);
+
+			TextFollowPath(text, egeo.GetFlattenedPathGeometry(), true);
+		}
+
+		private void TextFollowPath(string text, PathGeometry path, bool above) {
+			double len = 0d;
+			Point pt, ptTan;
+
+			for (int c = 0; c < 12; ++c) {
+
+				len += (double)(1d / 12d);
+
+				path.GetPointAtFractionLength(len, out pt, out ptTan);
+
+				TextBlock t = new TextBlock();
+
+				t.Text = "H";
+				t.HorizontalAlignment = HorizontalAlignment.Center;
+				t.VerticalAlignment = VerticalAlignment.Center;
+
+				Canvas_Base.Children.Add(t);
+
+				t.Margin = new Thickness(pt.Y, pt.X, -pt.Y, -pt.X);
+			}
 		}
 
 		/// <summary>
@@ -124,6 +151,10 @@ namespace Client {
 					e.NewValue.Value.B.ToString("X2");
 				elem.Color = col;
 			}
+		}
+
+		private void Window_Loaded(object sender, RoutedEventArgs e) {
+			TextOnEllipse("ANS Test Ship", Ellipse_Inner);
 		}
 	}
 }

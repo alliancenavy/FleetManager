@@ -7,6 +7,7 @@
         xmlns:local="clr-namespace:Client"
         xmlns:elements="clr-namespace:Client.CrestDesignerElements"
         mc:Ignorable="d"
+        Loaded="Window_Loaded"
         Title="CrestDesigner" Height="400" Width="700" ResizeMode="NoResize">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -105,7 +106,7 @@
         </Grid>
 
         <Border Grid.Column="1" Margin="10,10,10,10" BorderBrush="Gray" BorderThickness="1">
-            <ItemsControl Name="Items_CrestImage" ItemsSource="{Binding Layers}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+            <ItemsControl Name="Items_CrestImage" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Grid/>
@@ -136,7 +137,25 @@
                     </DataTemplate>
                 </ItemsControl.Resources>
 
+                <Canvas Name="Canvas_Base">
+                    <!--<Polygon Points="0,0 100,100 0,100" StrokeThickness="3" Stroke="Black"/>-->
+                    <Ellipse Width="300" Height="300" StrokeThickness="4" Fill="LightGray" Stroke="Red">
+                        <Ellipse.RenderTransform>
+                            <TranslateTransform X="-150" Y="-150"/>
+                        </Ellipse.RenderTransform>
+                    </Ellipse>
+
+                    <Ellipse Name="Ellipse_Inner" Width="225" Height="225" StrokeThickness="4" Fill="White" Stroke="Red">
+                        <Ellipse.RenderTransform>
+                            <TranslateTransform X="-112.5" Y="-112.5"/>
+                        </Ellipse.RenderTransform>
+                    </Ellipse>
+                </Canvas>
+
             </ItemsControl>
         </Border>
+
+        
+       
     </Grid>
 </Window>
