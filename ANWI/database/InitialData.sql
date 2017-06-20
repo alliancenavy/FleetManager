@@ -20,9 +20,10 @@ PRAGMA foreign_key = "ON";
 INSERT INTO Rank (id, name, abrv, icon, ordering) VALUES (1, "Spacer", "SP", "1", 1);
 INSERT INTO Rank (id, name, abrv, icon, ordering) VALUES (2, "Senior Spacer", "SSP", "2", 2);
 INSERT INTO Rank (id, name, abrv, icon, ordering) VALUES (3, "Petty Officer", "PO", "3", 3);
-INSERT INTO Rank (id, name, abrv, icon, ordering) VALUES (4, "Lieutenant", "LT", "4", 4);
-INSERT INTO Rank (id, name, abrv, icon, ordering) VALUES (5, "Captain", "CAPT", "5", 5);
-INSERT INTO Rank (id, name, abrv, icon, ordering) VALUES (6, "Commodore", "CDRE", "6", 6);
+INSERT INTO Rank (id, name, abrv, icon, ordering) VALUES (4, "Chief Petty Officer", "CPO", "4", 4);
+INSERT INTO Rank (id, name, abrv, icon, ordering) VALUES (5, "Lieutenant", "LT", "5", 5);
+INSERT INTO Rank (id, name, abrv, icon, ordering) VALUES (6, "Captain", "CAPT", "6", 6);
+INSERT INTO Rank (id, name, abrv, icon, ordering) VALUES (7, "Commodore", "CDRE", "7", 7);
 
 ---------------------------------------
 --Rate
