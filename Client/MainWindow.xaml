@@ -230,7 +230,7 @@
                 </Grid.ColumnDefinitions>
                 <Button x:Name="Button_AddRate" Grid.Column="0" Grid.Row="0" Style="{StaticResource DefaultButton}" Content="Add Rate" HorizontalAlignment="Left" VerticalAlignment="Top" Height="29" Width="110" Click="Button_AddRate_Click" IsEnabled="{Binding userPrivileges.canCertify}"/>
                 <Button x:Name="Button_DeleteRate" Grid.Column="1" Grid.Row="0" Style="{StaticResource DefaultButton}" Content="Delete Rate" HorizontalAlignment="Center" VerticalAlignment="Top" Height="29" Width="110" Click="Button_DeleteRate_Click" IsEnabled="{Binding userPrivileges.canCertify}"/>
-                <Button x:Name="Button_ChangeRank" Grid.Column="0" Grid.Row="1" Style="{StaticResource DefaultButton}" Content="Change Rank" HorizontalAlignment="Left" VerticalAlignment="Top" Height="29" Width="110" Click="Button_ChangeRank_Click" IsEnabled="{Binding userPrivileges.canPromote}"/>
+                <Button x:Name="Button_ChangeRank" Grid.Column="0" Grid.Row="1" Style="{StaticResource DefaultButton}" Content="Change Rank" HorizontalAlignment="Left" VerticalAlignment="Top" Height="29" Width="110" Click="Button_ChangeRank_Click" IsEnabled="{Binding canChangeRank}"/>
                 <Button x:Name="Button_SetPrimaryRate" Grid.Column="2" Grid.Row="0"  Style="{StaticResource DefaultButton}" Content="Set Primary Rate" HorizontalAlignment="Right" VerticalAlignment="Top" Height="29" Width="110" Click="Button_SetPrimaryRate_Click" IsEnabled="{Binding canSetPrimaryRate}"/>
             </Grid>
         </Grid>

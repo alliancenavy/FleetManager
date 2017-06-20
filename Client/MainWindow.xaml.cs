@@ -44,6 +44,7 @@ namespace Client {
 					NotifyPropertyChanged("wpfProfile");
 					NotifyPropertyChanged("canSetPrimaryRate");
 					NotifyPropertyChanged("canEditName");
+					NotifyPropertyChanged("canChangeRank");
 				}
 			}
 		}
@@ -62,6 +63,13 @@ namespace Client {
 		public bool canEditName {
 			get { return currentProfile != null && 
 					account.profile.id == currentProfile.id; }
+		}
+		public bool canChangeRank {
+			get {
+				return account.profile.privs.canPromote &&
+					currentProfile != null &&
+					currentProfile.rank.ordering < account.profile.rank.ordering;
+			}
 		}
 		#endregion
 
