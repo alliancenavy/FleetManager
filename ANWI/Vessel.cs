@@ -23,6 +23,7 @@ namespace ANWI {
 		public int hullNumber { get; set; }
 		public VesselStatus status { get; set; }
 		public DateTime statusDate;
+		public bool final;
 
 		// The hull this ship uses
 		private int _hullId;
@@ -109,6 +110,7 @@ namespace ANWI {
 			isLTI = false;
 			hullNumber = 0;
 			status = VesselStatus.ACTIVE;
+			final = false;
 			_hullId = 0;
 		}
 
@@ -120,6 +122,7 @@ namespace ANWI {
 			status = (VesselStatus)s.status;
 			statusDate = 
 				DateTimeOffset.FromUnixTimeSeconds(s.statusDate).DateTime;
+			final = s.final;
 			_hullId = s.hull;
 
 			Datamodel.User u = null;

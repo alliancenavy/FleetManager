@@ -52,7 +52,8 @@ namespace Client {
 		public bool vesselSelectedStatus { get {
 				return _currentVessel != null && 
 					(_currentVessel.ownerId == user.id || 
-						user.privs.isFleetAdmin);
+						user.privs.isFleetAdmin) &&
+					_currentVessel.final == false;
 			} }
 		#endregion
 
@@ -245,8 +246,22 @@ namespace Client {
 		/// <param name="m"></param>
 		private void ProcessConfirmUpdate(ANWI.Messaging.IMessagePayload m) {
 			ANWI.Messaging.ConfirmUpdate cu = m as ANWI.Messaging.ConfirmUpdate;
-			if(cu.success) {
-				FetchVesselDetail(cu.updatedId);
+			if (cu.originalRequest == typeof(ANWI.Messaging.NewShip).ToString()) {
+				if (cu.success) {
+					FetchVesselDetail(cu.updatedId);
+					FetchVesselList();
+				} else {
+					MessageBox.Show(
+						"Failed to create new ship: " + cu.errorMessage,
+						"Error",
+						MessageBoxButton.OK,
+						MessageBoxImage.Error);
+				}
+			} else if(cu.originalRequest == typeof(ANWI.Messaging.ChangeShipStatus).ToString()) {
+				if(cu.success) {
+					FetchVesselDetail(cu.updatedId);
+					FetchVesselList();
+				}
 			}
 		}
 		#endregion

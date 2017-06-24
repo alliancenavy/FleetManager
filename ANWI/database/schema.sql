@@ -112,9 +112,10 @@ create table if not exists UserShip (
  hull integer not null references Hull(id),
  insurance integer not null default 0,
  number integer not null default 0,
- name text not null unique,
+ name text not null,
  status integer not null default 0,
- statusDate integer not null default 0
+ statusDate integer not null default 0,
+ final integer not null default 0
 );
 
 DROP TABLE IF EXISTS ShipEquipment;

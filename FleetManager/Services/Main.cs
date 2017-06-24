@@ -229,7 +229,7 @@ namespace FleetManager.Services {
 			if (ar.userId == GetUser().profile.id)
 				GetUser().RefreshProfile();
 
-			return new ANWI.Messaging.ConfirmUpdate(success, ar.userId);
+			return new ANWI.Messaging.ConfirmUpdate(p, success, ar.userId);
 		}
 
 		/// <summary>
@@ -255,7 +255,7 @@ namespace FleetManager.Services {
 			if (ns.userId == GetUser().profile.id)
 				GetUser().RefreshProfile();
 
-			return new ANWI.Messaging.ConfirmUpdate(success, ns.shipId);
+			return new ANWI.Messaging.ConfirmUpdate(p, success, ns.shipId);
 		}
 
 		/// <summary>
@@ -280,7 +280,7 @@ namespace FleetManager.Services {
 			if (es.userId == GetUser().profile.id)
 				GetUser().RefreshProfile();
 
-			return new ANWI.Messaging.ConfirmUpdate(success, es.shipId);
+			return new ANWI.Messaging.ConfirmUpdate(p, success, es.shipId);
 		}
 
 		/// <summary>
@@ -310,7 +310,7 @@ namespace FleetManager.Services {
 					"to update status");
 			}
 
-			return new ANWI.Messaging.ConfirmUpdate(success, css.shipId);
+			return new ANWI.Messaging.ConfirmUpdate(p, success, css.shipId);
 		}
 
 		/// <summary>
@@ -322,20 +322,37 @@ namespace FleetManager.Services {
 		ProcessNewShip(ANWI.Messaging.IMessagePayload p) {
 			ANWI.Messaging.NewShip ns = p as ANWI.Messaging.NewShip;
 
+			logger.Info($"Creating new ship {ns.name}");
+
 			bool success = false;
-			Datamodel.UserShip ship = null;
 			int confirmId = 0;
-			if(Datamodel.UserShip.Create(ref ship, ns.ownerId, ns.hullId, 
-				Convert.ToInt32(ns.LTI), ns.name, (int)VesselStatus.DRYDOCKED)) 
-				{
-				success = true;
-				confirmId = ship.id;
-				logger.Info($"Created new ship {ns.name}");
+			string message = null;
+
+			// Check that the ship name is available
+			if (Datamodel.UserShip.IsNameAvailable(ns.name)) {
+				// If any older ships exist with this name set their final
+				// flag so they cannot be brought back into service
+				Datamodel.UserShip.FinalizeOlderShips(ns.name);
+
+				// Create the new ship
+				Datamodel.UserShip ship = null;
+				if (Datamodel.UserShip.Create(ref ship, ns.ownerId, ns.hullId,
+					Convert.ToInt32(ns.LTI), ns.name, 
+					(int)VesselStatus.DRYDOCKED)) {
+					success = true;
+					confirmId = ship.id;
+					logger.Info($"Create successful");
+				} else {
+					logger.Error($"Create failed");
+					message = "Server error";
+				}
 			} else {
-				logger.Error($"Failed to create new ship {ns.name}");
+				logger.Error("Name not available");
+				message = "Another ship with this name is currently in an" +
+					" active (not destroyed or decommed) state.";
 			}
 
-			return new ANWI.Messaging.ConfirmUpdate(success, confirmId);
+			return new ANWI.Messaging.ConfirmUpdate(p, success, confirmId, message);
 		}
 		#endregion
 
@@ -363,7 +380,8 @@ namespace FleetManager.Services {
 			if (uid == GetUser().profile.id)
 				GetUser().RefreshProfile();
 
-			return new ANWI.Messaging.ConfirmUpdate(success, uid);
+			return new ANWI.Messaging.ConfirmUpdate(
+				typeof(ANWI.Messaging.Request), success, uid);
 		}
 
 		/// <summary>
@@ -383,7 +401,8 @@ namespace FleetManager.Services {
 			if (uid == GetUser().profile.id)
 				GetUser().RefreshProfile();
 
-			return new ANWI.Messaging.ConfirmUpdate(success, uid);
+			return new ANWI.Messaging.ConfirmUpdate(
+				typeof(ANWI.Messaging.Request), success, uid);
 		}
 
 		/// <summary>
@@ -412,7 +431,8 @@ namespace FleetManager.Services {
 			if (uid == GetUser().profile.id)
 				GetUser().RefreshProfile();
 
-			return new ANWI.Messaging.ConfirmUpdate(success, uid);
+			return new ANWI.Messaging.ConfirmUpdate(
+				typeof(ANWI.Messaging.Request), success, uid);
 		}
 
 		/// <summary>
@@ -440,7 +460,8 @@ namespace FleetManager.Services {
 			if (uid == GetUser().profile.id)
 				GetUser().RefreshProfile();
 
-			return new ANWI.Messaging.ConfirmUpdate(success, uid);
+			return new ANWI.Messaging.ConfirmUpdate(
+				typeof(ANWI.Messaging.Request), success, uid);
 		}
 
 		/// <summary>
@@ -460,7 +481,8 @@ namespace FleetManager.Services {
 			else
 				logger.Error($"Failed to add equipment to ship {shipId}");
 
-			return new ANWI.Messaging.ConfirmUpdate(success, shipId);
+			return new ANWI.Messaging.ConfirmUpdate(
+				typeof(ANWI.Messaging.Request), success, shipId);
 		}
 
 		/// <summary>
@@ -480,7 +502,8 @@ namespace FleetManager.Services {
 			else
 				logger.Error($"Failed to remove equipment from ship {shipId}");
 
-			return new ANWI.Messaging.ConfirmUpdate(success, shipId);
+			return new ANWI.Messaging.ConfirmUpdate(
+				typeof(ANWI.Messaging.Request), success, shipId);
 		}
 		#endregion
 	}

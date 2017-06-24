@@ -18,9 +18,10 @@ namespace ANWI.Database.Model {
 		public string name;
 		public int status;
 		public long statusDate;
+		public bool final;
 
 		private UserShip(int id, int user, int hull, int insurance, int number,
-			string name, int status, long statusDate) {
+			string name, int status, long statusDate, bool final) {
 			this.id = id;
 			this.user = user;
 			this.hull = hull;
@@ -29,6 +30,7 @@ namespace ANWI.Database.Model {
 			this.name = name;
 			this.status = status;
 			this.statusDate = statusDate;
+			this.final = final;
 		}
 
 		#endregion
@@ -44,14 +46,15 @@ namespace ANWI.Database.Model {
 				number: 0,
 				name: "",
 				status: 0,
-				statusDate: 0
+				statusDate: 0,
+				final: false
 			);
 			return result;
 		}
 
 		public static UserShip Factory(int id, int user, int hull, 
 			int insurance, int number, string name, int status, 
-			long statusDate) {
+			long statusDate, bool final) {
 
 			UserShip result = new UserShip(
 				id: id,
@@ -61,7 +64,8 @@ namespace ANWI.Database.Model {
 				number: number,
 				name: name,
 				status: status,
-				statusDate: statusDate
+				statusDate: statusDate,
+				final: final
 			);
 			return result;
 		}
@@ -75,7 +79,8 @@ namespace ANWI.Database.Model {
 				number: Convert.ToInt32(reader["number"]),
 				name: (string)reader["name"],
 				status: Convert.ToInt32(reader["status"]),
-				statusDate: Convert.ToInt64(reader["statusDate"])
+				statusDate: Convert.ToInt64(reader["statusDate"]),
+				final: Convert.ToBoolean(reader["final"])
 			);
 			return result;
 		}
@@ -95,7 +100,7 @@ namespace ANWI.Database.Model {
 			int insurance, string name, int status) {
 			int result = DBI.DoPreparedAction(
 				$@"INSERT INTO UserShip (user, hull, insurance, number, name, 
-				status, statusDate) 
+				status, statusDate, final) 
 				VALUES (@user, @hull, @insurance, 
 				COALESCE((
 					SELECT MAX(number)+1 FROM UserShip 
@@ -103,7 +108,7 @@ namespace ANWI.Database.Model {
 						SELECT h1.id FROM Hull h1, Hull h2 
 						WHERE h1.symbol = h2.symbol AND h2.id = @hull
 					)),1), @name, @status, 
-				strftime('%s', 'now'));",
+				strftime('%s', 'now'), 0);",
 				new Tuple<string, object>("@user", user), 
 				new Tuple<string, object>("@hull", hull), 
 				new Tuple<string, object>("@insurance", insurance),  
@@ -163,10 +168,7 @@ namespace ANWI.Database.Model {
 			SQLiteDataReader reader = DBI.DoQuery(
 				@"SELECT * FROM UserShip
 				WHERE (status != 1 AND status != 4)
-				OR (
-					(status == 1 OR status == 4)
-					AND statusDate > strftime('%s', 'now', '-1 week')
-				);");
+				OR statusDate > strftime('%s', 'now', '-7 days');");
 			while (reader != null && reader.Read()) {
 				UserShip us = UserShip.Factory(reader);
 				output.Add(us);
@@ -203,15 +205,16 @@ namespace ANWI.Database.Model {
 			int result = DBI.DoPreparedAction(
 				@"UPDATE UserShip SET user = @user, hull = @hull,
 				insurance = @insurance, number = @number, name = @name, 
-				status = @status, statusDate = @statusDate 
+				status = @status, statusDate = @statusDate, final = @final 
 				WHERE id = @id;",
 				new Tuple<string, object>("@user", input.user), 
 				new Tuple<string, object>("@hull", input.hull), 
 				new Tuple<string, object>("@insurance", input.insurance), 
 				new Tuple<string, object>("@number", input.number),
 				new Tuple<string, object>("@name", input.name), 
-				new Tuple<string, object>("@status", input.status), 
+				new Tuple<string, object>("@status", input.status),
 				new Tuple<string, object>("@statusDate", input.statusDate),
+				new Tuple<string, object>("@final", input.final),
 				new Tuple<string, object>("@id", input.id));
 			if (result == 1)
 				return true;
@@ -231,6 +234,56 @@ namespace ANWI.Database.Model {
 				new Tuple<string, object>("@status", input.status), 
 				new Tuple<string, object>("@id", input.id));
 			if (result == 1)
+				return true;
+			else
+				return false;
+		}
+
+		/// <summary>
+		/// Checks if a ship exists in the registry with the given name
+		/// that is not destroyed or decommed
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public static bool IsNameAvailable(string name) {
+			SQLiteDataReader reader = DBI.DoPreparedQuery(
+				@"SELECT * FROM UserShip
+				WHERE name = @name
+				AND status != 1 AND status != 2 AND status != 4",
+				new Tuple<string, object>("@name", name)
+				);
+
+			// If results exist this name is not available
+			if (reader.Read())
+				return false;
+			else
+				return true;
+		}
+
+		/// <summary>
+		/// Sets the final flag on all instances of a given ship name so their
+		/// status cannot be changed.  This is done when a new ship is created
+		/// with this name.
+		/// </summary>
+		/// <param name="name"></param>
+		public static bool FinalizeOlderShips(string name) {
+			int result1 = DBI.DoPreparedAction(
+				@"UPDATE UserShip
+				SET status = 1, final = 1
+				WHERE name = @name
+				AND (status = 1 OR status = 2)",
+				new Tuple<string, object>("@name", name)
+				);
+
+			int result2 = DBI.DoPreparedAction(
+				@"UPDATE UserShip
+				SET final = 1
+				WHERE name = @name
+				AND status = 4",
+				new Tuple<string, object>("@name", name)
+				);
+
+			if (result1 >= 1 && result2 >= 1)
 				return true;
 			else
 				return false;
