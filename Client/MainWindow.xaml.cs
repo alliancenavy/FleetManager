@@ -71,6 +71,17 @@ namespace Client {
 					currentProfile.rank.ordering < account.profile.rank.ordering;
 			}
 		}
+
+		public bool connected { get; private set; } = false;
+		public string connectionString { get {
+				if(connected) {
+					return "Connected";
+				} else {
+					return "Reconnect: 00:00";
+				}
+			} }
+		public string connLightGreen { get { return connected ? "Circle" : "CircleOutline"; } }
+		public string connLightRed { get { return connected ? "CircleOutline" : "Circle"; } }
 		#endregion
 
 		#region Initialization

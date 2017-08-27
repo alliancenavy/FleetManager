@@ -114,7 +114,8 @@ namespace FleetManager.Services {
 
 				SendMessage(resp);
 			} catch (System.Net.Http.HttpRequestException e) {
-				logger.Info("Failed to authenticate account with auth0.");
+				logger.Info("HTTP error when connecting to Auth0:\n" 
+					+ e);
 				DenyLogin(
 					ANWI.Messaging.LoginResponse.Code.FAILED_SERVER_ERROR);
 				return;

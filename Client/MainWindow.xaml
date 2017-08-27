@@ -8,7 +8,7 @@
         xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         xmlns:fa="http://schemas.fontawesome.io/icons/" x:Class="Client.MainWindow"
         mc:Ignorable="d"
-        Title="Alliance Fleet Operations System" Height="761" Width="1113" MinHeight="761" MinWidth="1113" ResizeMode="CanResizeWithGrip" Icon="images/afos_logo_VCP_icon.ico">
+        Title="Alliance Fleet Operations System" Height="780" Width="1113" MinHeight="761" MinWidth="1113" ResizeMode="CanResizeWithGrip" Icon="images/afos_logo_VCP_icon.ico">
     <Window.Resources>
 
         <CollectionViewSource x:Key="SortedRosterName" Source="{Binding wpfRosterList}">
@@ -150,6 +150,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
+            <RowDefinition Height="20"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="366"/>
@@ -322,6 +323,42 @@
         </Grid>
 
 
+        <StatusBar Grid.Row="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0" >
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="15"/>
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+            
+            <Separator Grid.Column="1"/>
+            
+            <StatusBarItem Grid.Column="2">
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel.Resources>
+                        <Style TargetType="{x:Type fa:ImageAwesome}">
+                            <Setter Property="Margin" Value="2,0,2,0"/>
+                        </Style>
+                    </StackPanel.Resources>
+                    <fa:ImageAwesome Name="GreenLight" Icon="{Binding connLightGreen, FallbackValue=Circle}" Foreground="Green"/>
+                    <fa:ImageAwesome Name="RedLight" Icon="{Binding connLightRed, FallbackValue=CircleOutline}" Foreground="Red"/>
+                </StackPanel>
+            </StatusBarItem>
 
+            <Separator Grid.Column="3"/>
+
+            <StatusBarItem Grid.Column="4">
+                <TextBlock Text="{Binding Path=connectionString, FallbackValue='Status Text'}"/>
+            </StatusBarItem>
+        </StatusBar>
+        
     </Grid>
 </local:MailboxWindow>
