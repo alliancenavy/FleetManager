@@ -13,26 +13,30 @@ using System.Diagnostics;
 
 namespace Client {
 	public class MessageRouter {
-		public event Action<CloseEventArgs> onMainClose;
-		public event Action<ErrorEventArgs> onError;
+		public enum Service {
+			Update,
+			Auth,
+			Main,
+			Ops
+		}
+
+		public event Action<Service> onOpen;
+		public event Action<Service, CloseEventArgs> onClose;
+		public event Action<Service, ErrorEventArgs> onError;
 
 		#region Instance Variables
 		private static MessageRouter instance = null;
 
-		private IMailbox splashScreen = null;
-		private WebSocket updateSocket = null;
-
-		private IMailbox loginWindow = null;
-		private WebSocket authSocket = null;
-
-		private WebSocket mainSocket = null;
-
-		private IMailbox opsPushTarget = null;
-		private WebSocket opsSocket = null;
+		private Dictionary<Service, WebSocket> sockets
+			= new Dictionary<Service, WebSocket>();
+		private Dictionary<object, Service> socketLookup
+			= new Dictionary<object, Service>();
 
 		private int sequence = 0;
 		private Dictionary<int, IMailbox> pendingResponses
 			= new Dictionary<int, IMailbox>();
+		private Dictionary<string, IMailbox> pushSubscriptions
+			= new Dictionary<string, IMailbox>();
 		#endregion
 
 		#region Singleton
@@ -49,170 +53,146 @@ namespace Client {
 
 		#region Constructors
 		private MessageRouter() {
-			updateSocket = new WebSocket($"{CommonData.serverAddress}/update");
-			updateSocket.OnMessage += OnUpdateMessage;
+			WebSocket updateSocket 
+				= new WebSocket($"{CommonData.serverAddress}/update");
+			updateSocket.OnMessage += OnMessage;
+			updateSocket.OnOpen += OnOpen;
+			updateSocket.OnClose += OnClose;
 			updateSocket.OnError += OnError;
+			sockets.Add(Service.Update, updateSocket);
+			socketLookup.Add(updateSocket, Service.Update);
 
-			authSocket = new WebSocket($"{CommonData.serverAddress}/auth");
-			authSocket.OnMessage += OnAuthMessage;
-			authSocket.OnError += OnAuthError;
+			WebSocket authSocket 
+				= new WebSocket($"{CommonData.serverAddress}/auth");
+			authSocket.OnMessage += OnMessage;
+			authSocket.OnOpen += OnOpen;
+			authSocket.OnClose += OnClose;
+			authSocket.OnError += OnError;
+			sockets.Add(Service.Auth, authSocket);
+			socketLookup.Add(authSocket, Service.Auth);
 
-			mainSocket = new WebSocket($"{CommonData.serverAddress}/main");
-			mainSocket.OnMessage += OnMainMessage;
-			mainSocket.OnClose += OnMainClose;
+			WebSocket mainSocket 
+				= new WebSocket($"{CommonData.serverAddress}/main");
+			mainSocket.OnMessage += OnMessage;
+			mainSocket.OnOpen += OnOpen;
+			mainSocket.OnClose += OnClose;
 			mainSocket.OnError += OnError;
+			sockets.Add(Service.Main, mainSocket);
+			socketLookup.Add(mainSocket, Service.Main);
 
-			opsSocket = new WebSocket($"{CommonData.serverAddress}/ops");
-			opsSocket.OnMessage += OnOpsMessage;
+			WebSocket opsSocket 
+				= new WebSocket($"{CommonData.serverAddress}/ops");
+			opsSocket.OnMessage += OnMessage;
+			opsSocket.OnOpen += OnOpen;
+			opsSocket.OnClose += OnClose;
 			opsSocket.OnError += OnError;
+			sockets.Add(Service.Ops, opsSocket);
+			socketLookup.Add(opsSocket, Service.Ops);
 		}
 		#endregion
 
 		#region Interface
-		public void ConnectUpdate(Splash spl) {
-			splashScreen = spl;
-			updateSocket.SetCookie(
-				new WebSocketSharp.Net.Cookie("name", Environment.MachineName)
-				);
-			updateSocket.Connect();
+		public void Connect(Service serv, AuthenticatedAccount account) {
+			WebSocket socket = sockets[serv];
 
-			if (!updateSocket.IsAlive)
-				throw new ArgumentException("Could not connect to server");
+			//
+			// Set appropriate cookies
+			switch(serv) {
+				case Service.Update:
+				case Service.Auth:
+					socket.SetCookie(
+						new WebSocketSharp.Net.Cookie(
+							"name", Environment.MachineName)
+						);
+					break;
+
+				case Service.Main:
+				case Service.Ops:
+					socket.SetCookie(
+						new WebSocketSharp.Net.Cookie(
+							"name", account.profile.nickname));
+					socket.SetCookie(
+						new WebSocketSharp.Net.Cookie(
+							"authtoken", account.authToken));
+					socket.SetCookie(
+						new WebSocketSharp.Net.Cookie(
+							"auth0id", account.auth0_id));
+					break;
+			}
+
+			socket.Connect();
 		}
 
-		public void DisconnectUpdate() {
-			updateSocket.Close();
+		public void Disconnect(Service serv) {
+			WebSocket socket = sockets[serv];
+			socket.Close();
+			// TODO: Clear cookies?
 		}
 
-		public void ConnectAuth(Login lWin) {
-			loginWindow = lWin;
-			authSocket.SetCookie(
-				new WebSocketSharp.Net.Cookie("name", Environment.MachineName)
-				);
-			authSocket.Connect();
+		public bool IsConnected(Service svc) {
+			WebSocket sock = sockets[svc];
+			return sock.IsAlive;
 		}
 
-		public void DisconnectAuth() {
-			authSocket.Close();
-		}
+		public void Send(Service serv, IMessagePayload payload, 
+			IMailbox returnTo) {
 
-		public void ConnectMain(ANWI.AuthenticatedAccount account) {
-			mainSocket.SetCookie(
-				new WebSocketSharp.Net.Cookie("name", account.profile.nickname)
-				);
-			mainSocket.SetCookie(
-				new WebSocketSharp.Net.Cookie("authtoken", account.authToken)
-				);
-			mainSocket.SetCookie(
-				new WebSocketSharp.Net.Cookie("auth0id", account.auth0_id)
-				);
-			mainSocket.Connect();
-		}
+			int seq = GetSequence();
+			Message.Send(sockets[serv], seq, payload);
 
-		public void ConnectOps(ANWI.AuthenticatedAccount account) {
-			opsSocket.SetCookie(
-				new WebSocketSharp.Net.Cookie("name", account.profile.nickname)
-				);
-			opsSocket.SetCookie(
-				new WebSocketSharp.Net.Cookie("authtoken", account.authToken)
-				);
-			opsSocket.SetCookie(
-				new WebSocketSharp.Net.Cookie("auth0id", account.auth0_id)
-				);
-			opsSocket.Connect();
-		}
-
-		public void DisconnectOps() {
-			opsSocket.Close();
-		}
-
-		public void SendUpdate(IMessagePayload payload) {
-			Message.Send(updateSocket, 0, payload);
-		}
-
-		public void SendAuth(IMessagePayload payload) {
-			Message.Send(authSocket, 0, payload);
-		}
-
-		public void SendMain(IMessagePayload payload, IMailbox returnTo) {
-			Message.Send(mainSocket, sequence, payload);
 			if(returnTo != null) {
-				pendingResponses.Add(sequence, returnTo);
+				pendingResponses.Add(seq, returnTo);
 			}
-
-			sequence++;
 		}
 
-		public void SendOps(IMessagePayload payload, IMailbox returnTo) {
-			Message.Send(opsSocket, sequence, payload);
-			if (returnTo != null) {
-				pendingResponses.Add(sequence, returnTo);
+		public void SubscribeSource(string source, IMailbox subscriber) {
+			if(pushSubscriptions.ContainsKey(source)) {
+				pushSubscriptions[source] = subscriber;
+			} else {
+				pushSubscriptions.Add(source, subscriber);
 			}
-
-			sequence++;
 		}
 
-		public void SetOpsPushTarget(IMailbox target) {
-			opsPushTarget = target;
+		public void UnsubscribeSource(string source) {
+			if (pushSubscriptions.ContainsKey(source))
+				pushSubscriptions.Remove(source);
 		}
-
 		#endregion
 
 		#region Socket Functions
-		private void OnUpdateMessage(object sender, MessageEventArgs e) {
-			if(splashScreen != null) {
-				splashScreen.DeliverMessage(Message.Receive(e.RawData));
-			}
-		}
-
-		private void OnAuthMessage(object sender, MessageEventArgs e) {
-			if(loginWindow != null) {
-				loginWindow.DeliverMessage(Message.Receive(e.RawData));
-			}
-		}
-
-		private void OnAuthError(object sender, ErrorEventArgs e) {
-			// TODO
-		}
-
-		private void OnMainMessage(object sender, MessageEventArgs e) {
-			Message msg = Message.Receive(e.RawData);
-
-			IMailbox returnTo = pendingResponses[msg.sequence];
-			if(returnTo != null) {
-				pendingResponses.Remove(msg.sequence);
-				returnTo.DeliverMessage(msg);
-			}
-		}
-
-		private void OnMainClose(object sender, CloseEventArgs c) {
-			onMainClose?.Invoke(c);
-		}
-
-		private void OnOpsMessage(object sender, MessageEventArgs e) {
+		private void OnMessage(object sender, MessageEventArgs e) {
 			Message msg = Message.Receive(e.RawData);
 
 			if (msg.sequence >= 0) {
-				IMailbox returnTo = pendingResponses[msg.sequence];
-				if (returnTo != null) {
+				// Normal message
+				IMailbox returnTo = null;
+				if (pendingResponses.TryGetValue(msg.sequence, out returnTo)) {
 					pendingResponses.Remove(msg.sequence);
 					returnTo.DeliverMessage(msg);
 				}
 			} else {
-				if (opsPushTarget != null)
-					opsPushTarget.DeliverMessage(msg);
+				IMailbox sub = null;
+				if (pushSubscriptions.TryGetValue(msg.source, out sub)) {
+					sub.DeliverMessage(msg);
+				}
 			}
 		}
 
+		private void OnOpen(object sender, EventArgs e) {
+			onOpen?.Invoke(socketLookup[sender]);
+		}
+
+		private void OnClose(object sender, CloseEventArgs e) {
+			onClose?.Invoke(socketLookup[sender], e);
+		}
+
 		private void OnError(object sender, ErrorEventArgs e) {
-			onError?.Invoke(e);
+			onError?.Invoke(socketLookup[sender], e);
 		}
 		#endregion
 
-		private void IncrementSequence() {
-			sequence++;
-			if (sequence >= 1000000)
-				sequence = 0;
+		private int GetSequence() {
+			return sequence++;
 		}
 	}
 }

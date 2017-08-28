@@ -276,7 +276,7 @@ namespace Client {
 				}
 			};
 
-			MessageRouter.Instance.SetOpsPushTarget(this);
+			MessageRouter.Instance.SubscribeSource(opUUID, this);
 
 			AddProcessor(typeof(ANWI.Messaging.Ops.FullOperationSnapshot),
 				ProcessOpSnapshot);
@@ -303,7 +303,8 @@ namespace Client {
 
 			RebuildC2();
 
-			MessageRouter.Instance.SendOps(
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Ops,
 				new ANWI.Messaging.Request(
 					ANWI.Messaging.Request.Type.GetOperation,
 					new ANWI.Messaging.ReqExp.IdString(0, uuid)),
@@ -368,12 +369,15 @@ namespace Client {
 					pos.filledByPointer == null
 				)) {
 
-				MessageRouter.Instance.SendOps(new ANWI.Messaging.Ops.AssignUser() {
-					opUUID = opUUID,
-					positionUUID = pos.uuid,
-					userId = userID
-				},
-				null);
+				MessageRouter.Instance.Send(
+					MessageRouter.Service.Ops,
+					new ANWI.Messaging.Ops.AssignUser() {
+						opUUID = opUUID,
+						positionUUID = pos.uuid,
+						userId = userID
+					},
+					null
+					);
 			}
 		}
 
@@ -456,7 +460,8 @@ namespace Client {
 			Confirm confirm = new Confirm("Advance stage to " +
 				status.Next().ToFriendlyString() + "?");
 			confirm.yesAction += () => {
-				MessageRouter.Instance.SendOps(
+				MessageRouter.Instance.Send(
+					MessageRouter.Service.Ops,
 					new ANWI.Messaging.Request(
 						ANWI.Messaging.Request.Type.AdvanceOpLifecycle,
 							new ANWI.Messaging.ReqExp.IdString(0, opUUID)),
@@ -469,17 +474,22 @@ namespace Client {
 		private void Button_JoinOp_Click(object sender, RoutedEventArgs e) {
 			if(thisUserIsJoined) {
 				// Leave the op
-				MessageRouter.Instance.SendOps(new ANWI.Messaging.Request(
-					ANWI.Messaging.Request.Type.LeaveOperation,
-					new ANWI.Messaging.ReqExp.IdString(userId, opUUID)
-					),
-					null);
+				MessageRouter.Instance.Send(
+					MessageRouter.Service.Ops,
+					new ANWI.Messaging.Request(
+						ANWI.Messaging.Request.Type.LeaveOperation,
+						new ANWI.Messaging.ReqExp.IdString(userId, opUUID)
+						),
+					null
+					);
 			} else {
 				// Join the op
-				MessageRouter.Instance.SendOps(new ANWI.Messaging.Request(
-					ANWI.Messaging.Request.Type.JoinOperation,
-					new ANWI.Messaging.ReqExp.IdString(userId, opUUID)
-					),
+				MessageRouter.Instance.Send(
+					MessageRouter.Service.Ops,
+					new ANWI.Messaging.Request(
+						ANWI.Messaging.Request.Type.JoinOperation,
+						new ANWI.Messaging.ReqExp.IdString(userId, opUUID)
+						),
 					null);
 			}
 		}
@@ -492,11 +502,14 @@ namespace Client {
 			// comes back
 			check.GetBindingExpression(CheckBox.IsCheckedProperty).UpdateTarget();
 
-			MessageRouter.Instance.SendOps(new ANWI.Messaging.Ops.SetFreeMove() {
-				opUUID = opUUID,
-				freeMove = !freeMove
-			},
-			null);
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Ops,
+				new ANWI.Messaging.Ops.SetFreeMove() {
+					opUUID = opUUID,
+					freeMove = !freeMove
+				},
+				null
+				);
 		}
 
 		private void
@@ -517,11 +530,14 @@ namespace Client {
 			Radio_C2Hierarchy.GetBindingExpression(
 				RadioButton.IsCheckedProperty).UpdateTarget();
 
-			MessageRouter.Instance.SendOps(new ANWI.Messaging.Ops.SetC2Type() {
-				opUUID = opUUID,
-				unified = !C2Unified
-			},
-			null);
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Ops,
+				new ANWI.Messaging.Ops.SetC2Type() {
+					opUUID = opUUID,
+					unified = !C2Unified
+				},
+				null
+				);
 		}
 
 		private void
@@ -626,12 +642,13 @@ namespace Client {
 		protected override void OnClosed(EventArgs e) {
 			base.OnClosed(e);
 
-			MessageRouter.Instance.SendOps(
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Ops,
 				new ANWI.Messaging.Request(
 					ANWI.Messaging.Request.Type.CloseOperation,
 						new ANWI.Messaging.ReqExp.IdString(0, opUUID)),
-					null
-					);
+				null
+				);
 
 			InvokeOnClose();
 		}

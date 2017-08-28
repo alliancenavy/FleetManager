@@ -72,7 +72,11 @@ namespace Client {
 			}
 		}
 
-		public bool connected { get; private set; } = false;
+		public bool connected {
+			get {
+				return MessageRouter.Instance.IsConnected(
+					MessageRouter.Service.Main);
+			} }
 		public string connectionString { get {
 				if(connected) {
 					return "Connected";
@@ -109,7 +113,8 @@ namespace Client {
 			AddProcessor(typeof(ANWI.Messaging.Ops.NewOpCreated),
 				ProcessNewOpCreated);
 
-			MessageRouter.Instance.onMainClose += OnMainSocketClose;
+			MessageRouter.Instance.onOpen += OnSocketOpen;
+			MessageRouter.Instance.onClose += OnSocketClose;
 			MessageRouter.Instance.onError += OnSocketError;
 
 #if !DEBUG
@@ -147,8 +152,8 @@ namespace Client {
 			wpfProfile = account.profile;
 
 			// Open connection to the main service
-			MessageRouter.Instance.ConnectMain(account);
-			MessageRouter.Instance.ConnectOps(account);
+			MessageRouter.Instance.Connect(MessageRouter.Service.Main, account);
+			MessageRouter.Instance.Connect(MessageRouter.Service.Ops, account);
 
 			// Note: blocking
 			FetchCommonData();
@@ -200,7 +205,8 @@ namespace Client {
 
 				Operations.NewOperation newOp = new Operations.NewOperation();
 				newOp.returnNewOp += (name, type) => {
-					MessageRouter.Instance.SendOps(
+					MessageRouter.Instance.Send(
+						MessageRouter.Service.Ops,
 						new ANWI.Messaging.Ops.CreateNewOp(name, type,
 						account.profile.id),
 						this
@@ -300,7 +306,8 @@ namespace Client {
 		private void Button_ViewJacket_Click(object sender, RoutedEventArgs e) {
 			if(List_Roster.SelectedItem != null) {
 				LiteProfile p = List_Roster.SelectedItem as LiteProfile;
-				MessageRouter.Instance.SendMain(
+				MessageRouter.Instance.Send(
+					MessageRouter.Service.Main,
 					new ANWI.Messaging.Request(
 						ANWI.Messaging.Request.Type.GetProfile, p.id),
 					this
@@ -319,6 +326,8 @@ namespace Client {
 				fleetReg = new FleetRegistry(account.profile);
 				fleetReg.OnClose += (t) => { fleetReg = null; };
 				fleetReg.Show();
+			} else {
+				fleetReg.Activate();
 			}
 		}
 
@@ -371,7 +380,8 @@ namespace Client {
 		/// move forward without the data.
 		/// </summary>
 		private void FetchCommonData() {
-			MessageRouter.Instance.SendMain(
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Main,
 				new ANWI.Messaging.Request(
 					ANWI.Messaging.Request.Type.GetCommonData),
 				this
@@ -393,7 +403,8 @@ namespace Client {
 			});
 
 			// Send a request to the server
-			MessageRouter.Instance.SendMain(
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Main,
 				new ANWI.Messaging.Request(
 					ANWI.Messaging.Request.Type.GetRoster),
 				this
@@ -411,7 +422,8 @@ namespace Client {
 			});
 
 			// Send a request to the server
-			MessageRouter.Instance.SendOps(
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Ops,
 				new ANWI.Messaging.Request(
 					ANWI.Messaging.Request.Type.GetOperations),
 				this
@@ -423,7 +435,8 @@ namespace Client {
 		/// </summary>
 		/// <param name="userId"></param>
 		private void FetchProfile(int userId) {
-			MessageRouter.Instance.SendMain(
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Main,
 				new ANWI.Messaging.Request(
 					ANWI.Messaging.Request.Type.GetProfile, userId),
 				this
@@ -534,7 +547,8 @@ namespace Client {
 		/// <param name="rateId"></param>
 		/// <param name="rank"></param>
 		private void AddRate(int userId, int rateId, int rank) {
-			MessageRouter.Instance.SendMain(
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Main,
 				new ANWI.Messaging.AddRate(userId, rateId, rank),
 				this
 				);
@@ -546,7 +560,8 @@ namespace Client {
 		/// <param name="userId"></param>
 		/// <param name="rateId"></param>
 		private void DeleteRate(int userId, int rateId) {
-			MessageRouter.Instance.SendMain(
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Main,
 				new ANWI.Messaging.Request(
 					ANWI.Messaging.Request.Type.DeleteRate,
 					new ANWI.Messaging.ReqExp.TwoIDs(userId, rateId)),
@@ -560,7 +575,8 @@ namespace Client {
 		/// <param name="userId"></param>
 		/// <param name="rateId"></param>
 		private void SetPrimaryRate(int userId, int rateId) {
-			MessageRouter.Instance.SendMain(
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Main,
 				new ANWI.Messaging.Request(
 					ANWI.Messaging.Request.Type.SetPrimaryRate,
 					new ANWI.Messaging.ReqExp.TwoIDs(userId, rateId)),
@@ -574,7 +590,8 @@ namespace Client {
 		/// <param name="userId"></param>
 		/// <param name="rankId"></param>
 		private void ChangeRank(int userId, int rankId) {
-			MessageRouter.Instance.SendMain(
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Main,
 				new ANWI.Messaging.Request(
 					ANWI.Messaging.Request.Type.ChangeRank,
 					new ANWI.Messaging.ReqExp.TwoIDs(userId, rankId)),
@@ -588,17 +605,25 @@ namespace Client {
 		/// <param name="userId"></param>
 		/// <param name="name"></param>
 		private void ChangeNickname(int userId, string name) {
-			MessageRouter.Instance.SendMain(
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Main,
 				new ANWI.Messaging.Request(
 					ANWI.Messaging.Request.Type.ChangeName,
 					new ANWI.Messaging.ReqExp.IdString(userId, name)),
 				this
 				);
 		}
-#endregion
+		#endregion
 
-		private void OnMainSocketClose(CloseEventArgs c) {
-			this.Dispatcher.Invoke(() => {
+		private void OnSocketOpen(MessageRouter.Service svc) {
+			NotifyPropertyChanged("connected");
+			NotifyPropertyChanged("connectionString");
+			NotifyPropertyChanged("connLightRed");
+			NotifyPropertyChanged("connLightGreen");
+		}
+
+		private void OnSocketClose(MessageRouter.Service svc, CloseEventArgs c) {
+			/*this.Dispatcher.Invoke(() => {
 				MessageBox.Show(this,
 					"Connection to Main service closed by server.  " +
 					$"Reason: {c.Reason}", "Connection Closed",
@@ -606,17 +631,26 @@ namespace Client {
 					MessageBoxImage.Error);
 
 				Application.Current.Shutdown();
-			});
+			});*/
+
+			NotifyPropertyChanged("connected");
+			NotifyPropertyChanged("connectionString");
+			NotifyPropertyChanged("connLightRed");
+			NotifyPropertyChanged("connLightGreen");
 		}
 
-		private void OnSocketError(ErrorEventArgs e) {
-			this.Dispatcher.Invoke(() => {
+		private void OnSocketError(MessageRouter.Service svc, ErrorEventArgs e) {
+			/*this.Dispatcher.Invoke(() => {
 				MessageBox.Show("Socket Error.  Connection Lost", "Error",
 					MessageBoxButton.OK);
 
 				Application.Current.Shutdown();
-			});
-			
+			});*/
+
+			NotifyPropertyChanged("connected");
+			NotifyPropertyChanged("connectionString");
+			NotifyPropertyChanged("connLightRed");
+			NotifyPropertyChanged("connLightGreen");
 		}
 
 		private bool OnUpdateDownloaded(string archiveName) {

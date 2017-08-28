@@ -70,19 +70,25 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>EADB426652B6086D53975D14466112E3EB42A884</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>17A485502AAD3F49125B078522FECD703E144A4D</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>Client_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>Client_AsmCert.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>images\afos_logo_VCP_icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>Client_AsmCert.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Auth0.Windows, Version=0.7.5.0, Culture=neutral, processorArchitecture=MSIL">
@@ -127,8 +133,9 @@
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="UIAutomationProvider" />
-    <Reference Include="websocket-sharp">
-      <HintPath>..\..\..\..\Lib\websocket-sharp-master\websocket-sharp\bin\Debug\websocket-sharp.dll</HintPath>
+    <Reference Include="websocket-sharp, Version=1.0.2.59611, Culture=neutral, PublicKeyToken=5660b08a1845a91e, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebSocketSharp.1.0.3-rc11\lib\websocket-sharp.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -185,6 +192,7 @@
       <DependentUpon>FleetRegistry.xaml</DependentUpon>
     </Compile>
     <Compile Include="IMailbox.cs" />
+    <Compile Include="LoginSender.cs" />
     <Compile Include="MailboxWindow.cs" />
     <Compile Include="MessageRouter.cs" />
     <Compile Include="NewAssignment.xaml.cs">
@@ -309,6 +317,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="Client_AsmCert.pfx" />
     <None Include="Client_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

@@ -61,10 +61,13 @@ namespace Client {
 
 			Task t = new Task(() => {
 				try {
-					MessageRouter.Instance.ConnectUpdate(this);
-					MessageRouter.Instance.SendUpdate(new ANWI.Messaging.Updater.Check() {
-						checksums = MD5List.GetDirectoryChecksum(".")
-					});
+					MessageRouter.Instance.Connect(MessageRouter.Service.Update, null);
+					MessageRouter.Instance.Send(
+						MessageRouter.Service.Update,
+						new ANWI.Messaging.Updater.Check() {
+							checksums = MD5List.GetDirectoryChecksum(".")
+						},
+						this);
 				} catch (Exception e) {
 					this.Dispatcher.Invoke(() => {
 						Text_Message.Text = "Failed to Connect to Server.";
@@ -90,9 +93,12 @@ namespace Client {
 
 				receiver = new UpdateReceiver(res.updateSize);
 
-				MessageRouter.Instance.SendUpdate(new ANWI.Messaging.Request() {
-					type = ANWI.Messaging.Request.Type.GetUpdateChunk
-				});
+				MessageRouter.Instance.Send(
+					MessageRouter.Service.Update,
+					new ANWI.Messaging.Request() {
+						type = ANWI.Messaging.Request.Type.GetUpdateChunk
+					},
+					this);
 			} else {
 				this.Dispatcher.Invoke(() => {
 					Text_Message.Text = "Version OK.";
@@ -113,9 +119,12 @@ namespace Client {
 			updating = true;
 			if (receiver.AddChunk(chunk.data)) {
 				NotifyPropertyChanged("progress");
-				MessageRouter.Instance.SendUpdate(new ANWI.Messaging.Request() {
-					type = ANWI.Messaging.Request.Type.GetUpdateChunk
-				});
+				MessageRouter.Instance.Send(
+					MessageRouter.Service.Update,
+					new ANWI.Messaging.Request() {
+						type = ANWI.Messaging.Request.Type.GetUpdateChunk
+					},
+					this);
 			} else {
 				NotifyPropertyChanged("progress");
 

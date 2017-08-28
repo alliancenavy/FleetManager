@@ -43,7 +43,8 @@ namespace Client.Operations {
 			this.AddProcessor(typeof(ANWI.Messaging.FullVesselReg),
 				ProcessVesselList);
 
-			MessageRouter.Instance.SendMain(
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Main,
 				new ANWI.Messaging.Request(
 					ANWI.Messaging.Request.Type.GetAvailableFleet),
 				this

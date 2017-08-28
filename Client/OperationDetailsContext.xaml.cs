@@ -17,7 +17,8 @@ namespace Client {
 			Operations.AddFleetShip afs 
 				= new Operations.AddFleetShip(fleet.Fleet);
 			afs.returnNewShip += (v) => {
-				MessageRouter.Instance.SendOps(
+				MessageRouter.Instance.Send(
+					MessageRouter.Service.Ops,
 					new ANWI.Messaging.Ops.AddOOBUnit() {
 						opUUID = opUUID,
 						type = ANWI.Messaging.Ops.AddOOBUnit.Type.FleetShip,
@@ -33,7 +34,8 @@ namespace Client {
 		}
 
 		private void Context_NewWing(object sender, RoutedEventArgs e) {
-			MessageRouter.Instance.SendOps(
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Ops,
 				new ANWI.Messaging.Ops.AddOOBUnit() {
 					opUUID = opUUID,
 					type = ANWI.Messaging.Ops.AddOOBUnit.Type.Wing
@@ -45,7 +47,8 @@ namespace Client {
 			FleetUnit elem = (sender as MenuItem).DataContext 
 				as FleetUnit;
 			if(elem != null) {
-				MessageRouter.Instance.SendOps(
+				MessageRouter.Instance.Send(
+					MessageRouter.Service.Ops,
 					new ANWI.Messaging.Ops.DeleteOOBElement(opUUID, elem.uuid),
 					null);
 			}
@@ -66,7 +69,8 @@ namespace Client {
 		private void Context_CriticalPosition(object sender, RoutedEventArgs e) {
 			MenuItem item = sender as MenuItem;
 			OpPosition pos = (item).DataContext as OpPosition;
-			MessageRouter.Instance.SendOps(
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Ops,
 				new ANWI.Messaging.Ops.SetPositionCritical() {
 					opUUID = opUUID,
 					posUUID = pos.uuid,
@@ -77,7 +81,8 @@ namespace Client {
 
 		private void Context_DeletePosition(object sender, RoutedEventArgs e) {
 			OpPosition pos = (sender as MenuItem).DataContext as OpPosition;
-			MessageRouter.Instance.SendOps(
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Ops,
 				new ANWI.Messaging.Ops.DeletePosition() {
 					opUUID = opUUID,
 					posUUID = pos.uuid
@@ -89,12 +94,15 @@ namespace Client {
 		#region Fleet Ships
 		private void Context_SetAsFlagship(object sender, RoutedEventArgs e) {
 			FleetUnit unit = (sender as MenuItem).DataContext as FleetUnit;
-			MessageRouter.Instance.SendOps(new ANWI.Messaging.Ops.ModifyUnit() {
-				opUUID = opUUID,
-				unitUUID = unit.uuid,
-				type = ANWI.Messaging.Ops.ModifyUnit.ChangeType.SetFlagship
-			},
-			null);
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Ops,
+				new ANWI.Messaging.Ops.ModifyUnit() {
+					opUUID = opUUID,
+					unitUUID = unit.uuid,
+					type = ANWI.Messaging.Ops.ModifyUnit.ChangeType.SetFlagship
+				},
+				null
+				);
 		}
 
 		private void Context_AddShipPosition(object sender, RoutedEventArgs e) {
@@ -104,13 +112,15 @@ namespace Client {
 				CommonData.shipRoles.ConvertAll<string>((r) => {
 					return r.name; }));
 			select.ReturnSelected += (index) => {
-				MessageRouter.Instance.SendOps(
+				MessageRouter.Instance.Send(
+					MessageRouter.Service.Ops,
 					new ANWI.Messaging.Ops.AddPosition() {
 						opUUID = opUUID,
 						unitUUID = unit.uuid,
 						roleID = new List<int>() { CommonData.shipRoles[index].id }
 					},
-					null);
+					null
+					);
 			};
 			select.ShowDialog();
 		}
@@ -121,13 +131,15 @@ namespace Client {
 
 			MassAddRoles mar = new MassAddRoles(CommonData.shipRoles);
 			mar.returnNewPositions += (positions) => {
-				MessageRouter.Instance.SendOps(
+				MessageRouter.Instance.Send(
+					MessageRouter.Service.Ops,
 					new ANWI.Messaging.Ops.AddPosition() {
 						opUUID = opUUID,
 						unitUUID = unit.uuid,
 						roleID = positions
 					},
-					null);
+					null
+					);
 			};
 			mar.ShowDialog();
 		}
@@ -147,7 +159,8 @@ namespace Client {
 					return h.name;
 				}));
 			select.ReturnSelected += (index) => {
-				MessageRouter.Instance.SendOps(
+				MessageRouter.Instance.Send(
+					MessageRouter.Service.Ops,
 					new ANWI.Messaging.Ops.AddOOBUnit() {
 						opUUID = opUUID,
 						wingUUID = wing.uuid,
@@ -164,7 +177,8 @@ namespace Client {
 			SimpleTextPrompt prompt = new SimpleTextPrompt(
 				"Change Wing Name", wing.name);
 			prompt.ReturnText += (name) => {
-				MessageRouter.Instance.SendOps(
+				MessageRouter.Instance.Send(
+					MessageRouter.Service.Ops,
 					new ANWI.Messaging.Ops.ModifyUnit() {
 						opUUID = opUUID,
 						unitUUID = wing.uuid,
@@ -181,7 +195,8 @@ namespace Client {
 			SimpleTextPrompt prompt = new SimpleTextPrompt(
 				"Change Callsign", wing.callsign);
 			prompt.ReturnText += (cs) => {
-				MessageRouter.Instance.SendOps(
+				MessageRouter.Instance.Send(
+					MessageRouter.Service.Ops,
 					new ANWI.Messaging.Ops.ModifyUnit() {
 						opUUID = opUUID,
 						unitUUID = wing.uuid,
@@ -201,7 +216,8 @@ namespace Client {
 					return r.name;
 				}));
 			select.ReturnSelected += (index) => {
-				MessageRouter.Instance.SendOps(
+				MessageRouter.Instance.Send(
+					MessageRouter.Service.Ops,
 					new ANWI.Messaging.Ops.AddPosition() {
 						opUUID = opUUID,
 						unitUUID = unit.uuid,
@@ -218,7 +234,8 @@ namespace Client {
 
 			MassAddRoles mar = new MassAddRoles(CommonData.boatRoles);
 			mar.returnNewPositions += (positions) => {
-				MessageRouter.Instance.SendOps(
+				MessageRouter.Instance.Send(
+					MessageRouter.Service.Ops,
 					new ANWI.Messaging.Ops.AddPosition() {
 						opUUID = opUUID,
 						unitUUID = unit.uuid,
@@ -231,12 +248,15 @@ namespace Client {
 
 		private void Context_SetWingCommander(object sender, RoutedEventArgs e) {
 			FleetUnit unit = (sender as MenuItem).DataContext as FleetUnit;
-			MessageRouter.Instance.SendOps(new ANWI.Messaging.Ops.ModifyUnit() {
-				opUUID = opUUID,
-				unitUUID = unit.uuid,
-				type = ANWI.Messaging.Ops.ModifyUnit.ChangeType.SetWingCommander
-			},
-			null);
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Ops,
+				new ANWI.Messaging.Ops.ModifyUnit() {
+					opUUID = opUUID,
+					unitUUID = unit.uuid,
+					type = ANWI.Messaging.Ops.ModifyUnit.ChangeType.SetWingCommander
+				},
+				null
+				);
 		}
 
 		private void Context_WingRoleInterceptor(object sender, RoutedEventArgs e) {
@@ -260,13 +280,16 @@ namespace Client {
 		}
 
 		private void ChangeWingtype(string uuid, Wing.Role role) {
-			MessageRouter.Instance.SendOps(new ANWI.Messaging.Ops.ModifyUnit() {
-				opUUID = opUUID,
-				unitUUID = uuid,
-				type = ANWI.Messaging.Ops.ModifyUnit.ChangeType.ChangeWingRole,
-				integer = (int)role
-			},
-			null);
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Ops,
+				new ANWI.Messaging.Ops.ModifyUnit() {
+					opUUID = opUUID,
+					unitUUID = uuid,
+					type = ANWI.Messaging.Ops.ModifyUnit.ChangeType.ChangeWingRole,
+					integer = (int)role
+				},
+				null
+				);
 		}
 		#endregion
 

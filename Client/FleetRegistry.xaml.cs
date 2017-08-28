@@ -84,7 +84,8 @@ namespace Client {
 				Spinner_List.Visibility = Visibility.Visible;
 			});
 
-			MessageRouter.Instance.SendMain(
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Main,
 				new ANWI.Messaging.Request(
 					ANWI.Messaging.Request.Type.GetFleet),
 				this
@@ -101,7 +102,8 @@ namespace Client {
 				Button_ViewShip.IsEnabled = false;
 			});
 
-			MessageRouter.Instance.SendMain(
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Main,
 				new ANWI.Messaging.Request(
 					ANWI.Messaging.Request.Type.GetVesselDetail, id),
 				this
@@ -114,7 +116,8 @@ namespace Client {
 		/// <param name="userId"></param>
 		/// <param name="roleId"></param>
 		private void AddNewAssignment(int userId, int roleId) {
-			MessageRouter.Instance.SendMain(
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Main,
 				new ANWI.Messaging.NewAssignment(
 					userId, currentVessel.id, roleId),
 				this
@@ -127,7 +130,8 @@ namespace Client {
 		/// <param name="id"></param>
 		/// <param name="status"></param>
 		private void UpdateShipStatus(int id, VesselStatus status) {
-			MessageRouter.Instance.SendMain(
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Main,
 				new ANWI.Messaging.ChangeShipStatus(id, status),
 				this
 				);
@@ -138,7 +142,8 @@ namespace Client {
 		/// </summary>
 		/// <param name="p"></param>
 		private void AddNewShip(NewShip.Parameters p) {
-			MessageRouter.Instance.SendMain(
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Main,
 				new ANWI.Messaging.NewShip(
 					p.hullId, p.name, p.isLTI, p.fleetOwned ? 0 : user.id),
 				this
@@ -151,7 +156,8 @@ namespace Client {
 		/// <param name="userId"></param>
 		/// <param name="assignmentId"></param>
 		private void RemoveAssignment(int userId, int assignmentId, int ship) {
-			MessageRouter.Instance.SendMain(
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Main,
 				new ANWI.Messaging.EndAssignment(userId, assignmentId, ship),
 				this
 				);
@@ -164,15 +170,16 @@ namespace Client {
 		/// <param name="hullIndex">Index of the hull in the smallHulls
 		/// array.  Not the ID in the database.</param>
 		private void AddEquipment(int shipId, int hullIndex) {
-			MessageRouter.Instance.SendMain(
-					new ANWI.Messaging.Request(
-						ANWI.Messaging.Request.Type.AddEquipment,
-						new ANWI.Messaging.ReqExp.TwoIDs(
-								shipId,
-								CommonData.smallHulls[hullIndex].id
-							)),
-					this
-					);
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Main,
+				new ANWI.Messaging.Request(
+					ANWI.Messaging.Request.Type.AddEquipment,
+					new ANWI.Messaging.ReqExp.TwoIDs(
+							shipId,
+							CommonData.smallHulls[hullIndex].id
+						)),
+				this
+				);
 		}
 
 		/// <summary>
@@ -181,7 +188,8 @@ namespace Client {
 		/// <param name="shipId"></param>
 		/// <param name="hullId"></param>
 		private void RemoveEquipment(int shipId, int hullId) {
-			MessageRouter.Instance.SendMain(
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Main,
 				new ANWI.Messaging.Request(
 					ANWI.Messaging.Request.Type.RemoveEquipment,
 					new ANWI.Messaging.ReqExp.TwoIDs(shipId, hullId)),

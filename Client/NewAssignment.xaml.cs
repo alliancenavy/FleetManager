@@ -47,7 +47,8 @@ namespace Client {
 				Spinner_Roster.Visibility = Visibility.Visible;
 			});
 
-			MessageRouter.Instance.SendMain(
+			MessageRouter.Instance.Send(
+				MessageRouter.Service.Main,
 				new ANWI.Messaging.Request(
 					ANWI.Messaging.Request.Type.GetUnassignedRoster),
 				this

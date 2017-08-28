@@ -10,6 +10,7 @@ namespace ANWI.Messaging {
 	public class Message {
 
 		public int sequence { get; private set; }
+		public string source { get; private set; }
 
 		/// <summary>
 		/// Polymorphic payload
@@ -62,8 +63,24 @@ namespace ANWI.Messaging {
 			payload = null;
 		}
 
+		/// <summary>
+		/// Normal message constructor
+		/// </summary>
+		/// <param name="seq"></param>
+		/// <param name="data"></param>
 		public Message(int seq, IMessagePayload data) {
 			sequence = seq;
+			payload = data;
+		}
+
+		/// <summary>
+		/// Push message constructor (for server use only)
+		/// </summary>
+		/// <param name="src"></param>
+		/// <param name="data"></param>
+		public Message(string src, IMessagePayload data) {
+			sequence = -1;
+			source = src;
 			payload = data;
 		}
 
@@ -87,6 +104,11 @@ namespace ANWI.Messaging {
 		public static void Send(WebSocket sock, int sequence, 
 			IMessagePayload data) {
 			Send(sock, new Message(sequence, data));
+		}
+
+		public static void Push(WebSocket sock, string source, 
+			IMessagePayload data) {
+			Send(sock, new Message(source, data));
 		}
 
 		/// <summary>

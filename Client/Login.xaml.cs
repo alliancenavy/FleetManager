@@ -105,14 +105,16 @@ namespace Client {
 		private void SendLogin(string uname, string pass, bool remember) {
 			// Make sure fields have text
 			if (uname != "" && pass != "") {
-				MessageRouter.Instance.ConnectAuth(this);
+				MessageRouter.Instance.Connect(MessageRouter.Service.Auth, null);
 
 				// Send message to login server
-				MessageRouter.Instance.SendAuth(
+				MessageRouter.Instance.Send(
+					MessageRouter.Service.Auth,
 					new ANWI.Messaging.LoginRequest(
 						CommonData.version, 
 						uname, 
-						pass)
+						pass),
+					this
 					);
 
 				// Save credentials
@@ -143,7 +145,7 @@ namespace Client {
 
 			if (resp.code == ANWI.Messaging.LoginResponse.Code.OK) {
 				Login_EndWorkingSucceeded();
-				MessageRouter.Instance.DisconnectAuth();
+				MessageRouter.Instance.Disconnect(MessageRouter.Service.Auth);
 				returnuser(resp.account);
 				this.Dispatcher.Invoke(Close);
 			} else {
@@ -279,15 +281,17 @@ namespace Client {
 			string pass = Textbox_RegisterPassword.Password;
 
 			Task t = new Task(() => {
-				MessageRouter.Instance.ConnectAuth(this);
+				MessageRouter.Instance.Connect(MessageRouter.Service.Auth, null);
 
 				// Send message to server
-				MessageRouter.Instance.SendAuth(
+				MessageRouter.Instance.Send(
+					MessageRouter.Service.Auth,
 					new ANWI.Messaging.RegisterRequest(
 						CommonData.version,
 						email,
 						nick,
-						pass)
+						pass),
+					this
 					);
 			});
 			t.Start();
