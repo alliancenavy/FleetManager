@@ -411,7 +411,7 @@ namespace FleetManager {
 		private void PushToAll(ANWI.Messaging.IMessagePayload p) {
 			MemoryStream stream = new MemoryStream();
 			MessagePackSerializer.Get<ANWI.Messaging.Message>().Pack(
-				stream, new ANWI.Messaging.Message(-1, p));
+				stream, new ANWI.Messaging.Message(uuid, p));
 			byte[] array = stream.ToArray();
 
 			foreach (KeyValuePair<string, ConnectedUser> user in subscribed) {
