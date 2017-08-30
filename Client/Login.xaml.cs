@@ -105,7 +105,7 @@ namespace Client {
 		private void SendLogin(string uname, string pass, bool remember) {
 			// Make sure fields have text
 			if (uname != "" && pass != "") {
-				MessageRouter.Instance.Connect(MessageRouter.Service.Auth, null);
+				MessageRouter.Instance.Connect(MessageRouter.Service.Auth);
 
 				// Send message to login server
 				MessageRouter.Instance.Send(
@@ -281,7 +281,7 @@ namespace Client {
 			string pass = Textbox_RegisterPassword.Password;
 
 			Task t = new Task(() => {
-				MessageRouter.Instance.Connect(MessageRouter.Service.Auth, null);
+				MessageRouter.Instance.Connect(MessageRouter.Service.Auth);
 
 				// Send message to server
 				MessageRouter.Instance.Send(

@@ -25,6 +25,8 @@ namespace Client {
 		public event Action<Service, ErrorEventArgs> onError;
 
 		#region Instance Variables
+		private AuthenticatedAccount account = null;
+
 		private static MessageRouter instance = null;
 
 		private Dictionary<Service, WebSocket> sockets
@@ -59,6 +61,10 @@ namespace Client {
 			updateSocket.OnOpen += OnOpen;
 			updateSocket.OnClose += OnClose;
 			updateSocket.OnError += OnError;
+			updateSocket.SetCookie(
+						new WebSocketSharp.Net.Cookie(
+							"name", Environment.MachineName)
+						);
 			sockets.Add(Service.Update, updateSocket);
 			socketLookup.Add(updateSocket, Service.Update);
 
@@ -68,6 +74,10 @@ namespace Client {
 			authSocket.OnOpen += OnOpen;
 			authSocket.OnClose += OnClose;
 			authSocket.OnError += OnError;
+			authSocket.SetCookie(
+						new WebSocketSharp.Net.Cookie(
+							"name", Environment.MachineName)
+						);
 			sockets.Add(Service.Auth, authSocket);
 			socketLookup.Add(authSocket, Service.Auth);
 
@@ -92,41 +102,39 @@ namespace Client {
 		#endregion
 
 		#region Interface
-		public void Connect(Service serv, AuthenticatedAccount account) {
-			WebSocket socket = sockets[serv];
+		public void SetAccount(AuthenticatedAccount acct) {
+			account = acct;
 
-			//
-			// Set appropriate cookies
-			switch(serv) {
-				case Service.Update:
-				case Service.Auth:
-					socket.SetCookie(
-						new WebSocketSharp.Net.Cookie(
-							"name", Environment.MachineName)
-						);
-					break;
-
-				case Service.Main:
-				case Service.Ops:
-					socket.SetCookie(
+			// Set the appropriate cookies
+			sockets[Service.Main].SetCookie(
 						new WebSocketSharp.Net.Cookie(
 							"name", account.profile.nickname));
-					socket.SetCookie(
-						new WebSocketSharp.Net.Cookie(
-							"authtoken", account.authToken));
-					socket.SetCookie(
-						new WebSocketSharp.Net.Cookie(
-							"auth0id", account.auth0_id));
-					break;
-			}
+			sockets[Service.Main].SetCookie(
+				new WebSocketSharp.Net.Cookie(
+					"authtoken", account.authToken));
+			sockets[Service.Main].SetCookie(
+				new WebSocketSharp.Net.Cookie(
+					"auth0id", account.auth0_id));
 
+			sockets[Service.Ops].SetCookie(
+						new WebSocketSharp.Net.Cookie(
+							"name", account.profile.nickname));
+			sockets[Service.Ops].SetCookie(
+				new WebSocketSharp.Net.Cookie(
+					"authtoken", account.authToken));
+			sockets[Service.Ops].SetCookie(
+				new WebSocketSharp.Net.Cookie(
+					"auth0id", account.auth0_id));
+		}
+
+		public void Connect(Service serv) {
+			WebSocket socket = sockets[serv];
 			socket.Connect();
 		}
 
 		public void Disconnect(Service serv) {
 			WebSocket socket = sockets[serv];
 			socket.Close();
-			// TODO: Clear cookies?
 		}
 
 		public bool IsConnected(Service svc) {
@@ -136,6 +144,9 @@ namespace Client {
 
 		public void Send(Service serv, IMessagePayload payload, 
 			IMailbox returnTo) {
+
+			if (!IsConnected(serv))
+				Connect(serv);
 
 			int seq = GetSequence();
 			Message.Send(sockets[serv], seq, payload);

@@ -145,6 +145,8 @@ namespace Client {
 				return;
 			}
 
+			MessageRouter.Instance.SetAccount(account);
+
 			// Once we have the basic data initialize the window
 			this.DataContext = this;
 			InitializeComponent();
@@ -152,8 +154,8 @@ namespace Client {
 			wpfProfile = account.profile;
 
 			// Open connection to the main service
-			MessageRouter.Instance.Connect(MessageRouter.Service.Main, account);
-			MessageRouter.Instance.Connect(MessageRouter.Service.Ops, account);
+			MessageRouter.Instance.Connect(MessageRouter.Service.Main);
+			MessageRouter.Instance.Connect(MessageRouter.Service.Ops);
 
 			// Note: blocking
 			FetchCommonData();

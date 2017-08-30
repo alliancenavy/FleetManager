@@ -61,7 +61,7 @@ namespace Client {
 
 			Task t = new Task(() => {
 				try {
-					MessageRouter.Instance.Connect(MessageRouter.Service.Update, null);
+					MessageRouter.Instance.Connect(MessageRouter.Service.Update);
 					MessageRouter.Instance.Send(
 						MessageRouter.Service.Update,
 						new ANWI.Messaging.Updater.Check() {
